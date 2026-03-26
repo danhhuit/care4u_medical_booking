@@ -35,8 +35,10 @@ class RouteNames {
   static const String notificationList = '/notification-list';
 
   // Payments
-  static const String payment = '/payment';
   static const String paymentHistory = '/payment-history';
+  static const String paymentsHome = '/payments';
+  static const String paymentTopup = '/payments/topup';
+  static const String paymentQr = '/payments/qr';
 
   // Reviews
   static const String reviewDoctor = '/review-doctor';
