@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/router/app_navigator.dart';
 import '../../../../app/router/route_names.dart';
-import '../screens/topup_screen.dart';
 
 class PaymentsHomeScreen extends StatelessWidget {
   final int walletBalance;
