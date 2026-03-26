@@ -12,3 +12,21 @@ enum NotificationType {
   paymentSuccess,
   system,
 }
+
+enum PaymentProvider { stripe, momo, zalopay, cash }
+
+enum PaymentStatus {
+  pending,
+  processing,
+  succeeded,
+  failed,
+  cancelled,
+  expired,
+}
+
+enum TransactionType {
+  topup,
+  appointmentPayment,
+  medicinePayment,
+  consultationPayment,
+}

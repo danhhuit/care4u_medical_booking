@@ -1,4 +1,9 @@
 import 'package:care4u_medical_booking/app/router/route_args.dart';
+import 'package:care4u_medical_booking/features/payments/domain/entities/transaction_entity.dart';
+import 'package:care4u_medical_booking/features/payments/presentation/screens/payment_qr_screen.dart';
+import 'package:care4u_medical_booking/features/payments/presentation/screens/payments_home_screen.dart';
+import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
+import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
@@ -84,6 +89,42 @@ class AppRouter {
         return _buildRoute(
           settings,
           const _PlaceholderScreen(title: 'Health Center Map Screen'),
+        );
+      case RouteNames.paymentsHome:
+        return _buildRoute(
+          settings,
+          const PaymentsHomeScreen(walletBalance: 1500000),
+        );
+
+      case RouteNames.paymentTopup:
+        return _buildRoute(settings, const TopupScreen());
+
+      case RouteNames.paymentQr:
+        return _buildRoute(settings, const PaymentQrScreen());
+
+      case RouteNames.paymentHistory:
+        return _buildRoute(
+          settings,
+          TransactionHistoryScreen(
+            transactions: [
+              TransactionEntity(
+                id: '1',
+                title: 'Thanh toán khám bệnh',
+                amount: -200000,
+                type: 'appointmentPayment',
+                status: 'succeeded',
+                createdAt: DateTime(2026, 3, 8),
+              ),
+              TransactionEntity(
+                id: '2',
+                title: 'Nạp tiền vào ví',
+                amount: 500000,
+                type: 'topup',
+                status: 'succeeded',
+                createdAt: DateTime(2026, 3, 7),
+              ),
+            ],
+          ),
         );
 
       default:
