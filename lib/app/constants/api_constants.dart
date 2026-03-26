@@ -46,4 +46,11 @@ class ApiConstants {
 
   // Health centers
   static const String healthCenters = '/health-centers';
+
+  // Payments
+  static const String wallet = '/payments/wallet';
+  static const String paymentMethods = '/payments/methods';
+  static const String createPayment = '/payments/create';
+  static const String topupCreate = '/payments/topup/create';
+  static const String transactionHistory = '/payments/transactions';
 }
