@@ -1,7 +1,13 @@
-class SharedPrefsService {
-  Future<void> setString(String key, String value) async {}
+class TokenStorage {
+  String? _token;
 
-  Future<String?> getString(String key) async => null;
+  Future<void> saveToken(String token) async {
+    _token = token;
+  }
 
-  Future<void> remove(String key) async {}
+  Future<String?> getToken() async => _token;
+
+  Future<void> clearToken() async {
+    _token = null;
+  }
 }
