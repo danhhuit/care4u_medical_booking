@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'router/app_router.dart';
-import 'theme/app_theme.dart';
 import 'constants/app_strings.dart';
+import 'theme/app_theme.dart';
 
 class Care4uApp extends StatelessWidget {
   const Care4uApp({super.key});
