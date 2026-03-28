@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'app/app.dart';
 import 'app/config/dependency_injection.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/update_profile_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/login_email_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
 // import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
 // import 'package:care4u_medical_booking/features/auth/presentation/screens/otp_verification_screen.dart';
 // import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
@@ -29,7 +29,7 @@ class TestApp extends StatelessWidget {
       title: 'UI Test Care4U',
       
       // 3. THAY ĐỔI TÊN CLASS MÀN HÌNH Ở ĐÂY ĐỂ XEM
-      home: UpdateProfileScreen(), 
+      home: const LoginDoctorScreen(), 
       
     );
   }
