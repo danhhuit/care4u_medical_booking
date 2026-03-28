@@ -14,14 +14,14 @@ class SplashScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/images/logo.png',
+                'assests/images/logo.png',
                 height: 120,
               ),
               const SizedBox(height: 80),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Image.asset(
-                  'assets/images/quote_banner.png',
+                  'assests/images/quote_banner.png',
                   fit: BoxFit.contain,
                 ),
               ),

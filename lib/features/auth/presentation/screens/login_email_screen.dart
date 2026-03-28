@@ -21,7 +21,7 @@ class LoginEmailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppSpacing.huge),
               Image.asset(
-                'assets/images/logo.png',
+                'assests/images/logo.png',
                 height: 120,
               ),
               const SizedBox(height: AppSpacing.xxxl),
@@ -83,7 +83,7 @@ class LoginEmailScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {},
                   icon: Image.asset(
-                    'assets/images/google_logo.png',
+                    'assests/images/google_logo.png',
                     height: 20,
                     width: 20,
                   ),
