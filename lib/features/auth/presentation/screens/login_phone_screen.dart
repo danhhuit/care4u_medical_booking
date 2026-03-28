@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
 
 class LoginPhoneScreen extends StatelessWidget {
   const LoginPhoneScreen({Key? key}) : super(key: key);
@@ -24,39 +27,59 @@ class LoginPhoneScreen extends StatelessWidget {
                 height: 120,
               ),
               const SizedBox(height: AppSpacing.huge),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'Quên mật khẩu?',
-                  style: AppTextStyles.captionDark,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Care4uTextField(
-                hintText: 'Nhập số điện thoại của bạn',
-                prefix: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.md),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        '+84',
-                        style: AppTextStyles.bodyDark,
-                      ),
-                    ],
-                  ),
-                ),
+              const Care4uTextField(
+                hintText: 'Nhập email hoặc số điện thoại',
               ),
               const SizedBox(height: AppSpacing.lg),
               const Care4uTextField(
                 hintText: 'Mật khẩu',
                 isPassword: true,
               ),
+              const SizedBox(height: AppSpacing.sm),
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ResetPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Quên mật khẩu?',
+                    style: AppTextStyles.captionDark,
+                  ),
+                ),
+              ),
               const SizedBox(height: AppSpacing.xl),
               Care4uButton(
                 text: 'Đăng nhập',
                 onPressed: () {},
               ),
+              const SizedBox(height: AppSpacing.lg),
+              RichText(
+                text: TextSpan(
+                  text: 'Bạn chưa có tài khoản? ',
+                  style: AppTextStyles.captionLight,
+                  children: [
+                    TextSpan(
+                      text: 'Đăng kí ngay',
+                      style: AppTextStyles.captionDark,
+                      recognizer: TapGestureRecognizer()..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
             ],
           ),
         ),

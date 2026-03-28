@@ -30,25 +30,13 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               const Text(
-                'Vui lòng nhập số điện thoại của bạn\nđể đăng kí tài khoản',
+                'Vui lòng nhập email hoặc số điện thoại của bạn\nđể đăng kí tài khoản',
                 style: AppTextStyles.bodyLight,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.xxxl),
-              Care4uTextField(
-                hintText: 'Nhập số điện thoại của bạn',
-                prefix: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.md),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        '+84',
-                        style: AppTextStyles.bodyDark,
-                      ),
-                    ],
-                  ),
-                ),
+              const Care4uTextField(
+                hintText: 'Nhập email hoặc số điện thoại của bạn',
               ),
               const SizedBox(height: AppSpacing.lg),
               const Care4uTextField(

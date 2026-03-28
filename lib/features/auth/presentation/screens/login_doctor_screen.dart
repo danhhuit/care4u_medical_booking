@@ -4,6 +4,7 @@ import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
 
 class LoginDoctorScreen extends StatelessWidget {
   const LoginDoctorScreen({Key? key}) : super(key: key);
@@ -26,14 +27,7 @@ class LoginDoctorScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.huge),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'Quên mật khẩu?',
-                  style: AppTextStyles.captionDark,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
+
               const Text(
                 'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
                 style: TextStyle(
@@ -67,6 +61,24 @@ class LoginDoctorScreen extends StatelessWidget {
               const Care4uTextField(
                 hintText: 'Mật khẩu',
                 isPassword: true,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ResetPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Quên mật khẩu?',
+                    style: AppTextStyles.captionDark,
+                  ),
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
               Care4uButton(
