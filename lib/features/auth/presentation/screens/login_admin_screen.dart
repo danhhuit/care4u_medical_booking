@@ -5,10 +5,9 @@ import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
 
-class LoginDoctorScreen extends StatelessWidget {
-  const LoginDoctorScreen({Key? key}) : super(key: key);
+class LoginAdminScreen extends StatelessWidget {
+  const LoginAdminScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,24 +19,7 @@ class LoginDoctorScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: AppSpacing.md),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.centerLeft,
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPhoneScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.huge),
               Center(
                 child: Image.asset(
                   'assests/images/logo.png',
@@ -47,7 +29,7 @@ class LoginDoctorScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.huge),
 
               const Text(
-                'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
+                'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Admin',
                 style: TextStyle(
                   color: AppColors.textLight,
                   fontSize: 14,
@@ -56,24 +38,8 @@ class LoginDoctorScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              Care4uTextField(
-                hintText: 'Nhập số điện thoại của bạn',
-                prefix: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.md),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        '+84',
-                        style: AppTextStyles.bodyDark,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
               const Care4uTextField(
-                hintText: 'Nhập mã số định danh nghề nghiệp',
+                hintText: 'Nhập email hoặc số điện thoại',
               ),
               const SizedBox(height: AppSpacing.lg),
               const Care4uTextField(
