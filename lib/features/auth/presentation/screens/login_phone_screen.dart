@@ -7,6 +7,7 @@ import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
 
 class LoginPhoneScreen extends StatelessWidget {
   const LoginPhoneScreen({Key? key}) : super(key: key);
@@ -57,6 +58,18 @@ class LoginPhoneScreen extends StatelessWidget {
               Care4uButton(
                 text: 'Đăng nhập',
                 onPressed: () {},
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Care4uButton(
+                text: 'Đăng nhập với tư cách Bác sĩ',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginDoctorScreen(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: AppSpacing.lg),
               RichText(
