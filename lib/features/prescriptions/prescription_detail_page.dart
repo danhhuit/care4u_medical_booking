@@ -1,104 +1,89 @@
 import 'package:flutter/material.dart';
-import 'prescription_detail_page.dart';
 import 'revisit_schedule_page.dart';
 
-class PrescriptionListPage extends StatelessWidget {
-  const PrescriptionListPage({super.key});
+class PrescriptionDetailPage extends StatelessWidget {
+  const PrescriptionDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: true,
-        title: const Text('Đơn thuốc của tôi', 
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+        elevation: 0,
+        leading: const BackButton(color: Colors.black),
+        title: const Text('Chi tiết đơn thuốc', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return _buildPrescriptionCard(context);
-        },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Danh sách thuốc (4 loại)', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 15),
+            _buildMedicineItem('Paracetamol 500mg', 'Sáng 1 - Chiều 1', 'Uống sau khi ăn no'),
+            _buildMedicineItem('Esomeprazol 40mg', 'Sáng 1 (trước ăn)', 'Uống trước ăn 30 phút'),
+            _buildMedicineItem('Phosphalugel', 'Khi đau', 'Hòa với nước hoặc uống trực tiếp'),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(color: Colors.orange.withOpacity(0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.orange.withOpacity(0.2))),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [Icon(Icons.warning_amber, color: Colors.orange, size: 20), SizedBox(width: 8), Text('Lưu ý của bác sĩ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange))]),
+                  SizedBox(height: 8),
+                  Text('Tránh ăn đồ cay nóng, không uống rượu bia trong quá trình điều trị.', style: TextStyle(fontSize: 13, color: Colors.black87)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RevisitSchedulePage()),
+                  );
+                },
+                icon: const Icon(Icons.calendar_month),
+                label: const Text('Xem lịch tái khám', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPrescriptionCard(BuildContext context) {
+  Widget _buildMedicineItem(String name, String dose, String note) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+        border: Border.all(color: const Color(0xFFEEEEEE)),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                child: const Icon(Icons.medication_liquid, color: Colors.blue),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Đơn thuốc điều trị dạ dày', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('Bác sĩ: Lê Văn B', style: TextStyle(color: Colors.grey, fontSize: 13)),
-                  ],
-                ),
-              ),
-              const Text('Đang dùng', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
-            ],
-          ),
-          const Divider(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Ngày kê: 25/03/2026', style: TextStyle(color: Colors.blueGrey, fontSize: 13)),
-              Row(
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RevisitSchedulePage()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                      side: const BorderSide(color: Colors.blue),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text('Tái khám'),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PrescriptionDetailPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text('Chi tiết'),
-                  ),
-                ],
-              ),
-            ],
+          const Icon(Icons.vaccines, color: Colors.blue, size: 30),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                Text('Liều dùng: $dose', style: const TextStyle(color: Colors.blue, fontSize: 13, fontWeight: FontWeight.w500)),
+                Text(note, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
           ),
         ],
       ),
