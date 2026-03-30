@@ -18,3 +18,24 @@ Future<void> main() async {
     home: ProfilePage(),
   ));
 }
+
+// đây là main để test giao diện đăng nhập
+void main() {
+  runApp(const TestApp());
+}
+
+class TestApp extends StatelessWidget {
+  const TestApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false, // Ẩn dải ruy-băng chữ DEBUG màu đỏ cho đẹp
+      title: 'UI Test Care4U',
+      
+      // 3. THAY ĐỔI TÊN CLASS MÀN HÌNH Ở ĐÂY ĐỂ XEM
+      home: const LoginDoctorScreen(), 
+      
+    );
+  }
+}
