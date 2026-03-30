@@ -2,25 +2,21 @@ import 'package:flutter/material.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> doctorData;
-
   const BookAppointmentScreen({super.key, required this.doctorData});
-
   @override
   State<BookAppointmentScreen> createState() => _BookAppointmentScreenState();
 }
-
 class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   int _selectedDateIndex = 0;
   int _selectedTimeIndex = -1;
-
   final List<String> _dates = ['T2, 12/10', 'T3, 13/10', 'T4, 14/10', 'T5, 15/10', 'T6, 16/10'];
   final List<String> _times = [
     '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM',
     '13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM'
   ];
-
   @override
   Widget build(BuildContext context) {
+    final String imagePath = widget.doctorData['imageUrl'] ?? 'assets/images/default_doctor.jpg';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Đặt lịch hẹn'),
@@ -30,15 +26,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Doctor Summary
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: NetworkImage(widget.doctorData['imageUrl'] ?? 'https://via.placeholder.com/150'),
-                    onBackgroundImageError: (_, __) => const Icon(Icons.person),
+                    backgroundImage: AssetImage(imagePath),
+                    onBackgroundImageError: (_, __) {
+                      debugPrint('Không tìm thấy ảnh asset: $imagePath');
+                    },
+                    backgroundColor: Colors.grey[200],
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -61,8 +59,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
             ),
             const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
-            
-            // Select Date
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -104,10 +100,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 },
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Select Time
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -160,9 +153,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: _selectedTimeIndex == -1
-                ? null // Disable if no time is selected
+                ? null 
                 : () {
-                    // Show success mock dialog
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -171,8 +163,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context); // Close dialog
-                              Navigator.pop(context); // Go back to prev screen
+                              Navigator.pop(context); 
+                              Navigator.pop(context); 
                             },
                             child: const Text('Đóng'),
                           )

@@ -4,19 +4,16 @@ import 'doctor_detail_screen.dart';
 
 class DoctorsScreen extends StatefulWidget {
   const DoctorsScreen({super.key});
-
   @override
   State<DoctorsScreen> createState() => _DoctorsScreenState();
 }
-
 class _DoctorsScreenState extends State<DoctorsScreen> {
-  // Mock data for UI demonstration
   final List<Map<String, dynamic>> _allDoctors = [
     {
       'id': '1',
       'name': 'BS. Nguyễn Văn An',
       'specialty': 'Tim mạch',
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assets/images/123.jpg', 
       'rating': 4.8,
       'reviews': 120,
       'bio': 'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch, từng tu nghiệp tại Pháp.',
@@ -25,7 +22,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       'id': '2',
       'name': 'BS. Trần Thị Bình',
       'specialty': 'Nhi khoa',
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assets/images/234.jpg', 
       'rating': 4.9,
       'reviews': 85,
       'bio': 'Bác sĩ Bình chuyên khoa Nhi, luôn tận tâm và yêu thương trẻ nhỏ.',
@@ -34,7 +31,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       'id': '3',
       'name': 'BS. Lê Trọng Chung',
       'specialty': 'Thần kinh',
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assets/images/345.jpg',
       'rating': 4.7,
       'reviews': 50,
       'bio': 'Chuyên gia hàng đầu về các bệnh lý thần kinh và phẫu thuật thần kinh.',
@@ -43,29 +40,25 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       'id': '4',
       'name': 'BS. Phạm Thị Dung',
       'specialty': 'Da liễu',
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assets/images/456.jpg',
       'rating': 4.6,
       'reviews': 200,
       'bio': 'Bác sĩ Dung có kinh nghiệm phong phú trong điều trị các bệnh về da học và thẩm mỹ.',
     },
   ];
-
   List<Map<String, dynamic>> _filteredDoctors = [];
   final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     _filteredDoctors = _allDoctors;
     _searchController.addListener(_filterDoctors);
   }
-
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-
   void _filterDoctors() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -76,7 +69,6 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       }).toList();
     });
   }
-
   void _showFilterBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -91,7 +83,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Lọc bách sĩ',
+                'Lọc bác sĩ',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -120,7 +112,6 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +121,6 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
       ),
       body: Column(
         children: [
-          // Search & Filter bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -165,7 +155,6 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
               ],
             ),
           ),
-          // List of doctors
           Expanded(
             child: _filteredDoctors.isEmpty
                 ? const Center(child: Text('Không tìm thấy bác sĩ nào.'))
@@ -177,7 +166,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                         name: doc['name'],
                         specialty: doc['specialty'],
                         imageUrl: doc['imageUrl'],
-                        rating: doc['rating'],
+                        rating: (doc['rating'] as num).toDouble(),
                         reviews: doc['reviews'],
                         onTap: () {
                           Navigator.push(

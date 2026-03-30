@@ -8,11 +8,11 @@ import 'package:care4u_medical_booking/features/auth/presentation/screens/splash
 // import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
 // import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/update_profile_screen.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await DependencyInjection.init();
-  runApp(const Care4uApp());
-}
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await DependencyInjection.init();
+//   runApp(const Care4uApp());
+// }
 
 // đây là main để test giao diện đăng nhập
 void main() {
