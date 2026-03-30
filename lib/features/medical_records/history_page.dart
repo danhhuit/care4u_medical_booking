@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../appointments/screens/book_appointment_screen.dart';
+import 'profile_page.dart';
+import 'results_page.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -15,6 +18,22 @@ class HistoryPage extends StatelessWidget {
           'Lịch sử khám bệnh',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.assignment_turned_in_outlined, color: Colors.blue),
+            tooltip: 'Kết quả khám',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ResultsPage()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_outline, color: Colors.blue),
+            tooltip: 'Hồ sơ cá nhân',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -55,7 +74,16 @@ class HistoryPage extends StatelessWidget {
                   ),
                   const Divider(height: 1),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookAppointmentScreen(
+                            doctorData: {}, // Trang yêu cầu truyền data bác sĩ, ta truyền rỗng để lấy mặc định
+                          ),
+                        ),
+                      );
+                    },
                     style: TextButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -113,8 +141,7 @@ class HistoryPage extends StatelessWidget {
             ),
 
             // --- Phần 3: Các nút chức năng dưới cùng ---
-            const SizedBox(height: 10),
-            _buildActionTile('Bạn chưa có Bác sĩ riêng?', 'Tìm BS ngay'),
+            const SizedBox(height: 10),           
             _buildActionTile('Bạn muốn mua thuốc?', 'Đặt mua ngay'),
             const SizedBox(height: 20),
           ],

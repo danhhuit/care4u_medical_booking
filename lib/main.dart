@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'navigation/main_navigation.dart'; 
+import 'features/medical_records/history_page.dart';
 
 void main() {
   runApp(const MedicalApp());
@@ -12,7 +12,7 @@ class MedicalApp extends StatelessWidget {
       title: 'Care4U Medical',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(), 
-      home: MainNavigation(),
+      home: const HistoryPage(),
     );
   }
   ThemeData _buildTheme() {
