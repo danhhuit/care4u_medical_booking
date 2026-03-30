@@ -70,10 +70,10 @@ flutter:
     - assests/images/google_logo.png
     - assests/images/logo.png
     - assests/images/quote_banner.png
-    - assests/images/bacsi_1.jpg
-    - assests/images/bacsi_2.jpg
-    - assests/images/bacsi_3.jpg
-    - assests/images/bacsi_4.jpg
+    # - assests/images/123.jpg
+    # - assests/images/234.jpg
+    # - assests/images/345.jpg
+    # - assests/images/456.jpg
     - assests/images/default_doctor.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
