@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/appointment_card.dart';
+import '../models/appointment_status.dart'; 
 
-enum AppointmentStatus { upcoming, completed, cancelled }
 class AppointmentsScreen extends StatelessWidget {
   const AppointmentsScreen({super.key});
   final List<Map<String, dynamic>> _mockAppointments = const [

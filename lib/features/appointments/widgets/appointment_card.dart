@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/appointment_status.dart'; 
 
-enum AppointmentStatus { upcoming, completed, cancelled }
 class AppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appointmentData;
   final AppointmentStatus status;
