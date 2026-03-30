@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'prescription_detail_page.dart';
+import 'revisit_schedule_page.dart';
 
 class PrescriptionListPage extends StatelessWidget {
   const PrescriptionListPage({super.key});
@@ -60,17 +62,41 @@ class PrescriptionListPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Ngày kê: 25/03/2026', style: TextStyle(color: Colors.blueGrey, fontSize: 13)),
-              ElevatedButton(
-                onPressed: () {
-                  // Chuyển sang trang chi tiết
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Chi tiết'),
+              Row(
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RevisitSchedulePage()),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      side: const BorderSide(color: Colors.blue),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: const Text('Tái khám'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const PrescriptionDetailPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: const Text('Chi tiết'),
+                  ),
+                ],
               ),
             ],
           ),
