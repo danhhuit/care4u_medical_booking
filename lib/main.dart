@@ -8,11 +8,13 @@ import 'features/prescriptions/revisit_schedule_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DependencyInjection.init();
+  
 
 
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: PrescriptionListPage(),
+    home: PrescriptionDetailPage(),
   ));
 }
+
 

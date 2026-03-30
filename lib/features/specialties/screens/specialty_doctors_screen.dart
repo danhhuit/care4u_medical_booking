@@ -4,38 +4,30 @@ import '../../doctors/screens/doctor_detail_screen.dart';
 
 class SpecialtyDoctorsScreen extends StatelessWidget {
   final String specialty;
-
   SpecialtyDoctorsScreen({super.key, required this.specialty});
-
-  // Mock list of doctors for this specialty
   final List<Map<String, dynamic>> _mockDoctors = [
     {
-      'id': '1',
+      'id': 's1',
       'name': 'BS. Nguyễn Văn A',
-      'specialty': 'Tim mạch', // This will dynamically match the specialty
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assests/images/123.jpg', 
       'rating': 4.8,
       'reviews': 120,
-      'bio': 'Bác sĩ có nhiều năm kinh nghiệm.',
+      'bio': 'Bác sĩ có nhiều năm kinh nghiệm trong ngành.',
     },
     {
-      'id': '2',
+      'id': 's2',
       'name': 'BS. Trần Thị B',
-      'specialty': 'Tim mạch', // This will dynamically match the specialty
-      'imageUrl': 'https://via.placeholder.com/150',
+      'imageUrl': 'assests/images/234.jpg',
       'rating': 4.5,
       'reviews': 95,
-      'bio': 'Chuyên gia uy tín, tận tâm.',
+      'bio': 'Chuyên gia uy tín, tận tâm với bệnh nhân.',
     },
   ];
-
   @override
   Widget build(BuildContext context) {
-    // Dynamically overwriting mock specialty to match the title for presentation
     final doctors = _mockDoctors.map((doc) {
       return {...doc, 'specialty': specialty};
     }).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Bác sĩ $specialty'),
@@ -49,13 +41,12 @@ class SpecialtyDoctorsScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final doc = doctors[index];
                 return DoctorCard(
-                  name: doc['name'],
-                  specialty: doc['specialty'],
-                  imageUrl: doc['imageUrl'],
-                  rating: doc['rating'],
-                  reviews: doc['reviews'],
+                  name: doc['name'] as String,
+                  specialty: doc['specialty'] as String,
+                  imageUrl: doc['imageUrl'] as String,
+                  rating: (doc['rating'] as num).toDouble(),
+                  reviews: doc['reviews'] as int,
                   onTap: () {
-                    // Navigate to doctor details screen reusing existing doctors feature
                     Navigator.push(
                       context,
                       MaterialPageRoute(

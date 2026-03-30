@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-
-enum AppointmentStatus { upcoming, completed, cancelled }
+import '../models/appointment_status.dart'; 
 
 class AppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appointmentData;
   final AppointmentStatus status;
-
   const AppointmentCard({
     super.key,
     required this.appointmentData,
     required this.status,
   });
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -22,13 +19,17 @@ class AppointmentCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Doctor Info
             Row(
               children: [
                 CircleAvatar(
                   radius: 25,
-                  backgroundImage: NetworkImage(appointmentData['doctorImage']),
-                  onBackgroundImageError: (_, __) => const Icon(Icons.person),
+                  backgroundImage: AssetImage(
+                    appointmentData['doctorImage'] ?? 'assests/images/default_doctor.jpg',
+                  ),
+                  onBackgroundImageError: (_, __) {
+                    debugPrint('Lỗi tải ảnh asset: ${appointmentData['doctorImage']}');
+                  },
+                  backgroundColor: Colors.grey[200],
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -60,7 +61,6 @@ class AppointmentCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 12.0),
               child: Divider(),
             ),
-            // Date and Time Info
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -86,7 +86,6 @@ class AppointmentCard extends StatelessWidget {
                 ),
               ],
             ),
-            // Actions
             if (status == AppointmentStatus.upcoming) ...[
               const SizedBox(height: 16),
               Row(
@@ -98,7 +97,6 @@ class AppointmentCard extends StatelessWidget {
                         side: BorderSide(color: Colors.grey[300]!),
                       ),
                       onPressed: () {
-                         // Action to Cancel
                       },
                       child: const Text('Hủy lịch'),
                     ),
@@ -111,9 +109,8 @@ class AppointmentCard extends StatelessWidget {
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () {
-                        // Action to Reschedule
                       },
-                      child: const Text('Đổi lịch', style: TextStyle(color: Colors.white)),
+                      child: const Text('Đổi lịch'),
                     ),
                   ),
                 ],
@@ -124,11 +121,9 @@ class AppointmentCard extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildStatusChip() {
     Color color;
     String text;
-
     switch (status) {
       case AppointmentStatus.upcoming:
         color = Colors.blue;
@@ -143,7 +138,6 @@ class AppointmentCard extends StatelessWidget {
         text = 'Đã hủy';
         break;
     }
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(

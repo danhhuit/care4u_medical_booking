@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../widgets/appointment_card.dart';
+import '../models/appointment_status.dart'; 
 
 class AppointmentsScreen extends StatelessWidget {
   const AppointmentsScreen({super.key});
-
   final List<Map<String, dynamic>> _mockAppointments = const [
     {
       'id': '1',
       'doctorName': 'BS. Nguyễn Văn An',
       'specialty': 'Tim mạch',
-      'doctorImage': 'https://via.placeholder.com/150',
+      'doctorImage': 'assests/images/123.jpg', 
       'date': '12/10/2026',
       'time': '09:00 AM',
       'status': AppointmentStatus.upcoming,
@@ -18,7 +18,7 @@ class AppointmentsScreen extends StatelessWidget {
       'id': '2',
       'doctorName': 'BS. Trần Thị Bình',
       'specialty': 'Nhi khoa',
-      'doctorImage': 'https://via.placeholder.com/150',
+      'doctorImage': 'assests/images/234.jpg',
       'date': '15/10/2026',
       'time': '14:30 PM',
       'status': AppointmentStatus.upcoming,
@@ -27,7 +27,7 @@ class AppointmentsScreen extends StatelessWidget {
       'id': '3',
       'doctorName': 'BS. Lê Trọng Chung',
       'specialty': 'Thần kinh',
-      'doctorImage': 'https://via.placeholder.com/150',
+      'doctorImage': 'assests/images/345.jpg',
       'date': '01/09/2026',
       'time': '10:00 AM',
       'status': AppointmentStatus.completed,
@@ -36,13 +36,12 @@ class AppointmentsScreen extends StatelessWidget {
       'id': '4',
       'doctorName': 'BS. Phạm Thị Dung',
       'specialty': 'Da liễu',
-      'doctorImage': 'https://via.placeholder.com/150',
+      'doctorImage': 'assests/images/456.jpg',
       'date': '20/08/2026',
       'time': '16:00 PM',
       'status': AppointmentStatus.cancelled,
     },
   ];
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -72,7 +71,6 @@ class AppointmentsScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildAppointmentList(AppointmentStatus status) {
     final filteredList = _mockAppointments.where((app) => app['status'] == status).toList();
 
@@ -91,7 +89,6 @@ class AppointmentsScreen extends StatelessWidget {
         ),
       );
     }
-
     return ListView.builder(
       padding: const EdgeInsets.only(top: 8, bottom: 80),
       itemCount: filteredList.length,

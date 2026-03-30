@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class SpecialtyCard extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final dynamic icon; 
   final Color color;
   final VoidCallback onTap;
-
   const SpecialtyCard({
     super.key,
     required this.title,
@@ -13,7 +12,6 @@ class SpecialtyCard extends StatelessWidget {
     required this.color,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -40,11 +38,7 @@ class SpecialtyCard extends StatelessWidget {
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 32,
-              ),
+              child: _buildIconContent(),
             ),
             const SizedBox(height: 12),
             Text(
@@ -59,5 +53,23 @@ class SpecialtyCard extends StatelessWidget {
         ),
       ),
     );
+  }
+  Widget _buildIconContent() {
+    if (icon is IconData) {
+      return Icon(
+        icon as IconData,
+        color: color,
+        size: 32,
+      );
+    } else if (icon is String) {
+      return Image.asset(
+        icon as String,
+        width: 32,
+        height: 32,
+        color: color,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    }
+    return const Icon(Icons.help_outline);
   }
 }

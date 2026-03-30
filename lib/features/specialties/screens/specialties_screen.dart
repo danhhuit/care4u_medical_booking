@@ -4,7 +4,6 @@ import 'specialty_doctors_screen.dart';
 
 class SpecialtiesScreen extends StatelessWidget {
   const SpecialtiesScreen({super.key});
-
   final List<Map<String, dynamic>> _specialties = const [
     {'title': 'Tim mạch', 'icon': Icons.favorite, 'color': Colors.red},
     {'title': 'Thần kinh', 'icon': Icons.psychology, 'color': Colors.purple},
@@ -15,7 +14,6 @@ class SpecialtiesScreen extends StatelessWidget {
     {'title': 'Tai Mũi Họng', 'icon': Icons.hearing, 'color': Colors.green},
     {'title': 'Tiêu hóa', 'icon': Icons.restaurant, 'color': Colors.brown},
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +33,7 @@ class SpecialtiesScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Expanded(
               child: GridView.builder(
+                physics: const BouncingScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
@@ -45,7 +44,7 @@ class SpecialtiesScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final spec = _specialties[index];
                   return SpecialtyCard(
-                    title: spec['title'],
+                    title: spec['title'] as String,
                     icon: spec['icon'] as IconData,
                     color: spec['color'] as Color,
                     onTap: () {
@@ -53,7 +52,7 @@ class SpecialtiesScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => SpecialtyDoctorsScreen(
-                            specialty: spec['title'],
+                            specialty: spec['title'] as String,
                           ),
                         ),
                       );
