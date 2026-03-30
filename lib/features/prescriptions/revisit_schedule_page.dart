@@ -10,6 +10,7 @@ class RevisitSchedulePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
+        leading: const BackButton(color: Colors.black),
         title: const Text('Lịch tái khám', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
