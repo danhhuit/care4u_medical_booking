@@ -7,7 +7,6 @@ class DoctorCard extends StatelessWidget {
   final double rating;
   final int reviews;
   final VoidCallback onTap;
-
   const DoctorCard({
     super.key,
     required this.name,
@@ -17,7 +16,6 @@ class DoctorCard extends StatelessWidget {
     required this.reviews,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -32,14 +30,16 @@ class DoctorCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar
               CircleAvatar(
                 radius: 40,
-                backgroundImage: NetworkImage(imageUrl),
-                onBackgroundImageError: (_, __) => const Icon(Icons.person),
+                backgroundImage: AssetImage(imageUrl),
+                onBackgroundImageError: (_, __) {
+                  debugPrint('Lỗi: Không tìm thấy ảnh tại $imageUrl');
+                },
+                backgroundColor: Colors.grey[200],
+                child: null, 
               ),
               const SizedBox(width: 16),
-              // Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,11 +76,13 @@ class DoctorCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Action Icon
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Colors.grey,
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Colors.grey,
+                ),
               )
             ],
           ),

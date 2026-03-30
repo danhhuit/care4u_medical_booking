@@ -3,9 +3,7 @@ import '../../appointments/screens/book_appointment_screen.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   final Map<String, dynamic> doctorData;
-
   const DoctorDetailScreen({super.key, required this.doctorData});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +16,6 @@ class DoctorDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: Avatar & Basic Info
             Row(
               children: [
                 Hero(
@@ -67,8 +64,6 @@ class DoctorDetailScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32),
-
-            // About Section
             const Text(
               'Giới thiệu chung',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -79,8 +74,6 @@ class DoctorDetailScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 15, height: 1.5),
             ),
             const SizedBox(height: 32),
-
-            // Stats/Info Cards
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -119,7 +112,6 @@ class DoctorDetailScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Container(
       width: 100,
