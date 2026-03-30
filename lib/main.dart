@@ -31,3 +31,8 @@ class MedicalApp extends StatelessWidget {
 }
 
 
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: HealthCenterPage(),
+  ));
+}
