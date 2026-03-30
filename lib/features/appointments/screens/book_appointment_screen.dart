@@ -16,7 +16,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    final String imagePath = widget.doctorData['imageUrl'] ?? 'assets/images/default_doctor.jpg';
+    final String imagePath = widget.doctorData['imageUrl'] ?? 'assests/images/default_doctor.jpg';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Đặt lịch hẹn'),

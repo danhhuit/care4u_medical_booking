@@ -9,7 +9,7 @@ class SpecialtyDoctorsScreen extends StatelessWidget {
     {
       'id': 's1',
       'name': 'BS. Nguyễn Văn A',
-      'imageUrl': 'assets/images/123.jpg', 
+      'imageUrl': 'assests/images/123.jpg', 
       'rating': 4.8,
       'reviews': 120,
       'bio': 'Bác sĩ có nhiều năm kinh nghiệm trong ngành.',
@@ -17,7 +17,7 @@ class SpecialtyDoctorsScreen extends StatelessWidget {
     {
       'id': 's2',
       'name': 'BS. Trần Thị B',
-      'imageUrl': 'assets/images/234.jpg',
+      'imageUrl': 'assests/images/234.jpg',
       'rating': 4.5,
       'reviews': 95,
       'bio': 'Chuyên gia uy tín, tận tâm với bệnh nhân.',

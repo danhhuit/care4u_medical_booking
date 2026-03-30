@@ -24,7 +24,7 @@ class AppointmentCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 25,
                   backgroundImage: AssetImage(
-                    appointmentData['doctorImage'] ?? 'assets/images/default_doctor.jpg',
+                    appointmentData['doctorImage'] ?? 'assests/images/default_doctor.jpg',
                   ),
                   onBackgroundImageError: (_, __) {
                     debugPrint('Lỗi tải ảnh asset: ${appointmentData['doctorImage']}');
