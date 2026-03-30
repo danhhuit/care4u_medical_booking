@@ -1,36 +1,77 @@
 import 'package:flutter/material.dart';
-import 'app/app.dart';
-import 'app/config/dependency_injection.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/splash_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/otp_verification_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
-// import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/update_profile_screen.dart';
+import 'screens/doctors_screen.dart'; 
+import 'screens/appointments_screen.dart';
 
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await DependencyInjection.init();
-//   runApp(const Care4uApp());
-// }
-
-// đây là main để test giao diện đăng nhập
 void main() {
-  runApp(const TestApp());
+  runApp(const MedicalApp());
 }
 
-class TestApp extends StatelessWidget {
-  const TestApp({Key? key}) : super(key: key);
+class MedicalApp extends StatelessWidget {
+  const MedicalApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false, // Ẩn dải ruy-băng chữ DEBUG màu đỏ cho đẹp
-      title: 'UI Test Care4U',
-      
-      // 3. THAY ĐỔI TÊN CLASS MÀN HÌNH Ở ĐÂY ĐỂ XEM
-      home: const LoginDoctorScreen(), 
-      
+    return MaterialApp(
+      title: 'Medical App Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+      ), // Đã sửa: Chỗ này dùng ) chứ không phải ],
+      home: const MainNavigation(), 
+    );
+  }
+}
+
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _selectedIndex = 0;
+
+  // Đã sửa: Xóa const trước các Screen vì chúng chứa dữ liệu động
+  final List<Widget> _screens = [
+    const DoctorsScreen(),      
+    const AppointmentsScreen(), 
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Sử dụng IndexedStack để giữ trạng thái các tab khi chuyển đổi
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.medical_services_outlined),
+            activeIcon: Icon(Icons.medical_services),
+            label: 'Bác sĩ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            activeIcon: Icon(Icons.calendar_month),
+            label: 'Lịch hẹn',
+          ),
+        ],
+      ),
     );
   }
 }
