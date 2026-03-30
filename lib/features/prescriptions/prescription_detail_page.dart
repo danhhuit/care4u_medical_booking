@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'revisit_schedule_page.dart';
 
 class PrescriptionDetailPage extends StatelessWidget {
   const PrescriptionDetailPage({super.key});
@@ -34,6 +35,26 @@ class PrescriptionDetailPage extends StatelessWidget {
                   SizedBox(height: 8),
                   Text('Tránh ăn đồ cay nóng, không uống rượu bia trong quá trình điều trị.', style: TextStyle(fontSize: 13, color: Colors.black87)),
                 ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RevisitSchedulePage()),
+                  );
+                },
+                icon: const Icon(Icons.calendar_month),
+                label: const Text('Xem lịch tái khám', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ),
           ],
