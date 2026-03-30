@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'app/app.dart';
 import 'app/config/dependency_injection.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/splash_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/otp_verification_screen.dart';
-// import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
-// import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/update_profile_screen.dart';
+import 'features/medical_records/history_page.dart';
+import 'features/medical_records/profile_page.dart';  
+import 'features/medical_records/results_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DependencyInjection.init();
-  runApp(const Care4uApp());
+  
+  // Comment dòng dưới lại khi muốn chạy toàn bộ app
+  // runApp(const Care4uApp());
+  
+  // Bỏ comment đoạn dưới để chạy thử trang HistoryPage
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: ProfilePage(),
+  ));
 }
 
 // đây là main để test giao diện đăng nhập
