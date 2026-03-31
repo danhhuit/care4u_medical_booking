@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'app/app.dart';
-import 'app/config/dependency_injection.dart';
+// import 'features/doctors/screens/doctors_screen.dart';
+// import 'features/appointments/screens/appointments_screen.dart';
+import 'features/specialties/screens/specialties_screen.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await DependencyInjection.init();
-  runApp(const Care4uApp());
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'UI Testing',
+      home: const SpecialtiesScreen(), 
+    ),
+  );
 }
