@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 // import 'features/doctors/screens/doctors_screen.dart';
 // import 'features/appointments/screens/appointments_screen.dart';
-import 'features/specialties/screens/specialties_screen.dart';
+// import 'features/specialties/screens/specialties_screen.dart';
+import 'features/auth/presentation/screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,7 +10,7 @@ void main() {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'UI Testing',
-      home: const SpecialtiesScreen(), 
+      home: const SplashScreen(),
     ),
   );
 }
