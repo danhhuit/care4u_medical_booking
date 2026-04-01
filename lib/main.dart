@@ -6,8 +6,9 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'UI Testing',
-      home: const SpecialtiesScreen(), 
+      title: 'Care4U',
+      initialRoute: AppRouter.initialRoute,
+      onGenerateRoute: AppRouter.onGenerateRoute,
     ),
   );
 }
