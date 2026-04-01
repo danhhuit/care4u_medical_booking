@@ -5,7 +5,7 @@ import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
+import 'package:care4u_medical_booking/features/doctors/screens/doctor_main_screen.dart';
 
 class LoginDoctorScreen extends StatelessWidget {
   const LoginDoctorScreen({Key? key}) : super(key: key);
@@ -14,6 +14,14 @@ class LoginDoctorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -21,31 +29,10 @@ class LoginDoctorScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: AppSpacing.md),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.centerLeft,
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPhoneScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
               Center(
-                child: Image.asset(
-                  'assests/images/logo.png',
-                  height: 120,
-                ),
+                child: Image.asset('assests/images/logo.png', height: 120),
               ),
               const SizedBox(height: AppSpacing.huge),
-
               const Text(
                 'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
                 style: TextStyle(
@@ -59,14 +46,12 @@ class LoginDoctorScreen extends StatelessWidget {
               Care4uTextField(
                 hintText: 'Nhập số điện thoại của bạn',
                 prefix: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.md),
+                  padding: const EdgeInsets.only(
+                      left: AppSpacing.lg, right: AppSpacing.md),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Text(
-                        '+84',
-                        style: AppTextStyles.bodyDark,
-                      ),
+                      Text('+84', style: AppTextStyles.bodyDark),
                     ],
                   ),
                 ),
@@ -84,14 +69,11 @@ class LoginDoctorScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ResetPasswordScreen(),
-                      ),
-                    );
-                  },
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const ResetPasswordScreen()),
+                  ),
                   child: const Text(
                     'Quên mật khẩu?',
                     style: AppTextStyles.captionDark,
@@ -101,7 +83,15 @@ class LoginDoctorScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.xl),
               Care4uButton(
                 text: 'Đăng nhập',
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to Doctor Dashboard
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const DoctorMainScreen()),
+                    (route) => false,
+                  );
+                },
               ),
             ],
           ),
