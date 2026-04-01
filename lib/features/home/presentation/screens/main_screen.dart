@@ -5,8 +5,8 @@ import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.d
 import 'package:care4u_medical_booking/features/payments/presentation/screens/payments_home_screen.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/patient_profile_screen.dart';
 import 'package:care4u_medical_booking/features/appointments/screens/appointments_screen.dart';
-import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
-import 'package:care4u_medical_booking/app/router/route_names.dart';
+// import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
+// import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 
 class MainScreen extends StatefulWidget {
