@@ -5,15 +5,19 @@ import 'package:care4u_medical_booking/features/payments/presentation/screens/pa
 import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
+import 'package:care4u_medical_booking/features/store/presentation/screens/product_list_screen.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
+import 'package:care4u_medical_booking/features/home/presentation/screens/main_screen.dart';
 // import '../../core/widgets/empty_state.dart';
 // import '../../app/constants/app_strings.dart';
 // import '../../app/constants/app_enums.dart';
 
 class AppRouter {
   AppRouter._();
-  static const String initialRoute = RouteNames.home;
+  static const String initialRoute = RouteNames.login;
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RouteNames.splash:
@@ -23,22 +27,13 @@ class AppRouter {
         );
 
       case RouteNames.login:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Login Screen'),
-        );
+        return _buildRoute(settings, const LoginPhoneScreen());
 
       case RouteNames.register:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Register Screen'),
-        );
+        return _buildRoute(settings, const RegisterScreen());
 
       case RouteNames.home:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Home Screen'),
-        );
+        return _buildRoute(settings, const MainScreen());
 
       case RouteNames.doctorList:
         return _buildRoute(

@@ -23,19 +23,11 @@ class LoginPhoneScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: AppSpacing.huge),
-              Image.asset(
-                'assests/images/logo.png',
-                height: 120,
-              ),
+              Image.asset('assests/images/logo.png', height: 120),
               const SizedBox(height: AppSpacing.huge),
-              const Care4uTextField(
-                hintText: 'Nhập email hoặc số điện thoại',
-              ),
+              const Care4uTextField(hintText: 'Nhập email hoặc số điện thoại'),
               const SizedBox(height: AppSpacing.lg),
-              const Care4uTextField(
-                hintText: 'Mật khẩu',
-                isPassword: true,
-              ),
+              const Care4uTextField(hintText: 'Mật khẩu', isPassword: true),
               const SizedBox(height: AppSpacing.sm),
               Align(
                 alignment: Alignment.centerRight,
@@ -57,7 +49,9 @@ class LoginPhoneScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.xl),
               Care4uButton(
                 text: 'Đăng nhập',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/home');
+                },
               ),
               const SizedBox(height: AppSpacing.lg),
               Care4uButton(
@@ -80,14 +74,15 @@ class LoginPhoneScreen extends StatelessWidget {
                     TextSpan(
                       text: 'Đăng kí ngay',
                       style: AppTextStyles.captionDark,
-                      recognizer: TapGestureRecognizer()..onTap = () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ),
-                        );
-                      },
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
                     ),
                   ],
                 ),

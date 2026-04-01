@@ -14,7 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Light turquoise background from the design
     const Color turquoiseBg = Color(0xFFA1E4D5);
 
     return Scaffold(
@@ -51,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Logo Care4U circle
         Container(
           width: 50,
           height: 50,
@@ -112,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQuickActionsSlider() {
     return Container(
-      height: 140,
+      height: 160,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -179,32 +177,24 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          // Indicators
-          Container(
-            width: 40,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            child: Stack(
-              children: [
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  left: _currentQuickActionPage == 0 ? 0 : 20,
-                  child: Container(
-                    width: 20,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF5B6CCC),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                  ),
+          // Page indicator
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(2, (index) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                margin: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
+                width: _currentQuickActionPage == index ? 20 : 8,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: _currentQuickActionPage == index
+                      ? const Color(0xFF5B6CCC)
+                      : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
                 ),
-              ],
-            ),
+              );
+            }),
           ),
-          const SizedBox(height: 12),
         ],
       ),
     );
@@ -348,7 +338,6 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(width: 10),
-            // Dummy dotted line similar to design image next to standard title
             SizedBox(
               width: 30,
               child: Divider(color: Colors.blue, thickness: 2),
@@ -375,7 +364,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 'assests/images/default_doctor.jpg',
               ),
               const SizedBox(width: 16),
-              // More placeholders just in case
               _buildServiceCard('Tư vấn tâm lý', 'assests/images/logo.png'),
             ],
           ),
