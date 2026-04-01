@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
-import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/features/home/presentation/screens/home_screen.dart';
 import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/payments_home_screen.dart';
@@ -21,11 +20,11 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   // Tabs: Home | Appointments | [Book FAB] | Payments | Profile
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const AppointmentsScreen(),
-    const PaymentsHomeScreen(walletBalance: 1500000),
-    const PatientProfileScreen(),
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    AppointmentsScreen(),
+    PaymentsHomeScreen(walletBalance: 1500000),
+    PatientProfileScreen(),
   ];
 
   int get _unreadCount =>
@@ -55,13 +54,13 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: AppColors.primary,
         elevation: 4,
         shape: const CircleBorder(),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add, color: Colors.white, size: 22),
+            Icon(Icons.add, color: Colors.white, size: 22),
             Text(
-              AppTranslations.tr('book_appointment_fab'),
-              style: const TextStyle(color: Colors.white, fontSize: 8),
+              'Đặt lịch',
+              style: TextStyle(color: Colors.white, fontSize: 8),
             ),
           ],
         ),
@@ -70,18 +69,19 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8,
+        color: Colors.white,
         elevation: 8,
         child: SizedBox(
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(0, Icons.home_outlined, Icons.home, AppTranslations.tr('nav_home')),
-              _navItem(1, Icons.calendar_today_outlined, Icons.calendar_today, AppTranslations.tr('nav_appointments')),
+              _navItem(0, Icons.home_outlined, Icons.home, 'Trang chủ'),
+              _navItem(1, Icons.calendar_today_outlined, Icons.calendar_today, 'Lịch hẹn'),
               const SizedBox(width: 56), // FAB space
               _navItemWithBadge(2, Icons.account_balance_wallet_outlined,
-                  Icons.account_balance_wallet, AppTranslations.tr('nav_payments')),
-              _navItem(3, Icons.person_outline, Icons.person, AppTranslations.tr('nav_profile')),
+                  Icons.account_balance_wallet, 'Thanh toán'),
+              _navItem(3, Icons.person_outline, Icons.person, 'Cá nhân'),
             ],
           ),
         ),

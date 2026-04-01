@@ -1,111 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
-import 'package:care4u_medical_booking/app/theme/app_colors.dart';
-import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
-import 'package:care4u_medical_booking/core/constants/app_translations.dart';
-import '../models/appointment_status.dart';
+import '../models/appointment_status.dart'; 
 
 class AppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appointmentData;
   final AppointmentStatus status;
-  final VoidCallback? onRefresh;
-
   const AppointmentCard({
     super.key,
     required this.appointmentData,
     required this.status,
-    this.onRefresh,
   });
-
-  Future<void> _cancelAppointment(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(AppTranslations.tr('cancel_alerts')),
-        content: Text(
-          '${AppTranslations.tr('cancel_alerts')} ${appointmentData['doctorName']}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(AppTranslations.tr('cancelled'), style: const TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(AppTranslations.tr('cancelled'), style: const TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      if (!context.mounted) return;
-      final appIdx = MockData.appointments.indexWhere((a) => a['id'] == appointmentData['id']);
-      if (appIdx != -1) {
-        MockData.appointments[appIdx]['status'] = 'cancelled';
-        
-        MockData.notifications.insert(0, {
-          'id': 'n_${DateTime.now().millisecondsSinceEpoch}',
-          'title': AppTranslations.tr('cancel_alerts'),
-          'body': 'You have cancelled your appointment with ${appointmentData['doctorName']} on ${appointmentData['date']}.',
-          'type': 'cancelled',
-          'isRead': false,
-          'time': DateTime.now().toIso8601String(),
-          'appointmentId': appointmentData['id'],
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cancelled Successfully'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-        onRefresh?.call();
-      }
-    }
-  }
-
-  Future<void> _rescheduleAppointment(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 90)),
-    );
-
-    if (picked != null) {
-      if (!context.mounted) return;
-      final appIdx = MockData.appointments.indexWhere((a) => a['id'] == appointmentData['id']);
-      if (appIdx != -1) {
-        final newDate = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-        MockData.appointments[appIdx]['date'] = picked.toIso8601String().substring(0, 10);
-        
-        MockData.notifications.insert(0, {
-          'id': 'n_${DateTime.now().millisecondsSinceEpoch}',
-          'title': 'Appointment Rescheduled',
-          'body': 'Appointment with ${appointmentData['doctorName']} has been moved to $newDate.',
-          'type': 'reminder',
-          'isRead': false,
-          'time': DateTime.now().toIso8601String(),
-          'appointmentId': appointmentData['id'],
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Rescheduled to $newDate'),
-            backgroundColor: AppColors.primary,
-          ),
-        );
-        onRefresh?.call();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -113,9 +22,14 @@ class AppointmentCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  radius: 28,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  child: const Icon(Icons.person, color: AppColors.primary, size: 30),
+                  radius: 25,
+                  backgroundImage: AssetImage(
+                    appointmentData['doctorImage'] ?? 'assests/images/default_doctor.jpg',
+                  ),
+                  onBackgroundImageError: (_, __) {
+                    debugPrint('Lỗi tải ảnh asset: ${appointmentData['doctorImage']}');
+                  },
+                  backgroundColor: Colors.grey[200],
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -123,29 +37,53 @@ class AppointmentCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        appointmentData['doctorName'] ?? 'Bác sĩ',
-                        style: AppTextStyles.heading2,
+                        appointmentData['doctorName'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        appointmentData['specialty'] ?? 'Chuyên khoa',
-                        style: AppTextStyles.captionLight,
+                        appointmentData['specialty'],
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                _buildStatusChip(context),
+                _buildStatusChip(),
               ],
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0),
-              child: Divider(height: 1),
+              child: Divider(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _infoRow(context, Icons.calendar_today, appointmentData['date']),
-                _infoRow(context, Icons.access_time, appointmentData['time']),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    Text(
+                      appointmentData['date'],
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time, size: 16, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    Text(
+                      appointmentData['time'],
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
               ],
             ),
             if (status == AppointmentStatus.upcoming) ...[
@@ -155,22 +93,24 @@ class AppointmentCard extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        foregroundColor: Colors.grey[800],
+                        side: BorderSide(color: Colors.grey[300]!),
                       ),
-                      onPressed: () => _cancelAppointment(context),
-                      child: Text(AppTranslations.tr('cancelled'), style: const TextStyle(color: Colors.grey)),
+                      onPressed: () {
+                      },
+                      child: const Text('Hủy lịch'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        elevation: 0,
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
                       ),
-                      onPressed: () => _rescheduleAppointment(context),
-                      child: const Text('Reschedule', style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                      },
+                      child: const Text('Đổi lịch'),
                     ),
                   ),
                 ],
@@ -181,48 +121,34 @@ class AppointmentCard extends StatelessWidget {
       ),
     );
   }
-
-  Widget _infoRow(BuildContext context, IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: AppColors.primary),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: AppTextStyles.captionDark,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatusChip(BuildContext context) {
+  Widget _buildStatusChip() {
     Color color;
     String text;
     switch (status) {
       case AppointmentStatus.upcoming:
-        color = AppColors.primary;
-        text = AppTranslations.tr('upcoming');
+        color = Colors.blue;
+        text = 'Sắp tới';
         break;
       case AppointmentStatus.completed:
         color = Colors.green;
-        text = AppTranslations.tr('completed');
+        text = 'Hoàn thành';
         break;
       case AppointmentStatus.cancelled:
         color = Colors.red;
-        text = AppTranslations.tr('cancelled');
+        text = 'Đã hủy';
         break;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         text,
         style: TextStyle(
           color: color,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
       ),
