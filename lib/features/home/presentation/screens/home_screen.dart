@@ -21,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _currentQuickActionPage = 0;
 
-  int get _unreadCount => MockData.notifications.where((n) => n['isRead'] == false).length;
+  int get _unreadCount =>
+      MockData.notifications.where((n) => n['isRead'] == false).length;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, Map<String, dynamic> patient, bool isDark) {
+  Widget _buildHeader(
+    BuildContext context,
+    Map<String, dynamic> patient,
+    bool isDark,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -65,7 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               AppTranslations.tr('welcome'),
-              style: TextStyle(color: isDark ? Colors.white70 : Colors.black54, fontSize: 13),
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+                fontSize: 13,
+              ),
             ),
             Text(
               patient['name']!.split(' ').last,
@@ -80,7 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationListScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotificationListScreen(),
+                ),
+              ),
               child: Stack(
                 children: [
                   _iconBtn(Icons.notifications_none, isDark),
@@ -91,11 +104,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         width: 16,
                         height: 16,
-                        decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
                         child: Center(
                           child: Text(
                             '$_unreadCount',
-                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -105,7 +125,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: 12),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatBotScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatBotScreen()),
+              ),
               child: _iconBtn(Icons.chat_bubble_outline, isDark),
             ),
           ],
@@ -128,7 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSearchBar(BuildContext context, bool isDark) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DoctorsScreen())),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const DoctorsScreen()),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -161,22 +187,86 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: PageView(
               controller: _pageController,
-              onPageChanged: (index) => setState(() => _currentQuickActionPage = index),
+              onPageChanged: (index) =>
+                  setState(() => _currentQuickActionPage = index),
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _actionItem(Icons.person, AppTranslations.tr('quick_find_doctor'), Colors.blue, Colors.blue.withValues(alpha: 0.1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DoctorsScreen())), isDark),
-                    _actionItem(Icons.shopping_cart_outlined, AppTranslations.tr('buy_meds'), Colors.blue, Colors.blue.withValues(alpha: 0.1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductListScreen())), isDark),
-                    _actionItem(Icons.local_hospital, AppTranslations.tr('specialties'), Colors.blue, Colors.blue.withValues(alpha: 0.1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SpecialtiesScreen())), isDark),
+                    _actionItem(
+                      Icons.person,
+                      AppTranslations.tr('quick_find_doctor'),
+                      Colors.blue,
+                      Colors.blue.withValues(alpha: 0.1),
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DoctorsScreen(),
+                        ),
+                      ),
+                      isDark,
+                    ),
+                    _actionItem(
+                      Icons.shopping_cart_outlined,
+                      AppTranslations.tr('buy_meds'),
+                      Colors.blue,
+                      Colors.blue.withValues(alpha: 0.1),
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProductListScreen(),
+                        ),
+                      ),
+                      isDark,
+                    ),
+                    _actionItem(
+                      Icons.local_hospital,
+                      AppTranslations.tr('specialties'),
+                      Colors.blue,
+                      Colors.blue.withValues(alpha: 0.1),
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SpecialtiesScreen(),
+                        ),
+                      ),
+                      isDark,
+                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _actionItem(Icons.folder_special, 'Sổ tiêm', const Color(0xFF5C6BC0), const Color(0xFFE2E9FE), () {}, isDark),
-                    _actionItem(Icons.assignment, AppTranslations.tr('health_profile'), const Color(0xFF5C6BC0), const Color(0xFFE2E9FE), () => Navigator.pushNamed(context, RouteNames.medicalRecordList), isDark),
-                    _actionItem(Icons.calendar_month, AppTranslations.tr('book_now'), const Color(0xFF5C6BC0), const Color(0xFFE2E9FE), () => Navigator.pushNamed(context, RouteNames.appointmentList), isDark),
+                    _actionItem(
+                      Icons.folder_special,
+                      'Sổ tiêm',
+                      const Color(0xFF5C6BC0),
+                      const Color(0xFFE2E9FE),
+                      () {},
+                      isDark,
+                    ),
+                    _actionItem(
+                      Icons.assignment,
+                      AppTranslations.tr('health_profile'),
+                      const Color(0xFF5C6BC0),
+                      const Color(0xFFE2E9FE),
+                      () => Navigator.pushNamed(
+                        context,
+                        RouteNames.medicalRecordList,
+                      ),
+                      isDark,
+                    ),
+                    _actionItem(
+                      Icons.calendar_month,
+                      AppTranslations.tr('book_now'),
+                      const Color(0xFF5C6BC0),
+                      const Color(0xFFE2E9FE),
+                      () => Navigator.pushNamed(
+                        context,
+                        RouteNames.appointmentList,
+                      ),
+                      isDark,
+                    ),
                   ],
                 ),
               ],
@@ -191,7 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: _currentQuickActionPage == index ? 20 : 8,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: _currentQuickActionPage == index ? AppColors.primary : Colors.grey.shade300,
+                  color: _currentQuickActionPage == index
+                      ? AppColors.primary
+                      : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
@@ -202,7 +294,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _actionItem(IconData icon, String label, Color iconColor, Color bgColor, VoidCallback onTap, bool isDark) {
+  Widget _actionItem(
+    IconData icon,
+    String label,
+    Color iconColor,
+    Color bgColor,
+    VoidCallback onTap,
+    bool isDark,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
@@ -210,15 +309,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             CircleAvatar(
-              backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : bgColor,
+              backgroundColor: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : bgColor,
               radius: 26,
-              child: Icon(icon, color: isDark ? Colors.white : iconColor, size: 28),
+              child: Icon(
+                icon,
+                color: isDark ? Colors.white : iconColor,
+                size: 28,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: isDark ? Colors.white70 : Colors.black87),
+              style: TextStyle(
+                fontSize: 11,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
             ),
           ],
         ),
@@ -243,14 +351,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: AppTextStyles.heading2,
               ),
               InkWell(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductListScreen())),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProductListScreen()),
+                ),
                 child: Row(
                   children: [
                     Text(
                       AppTranslations.tr('see_all'),
                       style: const TextStyle(color: Colors.blue, fontSize: 13),
                     ),
-                    const Icon(Icons.arrow_forward, color: Colors.blue, size: 16),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.blue,
+                      size: 16,
+                    ),
                   ],
                 ),
               ),
@@ -261,10 +376,30 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _productCategoryItem(Icons.local_fire_department, Colors.orange, AppTranslations.tr('best_seller'), isDark),
-              _productCategoryItem(Icons.clean_hands, Colors.blue, AppTranslations.tr('dental_care'), isDark),
-              _productCategoryItem(Icons.medication_liquid, Colors.indigo, AppTranslations.tr('supplements'), isDark),
-              _productCategoryItem(Icons.medication, Colors.blue, AppTranslations.tr('medication'), isDark),
+              _productCategoryItem(
+                Icons.local_fire_department,
+                Colors.orange,
+                AppTranslations.tr('best_seller'),
+                isDark,
+              ),
+              _productCategoryItem(
+                Icons.clean_hands,
+                Colors.blue,
+                AppTranslations.tr('dental_care'),
+                isDark,
+              ),
+              _productCategoryItem(
+                Icons.medication_liquid,
+                Colors.indigo,
+                AppTranslations.tr('supplements'),
+                isDark,
+              ),
+              _productCategoryItem(
+                Icons.medication,
+                Colors.blue,
+                AppTranslations.tr('medication'),
+                isDark,
+              ),
             ],
           ),
         ],
@@ -272,23 +407,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _productCategoryItem(IconData icon, Color iconColor, String label, bool isDark) {
+  Widget _productCategoryItem(
+    IconData icon,
+    Color iconColor,
+    String label,
+    bool isDark,
+  ) {
     return Expanded(
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : iconColor.withValues(alpha: 0.1),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: isDark ? Colors.white : iconColor, size: 28),
+            child: Icon(
+              icon,
+              color: isDark ? Colors.white : iconColor,
+              size: 28,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 10, color: isDark ? Colors.white60 : Colors.black54),
+            style: TextStyle(
+              fontSize: 10,
+              color: isDark ? Colors.white60 : Colors.black54,
+            ),
           ),
         ],
       ),
@@ -309,9 +458,17 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _serviceItem('Chăm sóc tại nhà', 'assests/images/bacsi_1.jpg', isDark),
+              _serviceItem(
+                'Chăm sóc tại nhà',
+                'assests/images/bacsi_1.jpg',
+                isDark,
+              ),
               const SizedBox(width: 16),
-              _serviceItem('Xét nghiệm', 'assests/images/default_doctor.jpg', isDark),
+              _serviceItem(
+                'Xét nghiệm',
+                'assests/images/default_doctor.jpg',
+                isDark,
+              ),
               const SizedBox(width: 16),
               _serviceItem('Tư vấn tâm lý', 'assests/images/logo.png', isDark),
             ],
@@ -331,13 +488,27 @@ class _HomeScreenState extends State<HomeScreen> {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          Expanded(child: Image.asset(imagePath, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade300))),
+          Expanded(
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  Container(color: Colors.grey.shade300),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(title, style: TextStyle(fontSize: 12, color: isDark ? Colors.white : Colors.black87)),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 }
+// lâu lâu tự reset làm sao đây??:<
