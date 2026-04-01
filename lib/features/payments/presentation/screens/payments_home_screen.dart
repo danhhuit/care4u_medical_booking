@@ -57,7 +57,7 @@ class PaymentsHomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Số dư ví TrueDoc',
+                            'Số dư ví Care4U',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 16,
@@ -123,7 +123,7 @@ class PaymentsHomeScreen extends StatelessWidget {
                   _PaymentTile(
                     icon: Icons.account_balance_wallet_outlined,
                     iconBg: const Color(0xFFDDEBFB),
-                    title: 'Ví TrueDoc',
+                    title: 'Ví Care4U',
                     subtitle: 'Quản lý ví và giao dịch',
                     onTap: () {
                       AppNavigator.pushNamed(
