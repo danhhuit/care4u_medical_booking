@@ -4,6 +4,7 @@ import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/settings_screen.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({super.key});
@@ -17,28 +18,30 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
   void _goEdit() async {
     await Navigator.pushNamed(context, RouteNames.editPatientProfile);
-    // Refresh state after returning from edit screen
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
             automaticallyImplyLeading: false,
-            backgroundColor: AppColors.primary,
+            backgroundColor: isDark ? Colors.black : AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF2BB5A0), Color(0xFF1A7A6E)],
+                    colors: isDark 
+                      ? [const Color(0xFF121212), Colors.black]
+                      : [const Color(0xFF2BB5A0), const Color(0xFF1A7A6E)],
                   ),
                 ),
                 child: SafeArea(
@@ -48,13 +51,13 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                       const SizedBox(height: 16),
                       CircleAvatar(
                         radius: 44,
-                        backgroundColor: Colors.white,
+                        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
                         child: Text(
                           _patient['name']!.split(' ').last.substring(0, 1),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: isDark ? Colors.white : AppColors.primary,
                           ),
                         ),
                       ),
@@ -69,8 +72,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                       ),
                       Text(
                         _patient['email']!,
-                        style:
-                            const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: const TextStyle(color: Colors.white70, fontSize: 13),
                       ),
                     ],
                   ),
@@ -90,52 +92,51 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Thông tin cá nhân', style: AppTextStyles.heading2),
+                  Text(AppTranslations.tr('personal_info_header'), style: AppTextStyles.heading2),
                   const SizedBox(height: 8),
                   _infoCard([
-                    _infoRow(Icons.phone, 'Số điện thoại', _patient['phone']!),
+                    _infoRow(Icons.phone, AppTranslations.tr('phone_label'), _patient['phone']!),
                     _divider(),
-                    _infoRow(Icons.cake, 'Ngày sinh',
-                        _formatDate(_patient['dob']!)),
+                    _infoRow(Icons.cake, AppTranslations.tr('dob_label'), _formatDate(_patient['dob']!)),
                     _divider(),
-                    _infoRow(Icons.person, 'Giới tính', _patient['gender']!),
+                    _infoRow(Icons.person, AppTranslations.tr('gender_label'), _patient['gender']!),
                     _divider(),
-                    _infoRow(Icons.location_on, 'Địa chỉ', _patient['address']!),
+                    _infoRow(Icons.location_on, AppTranslations.tr('address_label'), _patient['address']!),
                     _divider(),
-                    _infoRow(Icons.water_drop, 'Nhóm máu', _patient['bloodType']!),
+                    _infoRow(Icons.water_drop, AppTranslations.tr('blood_group_label'), _patient['bloodType']!),
                   ]),
                   const SizedBox(height: 20),
-                  Text('Hoạt động', style: AppTextStyles.heading2),
+                  Text(AppTranslations.tr('activity_header'), style: AppTextStyles.heading2),
                   const SizedBox(height: 8),
                   _actionCard(
                     context,
                     Icons.calendar_today,
-                    'Lịch hẹn của tôi',
-                    'Xem và quản lý lịch hẹn',
+                    AppTranslations.tr('my_appointments'),
+                    AppTranslations.tr('manage_appointments'),
                     () => Navigator.pushNamed(context, RouteNames.appointmentList),
                   ),
                   const SizedBox(height: 8),
                   _actionCard(
                     context,
                     Icons.folder_open,
-                    'Hồ sơ bệnh án',
-                    'Lịch sử khám và kết quả',
+                    AppTranslations.tr('medical_records'),
+                    AppTranslations.tr('medical_history_desc'),
                     () => Navigator.pushNamed(context, RouteNames.medicalRecordList),
                   ),
                   const SizedBox(height: 8),
                   _actionCard(
                     context,
                     Icons.medication,
-                    'Đơn thuốc',
-                    'Danh sách đơn thuốc',
+                    AppTranslations.tr('prescriptions'),
+                    AppTranslations.tr('prescriptions_desc'),
                     () => Navigator.pushNamed(context, RouteNames.medicalRecordList),
                   ),
                   const SizedBox(height: 8),
                   _actionCard(
                     context,
                     Icons.settings,
-                    'Cài đặt',
-                    'Hướng dẫn, Ngôn ngữ, Mật khẩu, Chế độ',
+                    AppTranslations.tr('settings'),
+                    AppTranslations.tr('settings_desc'),
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
                   ),
                   const SizedBox(height: 24),
@@ -146,13 +147,11 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                         Navigator.pushReplacementNamed(context, RouteNames.login);
                       },
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      label: const Text('Đăng xuất',
-                          style: TextStyle(color: Colors.red)),
+                      label: Text(AppTranslations.tr('logout'), style: const TextStyle(color: Colors.red)),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
                   ),
@@ -166,14 +165,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
     );
   }
 
-  Widget _infoCard(List<Widget> children) => Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-          ],
-        ),
+  Widget _infoCard(List<Widget> children) => Card(
+        margin: EdgeInsets.zero,
         child: Column(children: children),
       );
 
@@ -187,7 +180,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: AppTextStyles.captionLight),
+                   Text(label, style: AppTextStyles.captionLight),
                   const SizedBox(height: 2),
                   Text(value, style: AppTextStyles.bodyDark),
                 ],
@@ -199,48 +192,37 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
   Widget _divider() => const Divider(height: 1, indent: 48);
 
-  Widget _actionCard(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String subtitle,
-    VoidCallback onTap,
-  ) =>
-      InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+  Widget _actionCard(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) => Card(
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: AppColors.primary),
                 ),
-                child: Icon(icon, color: AppColors.primary),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTextStyles.bodyDark),
-                    Text(subtitle, style: AppTextStyles.captionLight),
-                  ],
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: AppTextStyles.bodyDark),
+                      Text(subtitle, style: AppTextStyles.captionLight),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.textLight),
-            ],
+                const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
           ),
         ),
       );

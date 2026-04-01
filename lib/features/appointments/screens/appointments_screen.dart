@@ -1,63 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import '../widgets/appointment_card.dart';
-import '../models/appointment_status.dart'; 
+import '../models/appointment_status.dart';
 
-class AppointmentsScreen extends StatelessWidget {
+class AppointmentsScreen extends StatefulWidget {
   const AppointmentsScreen({super.key});
-  final List<Map<String, dynamic>> _mockAppointments = const [
-    {
-      'id': '1',
-      'doctorName': 'BS. Nguyễn Văn An',
-      'specialty': 'Tim mạch',
-      'doctorImage': 'assests/images/bacsi_1.jpg', 
-      'date': '12/10/2026',
-      'time': '09:00 AM',
-      'status': AppointmentStatus.upcoming,
-    },
-    {
-      'id': '2',
-      'doctorName': 'BS. Trần Thị Bình',
-      'specialty': 'Nhi khoa',
-      'doctorImage': 'assests/images/bacsi_2.jpg',
-      'date': '15/10/2026',
-      'time': '14:30 PM',
-      'status': AppointmentStatus.upcoming,
-    },
-    {
-      'id': '3',
-      'doctorName': 'BS. Lê Trọng Chung',
-      'specialty': 'Thần kinh',
-      'doctorImage': 'assests/images/bacsi_3.jpg',
-      'date': '01/09/2026',
-      'time': '10:00 AM',
-      'status': AppointmentStatus.completed,
-    },
-    {
-      'id': '4',
-      'doctorName': 'BS. Phạm Thị Dung',
-      'specialty': 'Da liễu',
-      'doctorImage': 'assests/images/bacsi_4.jpg',
-      'date': '20/08/2026',
-      'time': '16:00 PM',
-      'status': AppointmentStatus.cancelled,
-    },
-  ];
+
+  @override
+  State<AppointmentsScreen> createState() => _AppointmentsScreenState();
+}
+
+class _AppointmentsScreenState extends State<AppointmentsScreen> {
+  AppointmentStatus _mapStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+      case 'pending':
+      case 'upcoming':
+        return AppointmentStatus.upcoming;
+      case 'completed':
+        return AppointmentStatus.completed;
+      case 'cancelled':
+        return AppointmentStatus.cancelled;
+      default:
+        return AppointmentStatus.upcoming;
+    }
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Lịch hẹn'),
+          title: Text(AppTranslations.tr('nav_appointments')),
           centerTitle: true,
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(text: 'Sắp tới'),
-              Tab(text: 'Hoàn thành'),
-              Tab(text: 'Đã hủy'),
+              Tab(text: AppTranslations.tr('upcoming')),
+              Tab(text: AppTranslations.tr('completed')),
+              Tab(text: AppTranslations.tr('cancelled')),
             ],
-            indicatorColor: Colors.blue,
-            labelColor: Colors.blue,
+            indicatorColor: Theme.of(context).primaryColor,
+            labelColor: Theme.of(context).primaryColor,
             unselectedLabelColor: Colors.grey,
           ),
         ),
@@ -71,8 +60,11 @@ class AppointmentsScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildAppointmentList(AppointmentStatus status) {
-    final filteredList = _mockAppointments.where((app) => app['status'] == status).toList();
+    final filteredList = MockData.appointments.where((app) {
+      return _mapStatus(app['status'] as String) == status;
+    }).toList();
 
     if (filteredList.isEmpty) {
       return Center(
@@ -82,13 +74,14 @@ class AppointmentsScreen extends StatelessWidget {
             Icon(Icons.event_busy, size: 80, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
-              'Không có lịch hẹn nào.',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              AppTranslations.tr('no_appointments'),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],
         ),
       );
     }
+
     return ListView.builder(
       padding: const EdgeInsets.only(top: 8, bottom: 80),
       itemCount: filteredList.length,
@@ -96,6 +89,7 @@ class AppointmentsScreen extends StatelessWidget {
         return AppointmentCard(
           appointmentData: filteredList[index],
           status: status,
+          onRefresh: _refresh,
         );
       },
     );
