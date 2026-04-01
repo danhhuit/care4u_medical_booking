@@ -14,9 +14,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   final List<Map<String, String>> _messages = [
     {
       'type': 'bot',
-      'text':
-          'Xin chào! Tôi là trợ lý AI của Care4U. Tôi có thể giúp gì cho bạn hôm nay?',
-    },
+      'text': 'Xin chào! Tôi là trợ lý AI của Care4U. Tôi có thể giúp gì cho bạn hôm nay?'
+    }
   ];
 
   void _sendMessage() {
@@ -34,8 +33,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       setState(() {
         _messages.add({
           'type': 'bot',
-          'text':
-              'Đây là tin nhắn tự động từ AI Demo. Trong phiên bản thực tế, phần này sẽ được tích hợp với ChatGPT hoặc AI khác để giải đáp thắc mắc của bạn về sức khoẻ và dịch vụ Care4U.',
+          'text': 'Đây là tin nhắn tự động từ AI Demo. Trong phiên bản thực tế, phần này sẽ được tích hợp với ChatGPT hoặc AI khác để giải đáp thắc mắc của bạn về sức khoẻ và dịch vụ Care4U.'
         });
       });
     });
@@ -61,9 +59,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                 final msg = _messages[index];
                 final isBot = msg['type'] == 'bot';
                 return Align(
-                  alignment: isBot
-                      ? Alignment.centerLeft
-                      : Alignment.centerRight,
+                  alignment: isBot ? Alignment.centerLeft : Alignment.centerRight,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     padding: const EdgeInsets.all(12),
@@ -75,19 +71,11 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
-                        bottomLeft: isBot
-                            ? Radius.zero
-                            : const Radius.circular(16),
-                        bottomRight: isBot
-                            ? const Radius.circular(16)
-                            : Radius.zero,
+                        bottomLeft: isBot ? Radius.zero : const Radius.circular(16),
+                        bottomRight: isBot ? const Radius.circular(16) : Radius.zero,
                       ),
                       boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
+                        BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
                       ],
                     ),
                     child: Text(
@@ -107,13 +95,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
               color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, -2),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, -2))],
             ),
             child: SafeArea(
               child: Row(
@@ -129,10 +111,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                         ),
                         filled: true,
                         fillColor: Colors.grey[200],
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
