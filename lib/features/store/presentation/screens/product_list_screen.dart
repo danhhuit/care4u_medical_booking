@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -10,13 +12,6 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   int _selectedCategory = 0;
   final TextEditingController _searchController = TextEditingController();
-
-  final List<Map<String, dynamic>> _categories = [
-    {'label': 'Tất cả', 'icon': Icons.apps},
-    {'label': 'Bán chạy', 'icon': Icons.local_fire_department},
-    {'label': 'Chăm sóc\nrăng miệng', 'icon': Icons.sentiment_satisfied_alt},
-    {'label': 'Thực phẩm\nchức năng', 'icon': Icons.eco},
-  ];
 
   final List<Map<String, dynamic>> _allProducts = [
     {
@@ -102,130 +97,147 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Danh mục sp',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Nhập sản phẩm cần tìm',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
-                ),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: SettingsManager.themeMode,
+      builder: (context, mode, _) {
+        return ValueListenableBuilder<String>(
+          valueListenable: SettingsManager.languageCode,
+          builder: (context, lang, _) {
+        final _categories = [
+          {'label': AppTranslations.tr('all_products'), 'icon': Icons.apps},
+          {'label': AppTranslations.tr('best_seller'), 'icon': Icons.local_fire_department},
+          {'label': AppTranslations.tr('dental_care'), 'icon': Icons.sentiment_satisfied_alt},
+          {'label': AppTranslations.tr('supplements'), 'icon': Icons.eco},
+        ];
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              AppTranslations.tr('product_category'),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+                onPressed: () {},
+              ),
+            ],
           ),
-
-          // Category tabs
-          SizedBox(
-            height: 80,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                final isSelected = _selectedCategory == index;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedCategory = index),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFFA1E4D5)
-                          : Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          cat['icon'] as IconData,
-                          color: isSelected
-                              ? const Color(0xFF2BB5A0)
-                              : Colors.grey,
-                          size: 24,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          cat['label'] as String,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isSelected
-                                ? const Color(0xFF2BB5A0)
-                                : Colors.grey[600],
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
+          body: Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: AppTranslations.tr('search_product_hint'),
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Product grid
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.75,
+                ),
               ),
-              itemCount: _filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = _filteredProducts[index];
-                return _buildProductCard(product);
-              },
-            ),
+
+              // Category tabs
+              SizedBox(
+                height: 80,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: _categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = _categories[index];
+                    final isSelected = _selectedCategory == index;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedCategory = index),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFA1E4D5)
+                              : Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              cat['icon'] as IconData,
+                              color: isSelected
+                                  ? const Color(0xFF2BB5A0)
+                                  : Colors.grey,
+                              size: 24,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              cat['label'] as String,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isSelected
+                                    ? const Color(0xFF2BB5A0)
+                                    : Colors.grey[600],
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Product grid
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemCount: _filteredProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = _filteredProducts[index];
+                    return _buildProductCard(product);
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+          },
+        );
+      },
     );
   }
 

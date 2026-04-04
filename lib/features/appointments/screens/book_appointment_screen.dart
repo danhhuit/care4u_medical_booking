@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> doctorData;
@@ -14,12 +16,55 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM',
     '13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM'
   ];
+
+  void _confirmBooking() {
+    // Generate a new appointment
+    final newAppointment = {
+      'id': 'a_${DateTime.now().millisecondsSinceEpoch}',
+      'doctorName': widget.doctorData['name'] ?? 'Doctor',
+      'specialty': widget.doctorData['specialty'] ?? 'Specialty',
+      'date': '2026-10-${12 + _selectedDateIndex}', // Mocking date
+      'time': _times[_selectedTimeIndex].split(' ')[0],
+      'status': 'confirmed',
+      'hospital': widget.doctorData['hospital'] ?? 'Care4U Hospital',
+    };
+    
+    MockData.addAppointment(newAppointment);
+
+    MockData.addNotification({
+      'id': 'n_${DateTime.now().millisecondsSinceEpoch}',
+      'title': AppTranslations.tr('booking_confirmed'),
+      'body': 'Your appointment with ${newAppointment['doctorName']} on ${newAppointment['date']} at ${newAppointment['time']} is confirmed.',
+      'type': 'confirmed',
+      'isRead': false,
+      'time': DateTime.now().toIso8601String(),
+      'appointmentId': newAppointment['id'],
+    });
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppTranslations.tr('success')),
+        content: Text(AppTranslations.tr('booking_success_msg')),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); 
+              Navigator.pop(context); 
+            },
+            child: Text(AppTranslations.tr('close')),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final String imagePath = widget.doctorData['imageUrl'] ?? 'assests/images/default_doctor.jpg';
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đặt lịch hẹn'),
+        title: Text(AppTranslations.tr('book_appointment_title')),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -44,12 +89,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.doctorData['name'] ?? 'Bác sĩ',
+                          widget.doctorData['name'] ?? AppTranslations.tr('doctor'),
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          widget.doctorData['specialty'] ?? 'Chuyên khoa',
+                          widget.doctorData['specialty'] ?? AppTranslations.tr('specialties'),
                           style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                         ),
                       ],
@@ -59,11 +104,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
             ),
             const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Chọn ngày',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                AppTranslations.tr('select_date'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(
@@ -101,11 +146,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Chọn giờ',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                AppTranslations.tr('select_time'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -152,26 +197,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
-            onPressed: _selectedTimeIndex == -1
-                ? null 
-                : () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Thành công'),
-                        content: const Text('Bạn đã đặt lịch khám thành công!'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); 
-                              Navigator.pop(context); 
-                            },
-                            child: const Text('Đóng'),
-                          )
-                        ],
-                      ),
-                    );
-                  },
+            onPressed: _selectedTimeIndex == -1 ? null : _confirmBooking,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Colors.blue,
@@ -181,9 +207,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
               disabledBackgroundColor: Colors.grey[300],
             ),
-            child: const Text(
-              'Xác nhận đặt lịch',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            child: Text(
+              AppTranslations.tr('confirm_booking'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ),
