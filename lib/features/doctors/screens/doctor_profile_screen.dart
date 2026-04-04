@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/app/router/route_names.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'doctor_main_screen.dart';
 
 class DoctorProfileScreen extends StatelessWidget {
@@ -95,8 +96,11 @@ class DoctorProfileScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, RouteNames.login);
+                      onPressed: () async {
+                        await SettingsManager.setLoggedIn(false);
+                        if (context.mounted) {
+                          Navigator.pushReplacementNamed(context, RouteNames.login);
+                        }
                       },
                       icon: const Icon(Icons.logout, color: Colors.red),
                       label: const Text('Đăng xuất',

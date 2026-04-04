@@ -56,8 +56,8 @@ class AppointmentCard extends StatelessWidget {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cancelled Successfully'),
+          SnackBar(
+            content: Text(AppTranslations.tr('cancel_success')),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -83,7 +83,7 @@ class AppointmentCard extends StatelessWidget {
         
         MockData.notifications.insert(0, {
           'id': 'n_${DateTime.now().millisecondsSinceEpoch}',
-          'title': 'Appointment Rescheduled',
+          'title': AppTranslations.tr('rescheduled'),
           'body': 'Appointment with ${appointmentData['doctorName']} has been moved to $newDate.',
           'type': 'reminder',
           'isRead': false,
@@ -93,7 +93,7 @@ class AppointmentCard extends StatelessWidget {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Rescheduled to $newDate'),
+            content: Text('${AppTranslations.tr('rescheduled_to')} $newDate'),
             backgroundColor: AppColors.primary,
           ),
         );
@@ -170,7 +170,7 @@ class AppointmentCard extends StatelessWidget {
                         elevation: 0,
                       ),
                       onPressed: () => _rescheduleAppointment(context),
-                      child: const Text('Reschedule', style: TextStyle(color: Colors.white)),
+                      child: Text(AppTranslations.tr('reschedule'), style: const TextStyle(color: Colors.white)),
                     ),
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 
 class NotificationListScreen extends StatefulWidget {
   const NotificationListScreen({super.key});
@@ -21,10 +22,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   void _markAllRead() {
+    MockData.markAllNotificationsRead();
     setState(() {
-      for (final n in _notifications) {
-        n['isRead'] = true;
-      }
+      _notifications = List.from(MockData.notifications);
     });
   }
 
@@ -186,14 +186,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             ),
             onPressed: () {
               Navigator.pop(ctx);
-              final idx = MockData.appointments
-                  .indexWhere((a) => a['id'] == appt['id']);
-              if (idx != -1) {
-                MockData.appointments[idx] =
-                    Map.from(MockData.appointments[idx])
-                      ..['status'] = 'cancelled';
-              }
-              MockData.notifications.insert(0, {
+              MockData.cancelAppointment(appt['id']);
+              MockData.addNotification({
                 'id': 'n${DateTime.now().millisecondsSinceEpoch}',
                 'title': AppTranslations.tr('cancel_alerts'),
                 'body':
@@ -226,6 +220,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     final unreadCount =
         _notifications.where((n) => n['isRead'] == false).length;
 
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
@@ -284,7 +284,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                     child: const Icon(Icons.delete, color: Colors.red),
                   ),
                   onDismissed: (_) {
-                    setState(() => _notifications.removeAt(index));
+                    MockData.removeNotification(index);
+                    setState(() => _notifications = List.from(MockData.notifications));
                   },
                   child: GestureDetector(
                     onTap: () => _showAppointmentSheet(n),
@@ -402,6 +403,10 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                 );
               },
             ),
+    );
+          },
+        );
+      },
     );
   }
 }

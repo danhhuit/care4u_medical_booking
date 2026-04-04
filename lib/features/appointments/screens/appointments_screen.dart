@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import '../widgets/appointment_card.dart';
 import '../models/appointment_status.dart';
 
@@ -33,31 +34,41 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(AppTranslations.tr('nav_appointments')),
-          centerTitle: true,
-          bottom: TabBar(
-            tabs: [
-              Tab(text: AppTranslations.tr('upcoming')),
-              Tab(text: AppTranslations.tr('completed')),
-              Tab(text: AppTranslations.tr('cancelled')),
-            ],
-            indicatorColor: Theme.of(context).primaryColor,
-            labelColor: Theme.of(context).primaryColor,
-            unselectedLabelColor: Colors.grey,
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            _buildAppointmentList(AppointmentStatus.upcoming),
-            _buildAppointmentList(AppointmentStatus.completed),
-            _buildAppointmentList(AppointmentStatus.cancelled),
-          ],
-        ),
-      ),
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            return DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(AppTranslations.tr('nav_appointments')),
+                  centerTitle: true,
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(text: AppTranslations.tr('upcoming')),
+                      Tab(text: AppTranslations.tr('completed')),
+                      Tab(text: AppTranslations.tr('cancelled')),
+                    ],
+                    indicatorColor: Theme.of(context).primaryColor,
+                    labelColor: Theme.of(context).primaryColor,
+                    unselectedLabelColor: Colors.grey,
+                  ),
+                ),
+                body: TabBarView(
+                  children: [
+                    _buildAppointmentList(AppointmentStatus.upcoming),
+                    _buildAppointmentList(AppointmentStatus.completed),
+                    _buildAppointmentList(AppointmentStatus.cancelled),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

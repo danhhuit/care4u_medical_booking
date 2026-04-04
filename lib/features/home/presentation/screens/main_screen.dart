@@ -9,6 +9,7 @@ import 'package:care4u_medical_booking/features/appointments/screens/appointment
 // import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
 // import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -41,51 +42,56 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _currentIndex,
-            children: _screens,
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onBookTap,
-        backgroundColor: AppColors.primary,
-        elevation: 4,
-        shape: const CircleBorder(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add, color: Colors.white, size: 22),
-            Text(
-              AppTranslations.tr('book_appointment_fab'),
-              style: const TextStyle(color: Colors.white, fontSize: 8),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        elevation: 8,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return Scaffold(
+          body: Stack(
             children: [
-              _navItem(0, Icons.home_outlined, Icons.home, AppTranslations.tr('nav_home')),
-              _navItem(1, Icons.calendar_today_outlined, Icons.calendar_today, AppTranslations.tr('nav_appointments')),
-              const SizedBox(width: 56), // FAB space
-              _navItemWithBadge(2, Icons.account_balance_wallet_outlined,
-                  Icons.account_balance_wallet, AppTranslations.tr('nav_payments')),
-              _navItem(3, Icons.person_outline, Icons.person, AppTranslations.tr('nav_profile')),
+              IndexedStack(
+                index: _currentIndex,
+                children: _screens,
+              ),
             ],
           ),
-        ),
-      ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onBookTap,
+            backgroundColor: AppColors.primary,
+            elevation: 4,
+            shape: const CircleBorder(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.add, color: Colors.white, size: 22),
+                Text(
+                  AppTranslations.tr('book_appointment_fab'),
+                  style: const TextStyle(color: Colors.white, fontSize: 8),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomAppBar(
+            shape: const CircularNotchedRectangle(),
+            notchMargin: 8,
+            elevation: 8,
+            child: SizedBox(
+              height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _navItem(0, Icons.home_outlined, Icons.home, AppTranslations.tr('nav_home')),
+                  _navItem(1, Icons.calendar_today_outlined, Icons.calendar_today, AppTranslations.tr('nav_appointments')),
+                  const SizedBox(width: 56), // FAB space
+                  _navItemWithBadge(2, Icons.account_balance_wallet_outlined,
+                      Icons.account_balance_wallet, AppTranslations.tr('nav_payments')),
+                  _navItem(3, Icons.person_outline, Icons.person, AppTranslations.tr('nav_profile')),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

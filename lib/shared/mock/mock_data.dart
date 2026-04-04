@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 // Mock in-memory data for Care4U app
 
 class MockData {
@@ -214,4 +217,66 @@ class MockData {
     'avatarUrl': '',
     'bloodType': 'O+',
   };
+
+// ─── Actions ────────────────────────────────────────────────────────────────
+  static Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Load appointments
+    final String? appointmentsJson = prefs.getString('mock_appointments');
+    if (appointmentsJson != null) {
+      final List<dynamic> decoded = json.decode(appointmentsJson);
+      appointments = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
+    
+    // Load notifications
+    final String? notificationsJson = prefs.getString('mock_notifications');
+    if (notificationsJson != null) {
+      final List<dynamic> decoded = json.decode(notificationsJson);
+      notifications = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
+  }
+
+  static Future<void> _saveAppointments() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_appointments', json.encode(appointments));
+  }
+
+  static Future<void> _saveNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_notifications', json.encode(notifications));
+  }
+
+  static void addAppointment(Map<String, dynamic> appointment) {
+    appointments.insert(0, appointment);
+    _saveAppointments();
+  }
+
+  static void cancelAppointment(String id) {
+    final index = appointments.indexWhere((app) => app['id'] == id);
+    if (index != -1) {
+      appointments[index]['status'] = 'cancelled';
+      _saveAppointments();
+    }
+  }
+
+  static void addNotification(Map<String, dynamic> notification) {
+    notifications.insert(0, notification);
+    _saveNotifications();
+  }
+  
+  static void markAllNotificationsRead() {
+    for (final n in notifications) {
+      n['isRead'] = true;
+    }
+    _saveNotifications();
+  }
+  
+  static void removeNotification(int index) {
+    if (index >= 0 && index < notifications.length) {
+      notifications.removeAt(index);
+      _saveNotifications();
+    }
+  }
 }
+

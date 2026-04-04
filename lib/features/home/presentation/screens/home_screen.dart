@@ -9,9 +9,10 @@ import 'package:care4u_medical_booking/features/specialties/screens/specialties_
 import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
 import 'package:care4u_medical_booking/features/chat/presentation/screens/chatbot_screen.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,34 +27,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final patient = MockData.currentPatient;
-    final turquoiseBg = isDark ? Colors.black : const Color(0xFFA1E4D5);
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final patient = MockData.currentPatient;
+        final turquoiseBg = isDark ? Colors.black : const Color(0xFFA1E4D5);
 
-    return Scaffold(
-      backgroundColor: turquoiseBg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context, patient, isDark),
-                const SizedBox(height: 24),
-                _buildSearchBar(context, isDark),
-                const SizedBox(height: 24),
-                _buildQuickActionsSlider(context, isDark),
-                const SizedBox(height: 24),
-                _buildHealthProducts(context, isDark),
-                const SizedBox(height: 24),
-                _buildFeaturedServices(isDark),
-                const SizedBox(height: 24),
-              ],
+        return Scaffold(
+          backgroundColor: turquoiseBg,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(context, patient, isDark),
+                    const SizedBox(height: 24),
+                    _buildSearchBar(context, isDark),
+                    const SizedBox(height: 24),
+                    _buildQuickActionsSlider(context, isDark),
+                    const SizedBox(height: 24),
+                    _buildHealthProducts(context, isDark),
+                    const SizedBox(height: 24),
+                    _buildFeaturedServices(isDark),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -239,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _actionItem(
                       Icons.folder_special,
-                      'Sổ tiêm',
+                      AppTranslations.tr('vaccine_record'),
                       const Color(0xFF5C6BC0),
                       const Color(0xFFE2E9FE),
                       () {},
@@ -459,18 +465,18 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             children: [
               _serviceItem(
-                'Chăm sóc tại nhà',
+                AppTranslations.tr('home_care'),
                 'assests/images/bacsi_1.jpg',
                 isDark,
               ),
               const SizedBox(width: 16),
               _serviceItem(
-                'Xét nghiệm',
+                AppTranslations.tr('testing'),
                 'assests/images/default_doctor.jpg',
                 isDark,
               ),
               const SizedBox(width: 16),
-              _serviceItem('Tư vấn tâm lý', 'assests/images/logo.png', isDark),
+              _serviceItem(AppTranslations.tr('psychological_counseling'), 'assests/images/logo.png', isDark),
             ],
           ),
         ),
@@ -511,4 +517,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-// lâu lâu tự reset làm sao đây??:<

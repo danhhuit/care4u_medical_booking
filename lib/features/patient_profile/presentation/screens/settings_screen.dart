@@ -160,6 +160,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppTranslations.tr('settings')),
@@ -183,7 +189,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AppTranslations.tr('dark_mode'), 
               SettingsManager.isDarkMode, 
               (v) {
-                // Brief delay or direct call is fine now that Care4uApp uses GlobalKey
                 SettingsManager.toggleTheme(v);
                 if (mounted) setState(() {});
               }
@@ -204,6 +209,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
         ],
       ),
+    );
+          },
+        );
+      },
     );
   }
 
