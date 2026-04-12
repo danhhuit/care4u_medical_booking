@@ -7,19 +7,19 @@ import 'package:care4u_medical_booking/features/payments/presentation/screens/tr
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
+import '../../core/widgets/error_view.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
 // import '../../core/widgets/empty_state.dart';
-// import '../../app/constants/app_strings.dart';
-// import '../../app/constants/app_enums.dart';
 
 class AppRouter {
   AppRouter._();
-  static const String initialRoute = RouteNames.home;
+  static const String initialRoute = RouteNames.splash;
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RouteNames.splash:
         return _buildRoute(
           settings,
-          const _PlaceholderScreen(title: 'Splash Screen'),
+          const SplashScreen(),
         );
 
       case RouteNames.login:

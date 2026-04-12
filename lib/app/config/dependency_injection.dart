@@ -27,7 +27,7 @@ class DependencyInjection {
     permissionService = PermissionService();
     imagePickerService = ImagePickerService();
     mapsService = MapsService();
-    appDatabase = AppDatabase();
+    appDatabase = AppDatabase.instance;
 
     await dioClient.init();
     await notificationService.init();
