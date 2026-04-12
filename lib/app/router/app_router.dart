@@ -23,16 +23,21 @@ import 'package:care4u_medical_booking/features/specialties/screens/specialties_
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
+import '../../core/widgets/error_view.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
+// import '../../core/widgets/empty_state.dart';
 
 class AppRouter {
   AppRouter._();
-  static const String initialRoute = RouteNames.login;
-
+  static const String initialRoute = RouteNames.splash;
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       // ─── Splash ─────────────────────────────────────────────────────────────
       case RouteNames.splash:
-        return _buildRoute(settings, const SplashScreen());
+        return _buildRoute(
+          settings,
+          const SplashScreen(),
+        );
 
       // ─── Auth ───────────────────────────────────────────────────────────────
       case RouteNames.login:
