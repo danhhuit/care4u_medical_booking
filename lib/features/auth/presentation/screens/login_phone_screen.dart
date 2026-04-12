@@ -165,10 +165,7 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: AppSpacing.huge),
-              Image.asset(
-                'assests/images/logo.png',
-                height: 120,
-              ),
+              Image.asset('assests/images/logo.png', height: 120),
               const SizedBox(height: AppSpacing.huge),
               Care4uTextField(
                 controller: _accountController,
@@ -225,14 +222,15 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
                     TextSpan(
                       text: 'Đăng kí ngay',
                       style: AppTextStyles.captionDark,
-                      recognizer: TapGestureRecognizer()..onTap = () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ),
-                        );
-                      },
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
                     ),
                   ],
                 ),

@@ -1,9 +1,25 @@
 import 'package:care4u_medical_booking/app/router/route_args.dart';
+import 'package:care4u_medical_booking/features/admin/presentation/screens/admin_dashboard_screen.dart';
+import 'package:care4u_medical_booking/features/appointments/screens/appointments_screen.dart';
+import 'package:care4u_medical_booking/features/appointments/screens/book_appointment_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/splash_screen.dart';
+import 'package:care4u_medical_booking/features/doctors/screens/doctor_detail_screen.dart';
+import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
+import 'package:care4u_medical_booking/features/health_center/health_center_page.dart';
+import 'package:care4u_medical_booking/features/home/presentation/screens/main_screen.dart';
+import 'package:care4u_medical_booking/features/medical_records/history_page.dart';
+import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
+import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/edit_profile_screen.dart';
+import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/patient_profile_screen.dart';
 import 'package:care4u_medical_booking/features/payments/domain/entities/transaction_entity.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/payment_qr_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/payments_home_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
+import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_doctor_screen.dart';
+import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
@@ -16,80 +32,122 @@ class AppRouter {
   static const String initialRoute = RouteNames.splash;
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      // ─── Splash ─────────────────────────────────────────────────────────────
       case RouteNames.splash:
         return _buildRoute(
           settings,
           const SplashScreen(),
         );
 
+      // ─── Auth ───────────────────────────────────────────────────────────────
       case RouteNames.login:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Login Screen'),
-        );
+        return _buildRoute(settings, const LoginPhoneScreen());
 
       case RouteNames.register:
+        return _buildRoute(settings, const RegisterScreen());
+
+      case RouteNames.forgotPassword:
         return _buildRoute(
           settings,
-          const _PlaceholderScreen(title: 'Register Screen'),
+          const _PlaceholderScreen(title: 'Quên mật khẩu'),
         );
 
+      // ─── Main ───────────────────────────────────────────────────────────────
       case RouteNames.home:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Home Screen'),
-        );
+        return _buildRoute(settings, const MainScreen());
 
+      // ─── Patient Profile ────────────────────────────────────────────────────
+      case RouteNames.patientProfile:
+        return _buildRoute(settings, const PatientProfileScreen());
+
+      case RouteNames.editPatientProfile:
+        return _buildRoute(settings, const EditProfileScreen());
+
+      // ─── Doctors ────────────────────────────────────────────────────────────
       case RouteNames.doctorList:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Doctor List Screen'),
-        );
+        return _buildRoute(settings, const DoctorsScreen());
 
       case RouteNames.doctorDetail:
         final args = settings.arguments;
         if (args is DoctorDetailRouteArgs) {
           return _buildRoute(
             settings,
-            _PlaceholderScreen(title: 'Doctor Detail: ${args.doctorId}'),
+            DoctorDetailScreen(
+              doctorData: const {
+                'id': '1',
+                'name': 'BS. Nguyễn Văn An',
+                'specialty': 'Tim mạch',
+                'imageUrl': 'assests/images/default_doctor.jpg',
+                'rating': 4.8,
+                'reviews': 120,
+                'bio': 'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch.',
+                'hospital': 'BV Chợ Rẫy',
+                'fee': 300000,
+              },
+            ),
           );
         }
-        return _undefinedRoute(
-          message: 'Doctor detail requires DoctorDetailRouteArgs',
-        );
+        if (args is Map<String, dynamic>) {
+          return _buildRoute(settings, DoctorDetailScreen(doctorData: args));
+        }
+        return _undefinedRoute(message: 'Doctor detail requires args');
+
+      // ─── Specialties ────────────────────────────────────────────────────────
+      case RouteNames.specialtyList:
+        return _buildRoute(settings, const SpecialtiesScreen());
+
+      // ─── Appointments ───────────────────────────────────────────────────────
+      case RouteNames.appointmentList:
+        return _buildRoute(settings, const AppointmentsScreen());
 
       case RouteNames.appointmentBooking:
         final args = settings.arguments;
         if (args is AppointmentBookingRouteArgs) {
           return _buildRoute(
             settings,
-            _PlaceholderScreen(
-              title:
-                  'Booking: doctor=${args.doctorId}, specialty=${args.specialtyId}',
+            BookAppointmentScreen(
+              doctorData: const {
+                'id': '1',
+                'name': 'BS. Nguyễn Văn An',
+                'specialty': 'Tim mạch',
+                'imageUrl': 'assests/images/default_doctor.jpg',
+              },
             ),
           );
         }
-        return _undefinedRoute(
-          message: 'Appointment booking requires AppointmentBookingRouteArgs',
-        );
-
-      case RouteNames.patientProfile:
+        if (args is Map<String, dynamic>) {
+          return _buildRoute(settings, BookAppointmentScreen(doctorData: args));
+        }
         return _buildRoute(
           settings,
-          const _PlaceholderScreen(title: 'Patient Profile Screen'),
+          const BookAppointmentScreen(
+            doctorData: {
+              'id': '1',
+              'name': 'BS. Nguyễn Văn An',
+              'specialty': 'Tim mạch',
+              'imageUrl': 'assests/images/default_doctor.jpg',
+            },
+          ),
         );
 
+
+      case RouteNames.appointmentDetail:
+      case RouteNames.appointmentSuccess:
+        return _buildRoute(
+          settings,
+          const AppointmentsScreen(),
+        );
+
+      // ─── Medical Records ────────────────────────────────────────────────────
+      case RouteNames.medicalRecordList:
+      case RouteNames.medicalRecordDetail:
+        return _buildRoute(settings, const HistoryPage());
+
+      // ─── Notifications ──────────────────────────────────────────────────────
       case RouteNames.notificationList:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Notification List Screen'),
-        );
+        return _buildRoute(settings, const NotificationListScreen());
 
-      case RouteNames.healthCenterMap:
-        return _buildRoute(
-          settings,
-          const _PlaceholderScreen(title: 'Health Center Map Screen'),
-        );
+      // ─── Payments ───────────────────────────────────────────────────────────
       case RouteNames.paymentsHome:
         return _buildRoute(
           settings,
@@ -127,9 +185,32 @@ class AppRouter {
           ),
         );
 
+      // ─── Reviews ────────────────────────────────────────────────────────────
+      case RouteNames.reviewDoctor:
+        final args = settings.arguments;
+        if (args is Map<String, dynamic>) {
+          return _buildRoute(
+            settings,
+            ReviewDoctorScreen(
+              doctorId: args['doctorId'] as String?,
+              doctorName: args['doctorName'] as String?,
+            ),
+          );
+        }
+        return _buildRoute(settings, const ReviewDoctorScreen());
+
+      // ─── Health Center ───────────────────────────────────────────────────────
+      case RouteNames.healthCenterMap:
+      case RouteNames.healthCenterDetail:
+        return _buildRoute(settings, const HealthCenterPage());
+
+      // ─── Admin ──────────────────────────────────────────────────────────────
+      case RouteNames.adminDashboard:
+        return _buildRoute(settings, const AdminDashboardScreen());
+
       default:
         return _undefinedRoute(
-          message: 'No route defined for ${settings.name}',
+          message: 'Không tìm thấy route: ${settings.name}',
         );
     }
   }
@@ -144,7 +225,7 @@ class AppRouter {
   static MaterialPageRoute<dynamic> _undefinedRoute({String? message}) {
     return MaterialPageRoute(
       builder: (_) => Scaffold(
-        appBar: AppBar(title: const Text('Route Error')),
+        appBar: AppBar(title: const Text('Lỗi điều hướng')),
         body: Center(child: ErrorView(message: message ?? 'Route not found')),
       ),
     );
@@ -153,7 +234,6 @@ class AppRouter {
 
 class _PlaceholderScreen extends StatelessWidget {
   final String title;
-
   const _PlaceholderScreen({required this.title});
 
   @override
