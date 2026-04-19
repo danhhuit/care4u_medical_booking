@@ -69,20 +69,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return ValueListenableBuilder<String>(
       valueListenable: SettingsManager.languageCode,
       builder: (context, lang, _) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(AppTranslations.tr('edit_profile')),
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Stack(
-                    children: [
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            final isDark = mode == ThemeMode.dark ||
+                (mode == ThemeMode.system &&
+                    MediaQuery.of(context).platformBrightness == Brightness.dark);
+            final bgColor = isDark ? const Color(0xFF1E1E1E) : AppColors.background;
+            final textColor = isDark ? Colors.white : AppColors.textDark;
+
+            return Scaffold(
+              backgroundColor: bgColor,
+              appBar: AppBar(
+                title: Text(AppTranslations.tr('edit_profile')),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Stack(
+                        children: [
                       CircleAvatar(
                         radius: 52,
                         backgroundColor: AppColors.primary.withOpacity(0.2),
@@ -100,39 +110,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 28),
-                _label(AppTranslations.tr('name_label')),
-                _field(_nameCtrl, AppTranslations.tr('enter_name')),
-                const SizedBox(height: 16),
-                _label(AppTranslations.tr('phone_label')),
-                _field(_phoneCtrl, AppTranslations.tr('enter_phone'), type: TextInputType.phone),
-                const SizedBox(height: 16),
-                _label(AppTranslations.tr('dob_label_full')),
-                _field(_dobCtrl, AppTranslations.tr('enter_dob')),
-                const SizedBox(height: 16),
-                _label(AppTranslations.tr('gender_label')),
-                Row(
-                  children: ['male', 'female', 'other_gender'].map((g) {
-                    final selected = _selectedGenderKey == g;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(AppTranslations.tr(g)),
-                        selected: selected,
-                        selectedColor: AppColors.primary,
-                        labelStyle: TextStyle(
-                          color: selected ? Colors.white : AppColors.textDark,
-                        ),
-                        onSelected: (_) => setState(() => _selectedGenderKey = g),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 16),
-                _label(AppTranslations.tr('address_label')),
-                _field(_addressCtrl, AppTranslations.tr('enter_address'), maxLines: 2),
-                const SizedBox(height: 32),
-                SizedBox(
+                    const SizedBox(height: 28),
+                    _label(AppTranslations.tr('name_label'), isDark),
+                    _field(_nameCtrl, AppTranslations.tr('enter_name'), isDark),
+                    const SizedBox(height: 16),
+                    _label(AppTranslations.tr('phone_label'), isDark),
+                    _field(_phoneCtrl, AppTranslations.tr('enter_phone'), isDark, type: TextInputType.phone),
+                    const SizedBox(height: 16),
+                    _label(AppTranslations.tr('dob_label_full'), isDark),
+                    _field(_dobCtrl, AppTranslations.tr('enter_dob'), isDark),
+                    const SizedBox(height: 16),
+                    _label(AppTranslations.tr('gender_label'), isDark),
+                    Row(
+                      children: ['male', 'female', 'other_gender'].map((g) {
+                        final selected = _selectedGenderKey == g;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(AppTranslations.tr(g)),
+                            selected: selected,
+                            selectedColor: AppColors.primary,
+                            backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200],
+                            labelStyle: TextStyle(
+                              color: selected ? Colors.white : (isDark ? Colors.white : AppColors.textDark),
+                            ),
+                            onSelected: (_) => setState(() => _selectedGenderKey = g),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    _label(AppTranslations.tr('address_label'), isDark),
+                    _field(_addressCtrl, AppTranslations.tr('enter_address'), isDark, maxLines: 2),
+                    const SizedBox(height: 32),
+                    SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _save,
@@ -153,18 +164,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         );
+          },
+        );
       },
     );
   }
-
-  Widget _label(String text) => Padding(
+  Widget _label(String text, bool isDark) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
-        child: Text(text, style: AppTextStyles.captionDark),
+        child: Text(text, style: AppTextStyles.captionDark.copyWith(color: isDark ? Colors.white : AppColors.textDark)),
       );
 
   Widget _field(
     TextEditingController ctrl,
-    String hint, {
+    String hint,
+    bool isDark, {
     TextInputType type = TextInputType.text,
     int maxLines = 1,
   }) {
@@ -172,10 +185,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       controller: ctrl,
       keyboardType: type,
       maxLines: maxLines,
+      style: TextStyle(
+        color: isDark ? Colors.white : AppColors.textDark,
+      ),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(
+          color: isDark ? Colors.white54 : AppColors.textLight,
+        ),
         filled: true,
-        fillColor: const Color(0xFFF5F7FA),
+        fillColor: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F7FA),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

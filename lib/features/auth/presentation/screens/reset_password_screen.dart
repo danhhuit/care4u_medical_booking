@@ -42,7 +42,7 @@ class ResetPasswordScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: AppSpacing.lg),
-                      Image.asset('assests/images/logo.png', height: 60),
+                      Image.asset('assests/images/logo_transparent.png', height: 60),
                       const SizedBox(height: AppSpacing.lg),
                       Text(AppTranslations.tr('reset_pwd_title'), style: AppTextStyles.heading2.copyWith(color: textColor)),
                       const SizedBox(height: AppSpacing.xs),

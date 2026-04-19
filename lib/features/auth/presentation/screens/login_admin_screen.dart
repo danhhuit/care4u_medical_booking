@@ -22,7 +22,7 @@ class LoginAdminScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.huge),
               Center(
                 child: Image.asset(
-                  'assests/images/logo.png',
+                  'assests/images/logo_transparent.png',
                   height: 120,
                 ),
               ),
