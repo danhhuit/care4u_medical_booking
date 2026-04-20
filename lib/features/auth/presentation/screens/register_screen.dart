@@ -4,6 +4,7 @@ import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
+import 'package:care4u_medical_booking/app/router/route_names.dart';
 
 import 'package:care4u_medical_booking/core/database/app_database.dart';
 
@@ -96,22 +97,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: AppSpacing.huge),
-              Image.asset(
-                'assests/images/logo.png',
-                height: 60,
-              ),
               const SizedBox(height: AppSpacing.lg),
-              const Text(
-                'Chào mừng đến với Care4U',
-                style: AppTextStyles.heading2,
-              ),
+              Image.asset('assests/images/logo.png', height: 60),
+              const SizedBox(height: AppSpacing.lg),
+              const Text('Chào mừng đến với Care4U', style: AppTextStyles.heading2),
               const SizedBox(height: AppSpacing.xs),
               const Text(
                 'Vui lòng nhập email hoặc số điện thoại của bạn\nđể đăng kí tài khoản',

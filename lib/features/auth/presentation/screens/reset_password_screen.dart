@@ -91,13 +91,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 height: 60,
               ),
               const SizedBox(height: AppSpacing.lg),
-              const Text(
-                'Đặt lại mật khẩu mới',
-                style: AppTextStyles.heading2,
-              ),
+              Image.asset('assests/images/logo.png', height: 60),
+              const SizedBox(height: AppSpacing.lg),
+              const Text('Đặt lại mật khẩu mới', style: AppTextStyles.heading2),
               const SizedBox(height: AppSpacing.xs),
               const Text(
-                'Nhập mật khẩu để đăng nhập tài khoản',
+                'Nhập mật khẩu mới để đăng nhập tài khoản',
                 style: AppTextStyles.bodyLight,
                 textAlign: TextAlign.center,
               ),

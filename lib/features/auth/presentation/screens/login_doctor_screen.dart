@@ -88,6 +88,14 @@ class _LoginDoctorScreenState extends State<LoginDoctorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -95,31 +103,10 @@ class _LoginDoctorScreenState extends State<LoginDoctorScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: AppSpacing.md),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.centerLeft,
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPhoneScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
               Center(
-                child: Image.asset(
-                  'assests/images/logo.png',
-                  height: 120,
-                ),
+                child: Image.asset('assests/images/logo.png', height: 120),
               ),
               const SizedBox(height: AppSpacing.huge),
-
               const Text(
                 'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
                 style: TextStyle(
@@ -135,14 +122,12 @@ class _LoginDoctorScreenState extends State<LoginDoctorScreen> {
                 hintText: 'Nhập số điện thoại của bạn',
                 keyboardType: TextInputType.phone,
                 prefix: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.md),
+                  padding: const EdgeInsets.only(
+                      left: AppSpacing.lg, right: AppSpacing.md),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Text(
-                        '+84',
-                        style: AppTextStyles.bodyDark,
-                      ),
+                      Text('+84', style: AppTextStyles.bodyDark),
                     ],
                   ),
                 ),
