@@ -235,6 +235,13 @@ class MockData {
       final List<dynamic> decoded = json.decode(notificationsJson);
       notifications = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
     }
+
+    // Load reviews
+    final String? reviewsJson = prefs.getString('mock_reviews');
+    if (reviewsJson != null) {
+      final List<dynamic> decoded = json.decode(reviewsJson);
+      reviews = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
   }
 
   static Future<void> _saveAppointments() async {
@@ -263,6 +270,16 @@ class MockData {
   static void addNotification(Map<String, dynamic> notification) {
     notifications.insert(0, notification);
     _saveNotifications();
+  }
+
+  static Future<void> _saveReviews() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_reviews', json.encode(reviews));
+  }
+
+  static void addReview(Map<String, dynamic> review) {
+    reviews.insert(0, review);
+    _saveReviews();
   }
   
   static void markAllNotificationsRead() {

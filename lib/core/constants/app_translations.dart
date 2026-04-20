@@ -178,6 +178,22 @@ class AppTranslations {
       'reset_pwd_success_msg': 'Mật khẩu đã được đặt lại thành công!',
       'back_to_login': 'Về đăng nhập',
       'confirm_btn': 'Xác nhận',
+      
+      // Reviews
+      'review_service': 'Đánh giá dịch vụ',
+      'no_review_needed': 'Chưa có dịch vụ nào cần đánh giá',
+      'review_condition': 'Bạn chỉ có thể đánh giá trải nghiệm sau khi buổi khám đã hoàn tất.',
+      'reviewed': 'Đã đánh giá',
+      'view_review': 'Xem lại',
+      'evaluate': 'Đánh giá',
+      'review_rating_prompt': 'Chạm để đánh giá',
+      'review_share_hint': 'Chia sẻ trải nghiệm của bạn về bác sĩ này...',
+      'review_recent': 'Đánh giá gần đây',
+      'review_submit': 'Gửi đánh giá',
+      'review_choose_star': 'Vui lòng chọn số sao đánh giá!',
+      'review_success_title': 'Cảm ơn bạn đã đánh giá!',
+      'review_success_desc': 'Đánh giá của bạn giúp các bệnh nhân khác tìm được bác sĩ phù hợp.',
+      'back_to_previous': 'Về trang trước',
     },
     'en': {
       'app_name': 'Care4U',
@@ -353,6 +369,22 @@ class AppTranslations {
       'reset_pwd_success_msg': 'Password has been successfully reset!',
       'back_to_login': 'Back to login',
       'confirm_btn': 'Confirm',
+      
+      // Reviews
+      'review_service': 'Service Evaluation',
+      'no_review_needed': 'No services to evaluate',
+      'review_condition': 'You can only evaluate your experience after the appointment is completed.',
+      'reviewed': 'Reviewed',
+      'view_review': 'View',
+      'evaluate': 'Evaluate',
+      'review_rating_prompt': 'Tap to rate',
+      'review_share_hint': 'Share your experience about this doctor...',
+      'review_recent': 'Recent reviews',
+      'review_submit': 'Submit Review',
+      'review_choose_star': 'Please choose a star rating!',
+      'review_success_title': 'Thank you for your review!',
+      'review_success_desc': 'Your review helps other patients find the right doctor.',
+      'back_to_previous': 'Back to previous page',
     },
   };
 

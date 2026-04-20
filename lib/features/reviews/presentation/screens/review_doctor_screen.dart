@@ -3,14 +3,18 @@ import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+
 class ReviewDoctorScreen extends StatefulWidget {
   final String? doctorId;
   final String? doctorName;
+  final bool isReadOnly;
 
   const ReviewDoctorScreen({
     super.key,
     this.doctorId,
     this.doctorName,
+    this.isReadOnly = false,
   });
 
   @override
@@ -23,6 +27,21 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
   bool _submitted = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.isReadOnly && widget.doctorName != null) {
+      final existingReview = MockData.reviews.firstWhere(
+        (r) => r['doctorName'] == widget.doctorName && r['patientName'] == MockData.currentPatient['name'],
+        orElse: () => <String, dynamic>{},
+      );
+      if (existingReview.isNotEmpty) {
+        _rating = existingReview['rating'] as int;
+        _commentCtrl.text = existingReview['comment'] as String;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _commentCtrl.dispose();
     super.dispose();
@@ -31,8 +50,8 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
   void _submit() {
     if (_rating == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn số sao đánh giá!'),
+        SnackBar(
+          content: Text(AppTranslations.tr('review_choose_star')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -41,7 +60,9 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     final doctorName = widget.doctorName ??
         (MockData.doctors.isNotEmpty ? MockData.doctors[0]['name'] as String : 'Bác sĩ');
 
-    MockData.reviews.insert(0, {
+    if (widget.isReadOnly) return;
+
+    MockData.addReview({
       'id': 'r${DateTime.now().millisecondsSinceEpoch}',
       'doctorId': widget.doctorId ?? '1',
       'doctorName': doctorName,
@@ -61,7 +82,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đánh giá bác sĩ'),
+        title: Text(AppTranslations.tr('rate_doctor')),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -78,14 +99,14 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           children: [
             const Icon(Icons.check_circle, color: AppColors.success, size: 80),
             const SizedBox(height: 20),
-            const Text(
-              'Cảm ơn bạn đã đánh giá!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              AppTranslations.tr('review_success_title'),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
-              'Đánh giá của bạn giúp các bệnh nhân khác tìm được bác sĩ phù hợp.',
+              AppTranslations.tr('review_success_desc'),
               style: AppTextStyles.bodyLight,
               textAlign: TextAlign.center,
             ),
@@ -97,7 +118,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Về trang trước', style: TextStyle(color: Colors.white)),
+              child: Text(AppTranslations.tr('back_to_previous'), style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -120,7 +141,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           const SizedBox(height: 12),
           Text(doctorName, style: AppTextStyles.heading2, textAlign: TextAlign.center),
           const SizedBox(height: 4),
-          Text('Đánh giá trải nghiệm của bạn', style: AppTextStyles.captionLight),
+          Text(AppTranslations.tr('review_rating_prompt'), style: AppTextStyles.captionLight),
           const SizedBox(height: 28),
           _buildStarRating(),
           const SizedBox(height: 8),
@@ -128,16 +149,23 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           const SizedBox(height: 24),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('Nhận xét', style: AppTextStyles.captionDark),
+            child: Text(AppTranslations.tr('reviews_feedback'), style: AppTextStyles.captionDark),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _commentCtrl,
             maxLines: 5,
+            readOnly: widget.isReadOnly,
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87,
+            ),
             decoration: InputDecoration(
-              hintText: 'Chia sẻ trải nghiệm của bạn về bác sĩ này...',
+              hintText: AppTranslations.tr('review_share_hint'),
+              hintStyle: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[500] : Colors.grey[400],
+              ),
               filled: true,
-              fillColor: const Color(0xFFF5F7FA),
+              fillColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F7FA),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -147,21 +175,22 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           const SizedBox(height: 24),
           _buildExistingReviews(),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text(
-                'Gửi đánh giá',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          if (!widget.isReadOnly)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(
+                  AppTranslations.tr('review_submit'),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -172,7 +201,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (i) {
         return GestureDetector(
-          onTap: () => setState(() => _rating = i + 1),
+          onTap: widget.isReadOnly ? null : () => setState(() => _rating = i + 1),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -188,9 +217,9 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
   }
 
   Widget _buildRatingLabel() {
-    const labels = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+    final labels = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
     return Text(
-      _rating > 0 ? labels[_rating] : 'Chạm để đánh giá',
+      _rating > 0 ? labels[_rating] : AppTranslations.tr('review_rating_prompt'),
       style: TextStyle(
         color: _rating > 0 ? Colors.amber.shade700 : Colors.grey,
         fontWeight: FontWeight.w600,
@@ -206,7 +235,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Đánh giá gần đây', style: AppTextStyles.heading2),
+        Text(AppTranslations.tr('review_recent'), style: AppTextStyles.heading2),
         const SizedBox(height: 10),
         ...reviews.map((r) => _reviewCard(r)),
       ],
@@ -218,7 +247,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
