@@ -133,7 +133,15 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                         Icons.medication,
                         AppTranslations.tr('prescriptions'),
                         AppTranslations.tr('prescriptions_desc'),
-                        () => Navigator.pushNamed(context, RouteNames.medicalRecordList),
+                        () => Navigator.pushNamed(context, RouteNames.prescriptionList),
+                      ),
+                      const SizedBox(height: 8),
+                      _actionCard(
+                        context,
+                        Icons.star_rate,
+                        AppTranslations.tr('rate_doctor'),
+                        AppTranslations.tr('rate_doctor_desc'),
+                        () => Navigator.pushNamed(context, RouteNames.reviewDoctor),
                       ),
                       const SizedBox(height: 8),
                       _actionCard(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../appointments/screens/book_appointment_screen.dart';
+import 'doctor_reviews_screen.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   final Map<String, dynamic> doctorData;
@@ -48,15 +49,25 @@ class DoctorDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 20),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${doctorData['rating']} (${doctorData['reviews']} đánh giá)',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DoctorReviewsScreen(doctorData: doctorData),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(Icons.star, color: Colors.amber, size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${doctorData['rating']} (${doctorData['reviews']} đánh giá)',
+                              style: const TextStyle(fontSize: 14, decoration: TextDecoration.underline),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -79,7 +90,17 @@ class DoctorDetailScreen extends StatelessWidget {
               children: [
                 _buildInfoCard(Icons.people, 'Bệnh nhân', '1000+'),
                 _buildInfoCard(Icons.work, 'Kinh nghiệm', '10 năm'),
-                _buildInfoCard(Icons.star_rate, 'Đánh giá', '${doctorData['rating']}'),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DoctorReviewsScreen(doctorData: doctorData),
+                      ),
+                    );
+                  },
+                  child: _buildInfoCard(Icons.star_rate, 'Đánh giá', '${doctorData['rating']}'),
+                ),
               ],
             ),
           ],

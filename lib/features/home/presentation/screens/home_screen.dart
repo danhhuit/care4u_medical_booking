@@ -34,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
         final patient = MockData.currentPatient;
         final turquoiseBg = isDark ? Colors.black : const Color(0xFFA1E4D5);
 
-        return Scaffold(
-          backgroundColor: turquoiseBg,
-          body: SafeArea(
+        return Container(
+          color: turquoiseBg,
+          child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -71,23 +71,36 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
-            Text(
-              AppTranslations.tr('welcome'),
-              style: TextStyle(
-                color: isDark ? Colors.white70 : Colors.black54,
-                fontSize: 13,
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(
+                  Icons.menu,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                onPressed: () => Scaffold.of(context).openDrawer(),
               ),
             ),
-            Text(
-              patient['name']!.split(' ').last,
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppTranslations.tr('welcome'),
+                  style: TextStyle(
+                    color: isDark ? Colors.white70 : Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  patient['name']!.split(' ').last,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -476,7 +489,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDark,
               ),
               const SizedBox(width: 16),
-              _serviceItem(AppTranslations.tr('psychological_counseling'), 'assests/images/logo.png', isDark),
+              _serviceItem(
+                AppTranslations.tr('psychological_counseling'),
+                'assests/images/logo.png',
+                isDark,
+              ),
             ],
           ),
         ),

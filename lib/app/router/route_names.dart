@@ -30,6 +30,8 @@ class RouteNames {
   // Medical records
   static const String medicalRecordList = '/medical-record-list';
   static const String medicalRecordDetail = '/medical-record-detail';
+  static const String prescriptionList = '/prescription-list';
+
 
   // Notifications
   static const String notificationList = '/notification-list';

@@ -13,6 +13,8 @@ class AppTranslations {
       'nav_appointments': 'Lịch hẹn',
       'nav_payments': 'Thanh toán',
       'nav_profile': 'Cá nhân',
+      'logout': 'Đăng xuất',
+      'drawer_menu': 'Menu ứng dụng',
       'personal_info_header': 'Thông tin cá nhân',
       'phone_label': 'Số điện thoại',
       'dob_label': 'Ngày sinh',
@@ -28,7 +30,6 @@ class AppTranslations {
       'prescriptions_desc': 'Danh sách đơn thuốc',
       'settings': 'Cài đặt',
       'settings_desc': 'Ngôn ngữ, Mật khẩu, Chế độ',
-      'logout': 'Đăng xuất',
       'notifications_header': 'Thông báo',
       'reminders': 'Nhắc lịch khám',
       'remind_before': 'Nhắc trước',
@@ -41,14 +42,61 @@ class AppTranslations {
       'user_guide': 'Hướng dẫn sử dụng',
       'reviews_feedback': 'Đánh giá & Phản hồi',
       'rate_doctor': 'Đánh giá bác sĩ',
+      'rate_doctor_desc': 'Xem và đánh giá bác sĩ',
       'share_feedback': 'Phản hồi trải nghiệm',
       'security_header': 'Bảo mật',
       'change_password': 'Đổi mật khẩu',
       'version': 'Phiên bản',
+      'reviews_count': 'đánh giá',
+      'no_reviews_yet': 'Chưa có đánh giá nào.',
+
+      'user_guide_title': 'Hướng dẫn sử dụng',
+      'user_guide_section1': '1. Đăng kí & Đăng nhập',
+      'user_guide_content1':
+          'Mở ứng dụng, chọn "Đăng kí" nếu lần đầu sử dụng. Nhập email/số điện thoại và mật khẩu để tạo tài khoản. Nếu đã có tài khoản, chọn "Đăng nhập".',
+      'user_guide_section2': '2. Đặt lịch khám',
+      'user_guide_content2':
+          'Từ màn hình chính, bấm nút "Đặt lịch" hoặc chọn mục "Tìm bác sĩ riêng". Chọn bác sĩ phù hợp, chọn ngày giờ và xác nhận lịch hẹn.',
+      'user_guide_section3': '3. Quản lý lịch hẹn',
+      'user_guide_content3':
+          'Xem toàn bộ lịch hẹn trong mục "Lịch hẹn". Bạn có thể xem chi tiết, hủy hoặc đặt lại lịch hẹn.',
+      'user_guide_section4': '4. Thanh toán',
+      'user_guide_content4':
+          'Sử dụng Ví Care4U hoặc các phương thức thanh toán khác. Nạp tiền vào ví để thanh toán dịch vụ nhanh chóng.',
+      'user_guide_section5': '5. Thông báo',
+      'user_guide_content5':
+          'Bật thông báo ứng dụng để nhận nhắc lịch khám, xác nhận đặt lịch và kết quả xét nghiệm kịp thời.',
+      'user_guide_section6': '6. Điều khoản sử dụng',
+      'user_guide_content6':
+          '''Sử dụng ứng dụng Care4U, bạn đồng ý với điều khoản dịch vụ của chúng tôi. Thông tin cá nhân được bảo mật theo chính sách riêng tư của Care4U.
+Không sử dụng ứng dụng cho mục đích phi pháp hoặc gây hại cho người dùng khác.
+Care4U có quyền cập nhật điều khoản bất cứ lúc nào mà không cần báo trước.''',
+
       'upcoming': 'Sắp tới',
       'completed': 'Hoàn thành',
       'cancelled': 'Đã hủy',
+      'diagnosis_confirmed': 'Chẩn đoán xác định',
+      'abdominal_ultrasound': 'Siêu âm ổ bụng',
+      'prescription_number': 'Đơn thuốc số',
+      'revisit_advice': 'Lời dặn tái khám',
+      'hospital_system_update':
+          'Kết quả của bạn sẽ được tự động cập nhật từ hệ thống bệnh viện.',
+      'exam_results_title': 'Kết luận của Bác sĩ',
+      'details_arrow': 'Chi tiết >',
+      'prescribed_meds': 'Danh sách thuốc',
+      'dose_per_day': 'lần/ngày',
+      'morning': 'Sáng',
+      'afternoon': 'Trưa',
+      'evening': 'Tối',
+      'before_meal': 'Trước ăn',
+      'after_meal': 'Sau ăn',
+      'doctor_prescribed': 'Bác sĩ kê toa',
+      'revisit_schedule': 'Lịch tái khám',
+      'medical_note': 'Lưu ý y tế',
+      'med_usage': 'Cách dùng',
+      'med_dose': 'Liều lượng',
       'no_appointments': 'Không có lịch hẹn nào.',
+      'no_doctors': 'Không tìm thấy bác sĩ.',
       'buy_meds': 'Mua thuốc',
       'specialties': 'Chuyên khoa',
       'quick_find_doctor': 'Tìm bác sĩ riêng',
@@ -68,6 +116,7 @@ class AppTranslations {
       'min_ago': 'phút trước',
       'appointment_detail': 'Chi tiết lịch hẹn',
       'doctor': 'Bác sĩ',
+      'doctor_label': 'Bác sĩ',
       'hospital': 'Bệnh viện',
       'exam_date': 'Ngày khám',
       'exam_time': 'Giờ khám',
@@ -98,11 +147,11 @@ class AppTranslations {
       'other_gender': 'Khác',
       'enter_address': 'Nhập địa chỉ',
       'save_success': 'Đã lưu thông tin thành công!',
-      
-      // Home & Tabs
       'ai_assistant_title': 'Trợ lý AI Care4U',
-      'ai_greeting': 'Xin chào! Tôi là trợ lý AI của Care4U. Tôi có thể giúp gì cho bạn hôm nay?',
-      'ai_bot_response': 'Đây là tin nhắn tự động từ AI Demo. Trong phiên bản thực tế, phần này sẽ được tích hợp với ChatGPT hoặc AI khác để giải đáp thắc mắc của bạn về sức khoẻ và dịch vụ Care4U.',
+      'ai_greeting':
+          'Xin chào! Tôi là trợ lý AI của Care4U. Tôi có thể giúp gì cho bạn hôm nay?',
+      'ai_bot_response':
+          'Đây là tin nhắn tự động từ AI Demo. Trong phiên bản thực tế, phần này sẽ được tích hợp với ChatGPT hoặc AI khác để giải đáp thắc mắc của bạn về sức khoẻ và dịch vụ Care4U.',
       'type_message': 'Nhập tin nhắn...',
       'product_category': 'Danh mục sp',
       'search_product_hint': 'Nhập sản phẩm cần tìm',
@@ -110,8 +159,7 @@ class AppTranslations {
       'doctors_list_title': 'Danh sách bác sĩ',
       'specialty_search_title': 'Tìm bác sĩ theo chuyên khoa',
       'vaccine_record': 'Sổ tiêm',
-      
-      // Specialties
+
       'cardiology': 'Tim mạch',
       'pediatrics': 'Nhi khoa',
       'neurology': 'Thần kinh',
@@ -120,13 +168,11 @@ class AppTranslations {
       'ophthalmology': 'Mắt',
       'ent': 'Tai Mũi Họng',
       'gastroenterology': 'Tiêu hóa',
-      
-      // Services
+
       'home_care': 'Chăm sóc tại nhà',
       'testing': 'Xét nghiệm',
       'psychological_counseling': 'Tư vấn tâm lý',
-      
-      // Login
+
       'login_email_hint': 'Nhập email hoặc số điện thoại',
       'login_password_hint': 'Mật khẩu',
       'forgot_password': 'Quên mật khẩu?',
@@ -134,8 +180,7 @@ class AppTranslations {
       'login_as_doctor': 'Đăng nhập với tư cách Bác sĩ',
       'no_account': 'Bạn chưa có tài khoản? ',
       'register_now': 'Đăng kí ngay',
-      
-      // Medical History
+
       'medical_history_title': 'Lịch sử khám bệnh',
       'exam_results': 'Kết quả khám',
       'personal_profile': 'Hồ sơ cá nhân',
@@ -144,11 +189,11 @@ class AppTranslations {
       'book_new_exam': 'Đặt lịch khám mới',
       'exam_history': 'Lịch sử khám',
       'no_exam_history': 'Bạn chưa có lịch sử khám nào',
-      'exam_history_desc': 'Các hoạt động khám bệnh của bạn sẽ hiển thị tại đây sau khi bạn hoàn thành các lượt khám.',
+      'exam_history_desc':
+          'Các hoạt động khám bệnh của bạn sẽ hiển thị tại đây sau khi bạn hoàn thành các lượt khám.',
       'want_buy_medicine': 'Bạn muốn mua thuốc?',
       'order_now': 'Đặt mua ngay',
-      
-      // Payments
+
       'payments_title': 'Thanh toán',
       'wallet_balance': 'Số dư ví Care4U',
       'top_up': 'Nạp tiền',
@@ -156,21 +201,24 @@ class AppTranslations {
       'services': 'Dịch vụ',
       'care4u_wallet': 'Ví Care4U',
       'manage_wallet': 'Quản lý ví và giao dịch',
-      // Auth Flow
+
       'register_title': 'Chào mừng đến với Care4U',
-      'register_subtitle': 'Vui lòng nhập email hoặc số điện thoại của bạn\nđể đăng kí tài khoản',
+      'register_subtitle':
+          'Vui lòng nhập email hoặc số điện thoại của bạn\nđể đăng kí tài khoản',
       'register_email_hint': 'Nhập email hoặc số điện thoại của bạn',
       'register_pwd_hint': 'Nhập mật khẩu đăng nhập (6 kí tự số)',
       'register_confirm_pwd_hint': 'Nhập lại mật khẩu',
       'register_btn': 'Đăng kí',
       'register_success_title': 'Đăng kí thành công!',
-      'register_success_msg': 'Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để tiếp tục.',
+      'register_success_msg':
+          'Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để tiếp tục.',
       'login_now': 'Đăng nhập ngay',
-      
-      'doctor_welcome': 'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
+
+      'doctor_welcome':
+          'Chào mừng bạn đã trở lại với trang thông tin\ndành cho Bác sĩ',
       'doctor_phone_hint': 'Nhập số điện thoại của bạn',
       'doctor_id_hint': 'Nhập mã số định danh nghề nghiệp',
-      
+
       'reset_pwd_title': 'Đặt lại mật khẩu mới',
       'reset_pwd_subtitle': 'Nhập mật khẩu mới để đăng nhập tài khoản',
       'reset_pwd_hint': 'Nhập mật khẩu mới (bao gồm 6 kí tự số)',
@@ -178,11 +226,11 @@ class AppTranslations {
       'reset_pwd_success_msg': 'Mật khẩu đã được đặt lại thành công!',
       'back_to_login': 'Về đăng nhập',
       'confirm_btn': 'Xác nhận',
-      
-      // Reviews
+
       'review_service': 'Đánh giá dịch vụ',
       'no_review_needed': 'Chưa có dịch vụ nào cần đánh giá',
-      'review_condition': 'Bạn chỉ có thể đánh giá trải nghiệm sau khi buổi khám đã hoàn tất.',
+      'review_condition':
+          'Bạn chỉ có thể đánh giá trải nghiệm sau khi buổi khám đã hoàn tất.',
       'reviewed': 'Đã đánh giá',
       'view_review': 'Xem lại',
       'evaluate': 'Đánh giá',
@@ -192,9 +240,16 @@ class AppTranslations {
       'review_submit': 'Gửi đánh giá',
       'review_choose_star': 'Vui lòng chọn số sao đánh giá!',
       'review_success_title': 'Cảm ơn bạn đã đánh giá!',
-      'review_success_desc': 'Đánh giá của bạn giúp các bệnh nhân khác tìm được bác sĩ phù hợp.',
+      'review_success_desc':
+          'Đánh giá của bạn giúp các bệnh nhân khác tìm được bác sĩ phù hợp.',
       'back_to_previous': 'Về trang trước',
+
+      'prescription_detail': 'Chi tiết đơn thuốc',
+      'date_label': 'Ngày',
+      'active_status': 'Đang dùng',
+      'done_status': 'Đã hoàn thành',
     },
+
     'en': {
       'app_name': 'Care4U',
       'search_doctor_hint': 'Search doctors, specialties...',
@@ -204,6 +259,8 @@ class AppTranslations {
       'nav_appointments': 'Appointments',
       'nav_payments': 'Payments',
       'nav_profile': 'Profile',
+      'logout': 'Logout',
+      'drawer_menu': 'App Menu',
       'personal_info_header': 'Personal Information',
       'phone_label': 'Phone Number',
       'dob_label': 'Date of Birth',
@@ -219,7 +276,6 @@ class AppTranslations {
       'prescriptions_desc': 'List of prescriptions',
       'settings': 'Settings',
       'settings_desc': 'Language, Password, Mode',
-      'logout': 'Logout',
       'notifications_header': 'Notifications',
       'reminders': 'Appointment Reminders',
       'remind_before': 'Remind me',
@@ -231,20 +287,67 @@ class AppTranslations {
       'dark_mode': 'Dark Mode',
       'user_guide': 'User Guide',
       'reviews_feedback': 'Reviews & Feedback',
-      'rate_doctor': 'Rate a Doctor',
+      'rate_doctor': 'Rate Doctor',
+      'rate_doctor_desc': 'View and rate doctors',
       'share_feedback': 'Share Feedback',
       'security_header': 'Security',
       'change_password': 'Change Password',
       'version': 'Version',
+      'reviews_count': 'reviews',
+      'no_reviews_yet': 'No reviews yet.',
+
+      'user_guide_title': 'User Guide',
+      'user_guide_section1': '1. Register & Login',
+      'user_guide_content1':
+          'Open the app, select "Register" if you are a first-time user. Enter your email/phone and password to create an account. If you already have an account, select "Login".',
+      'user_guide_section2': '2. Book an Appointment',
+      'user_guide_content2':
+          'From the home screen, tap "Book" or select "Find a Doctor". Choose a suitable doctor, select a date and time, and confirm your appointment.',
+      'user_guide_section3': '3. Manage Appointments',
+      'user_guide_content3':
+          'View all appointments under the "Appointments" section. You can view details, cancel, or reschedule appointments.',
+      'user_guide_section4': '4. Payments',
+      'user_guide_content4':
+          'Use the Care4U Wallet or other payment methods. Top up your wallet to pay for services quickly.',
+      'user_guide_section5': '5. Notifications',
+      'user_guide_content5':
+          'Enable app notifications to receive appointment reminders, booking confirmations, and timely test results.',
+      'user_guide_section6': '6. Terms of Use',
+      'user_guide_content6':
+          '''By using Care4U, you agree to our terms of service. Personal information is kept secure under Care4U's privacy policy.
+Do not use the app for illegal purposes or to harm other users.
+Care4U reserves the right to update terms at any time without prior notice.''',
+
       'upcoming': 'Upcoming',
       'completed': 'Completed',
       'cancelled': 'Cancelled',
+      'diagnosis_confirmed': 'Confirmed Diagnosis',
+      'abdominal_ultrasound': 'Abdominal Ultrasound',
+      'prescription_number': 'Prescription No.',
+      'revisit_advice': 'Revisit Advice',
+      'hospital_system_update':
+          'Your results will be automatically updated from the hospital system.',
+      'exam_results_title': 'Doctor\'s Conclusion',
+      'details_arrow': 'Details >',
+      'prescribed_meds': 'Medication List',
+      'dose_per_day': 'times/day',
+      'morning': 'Morning',
+      'afternoon': 'Afternoon',
+      'evening': 'Evening',
+      'before_meal': 'Before meal',
+      'after_meal': 'After meal',
+      'doctor_prescribed': 'Prescribing Doctor',
+      'revisit_schedule': 'Revisit Schedule',
+      'medical_note': 'Medical Note',
+      'med_usage': 'Usage',
+      'med_dose': 'Dosage',
       'no_appointments': 'No appointments found.',
+      'no_doctors': 'No doctors found.',
       'buy_meds': 'Buy Medicine',
       'specialties': 'Specialties',
       'quick_find_doctor': 'Find a doctor',
       'health_profile': 'Health Profile',
-      'book_now': 'Book now',
+      'book_now': 'Book Appointment',
       'health_products': 'Health Products',
       'see_all': 'See all',
       'best_seller': 'Best Seller',
@@ -259,6 +362,7 @@ class AppTranslations {
       'min_ago': 'mins ago',
       'appointment_detail': 'Appointment Detail',
       'doctor': 'Doctor',
+      'doctor_label': 'Doctor',
       'hospital': 'Hospital',
       'exam_date': 'Exam Date',
       'exam_time': 'Exam Time',
@@ -266,7 +370,7 @@ class AppTranslations {
       'confirm_cancellation': 'Confirm Cancellation',
       'keep_appointment': 'Keep Appointment',
       'cancel_appointment': 'Cancel Appointment',
-      'view_appointment': 'View',
+      'view_appointment': 'View Appointment',
       'rescheduled': 'Rescheduled',
       'book_appointment_title': 'Book Appointment',
       'select_date': 'Select Date',
@@ -289,11 +393,11 @@ class AppTranslations {
       'other_gender': 'Other',
       'enter_address': 'Enter address',
       'save_success': 'Profile saved successfully!',
-      
-      // Home & Tabs
       'ai_assistant_title': 'Care4U AI Assistant',
-      'ai_greeting': 'Hello! I am Care4U AI Assistant. How can I help you today?',
-      'ai_bot_response': 'This is an automatic message from AI Demo. In the real version, this will be integrated with ChatGPT or other AI to answer your questions about health and Care4U services.',
+      'ai_greeting':
+          'Hello! I am Care4U AI Assistant. How can I help you today?',
+      'ai_bot_response':
+          'This is an automatic message from AI Demo. In the real version, this will be integrated with ChatGPT or other AI to answer your questions about health and Care4U services.',
       'type_message': 'Type a message...',
       'product_category': 'Product Category',
       'search_product_hint': 'Search for products...',
@@ -301,8 +405,7 @@ class AppTranslations {
       'doctors_list_title': 'Doctors List',
       'specialty_search_title': 'Find doctor by specialty',
       'vaccine_record': 'Vaccine Record',
-      
-      // Specialties
+
       'cardiology': 'Cardiology',
       'pediatrics': 'Pediatrics',
       'neurology': 'Neurology',
@@ -311,13 +414,11 @@ class AppTranslations {
       'ophthalmology': 'Ophthalmology',
       'ent': 'ENT',
       'gastroenterology': 'Gastroenterology',
-      
-      // Services
+
       'home_care': 'Home Care',
       'testing': 'Testing',
       'psychological_counseling': 'Psychological Counseling',
-      
-      // Login
+
       'login_email_hint': 'Enter email or phone number',
       'login_password_hint': 'Password',
       'forgot_password': 'Forgot password?',
@@ -325,66 +426,73 @@ class AppTranslations {
       'login_as_doctor': 'Login as Doctor',
       'no_account': 'Don\'t have an account? ',
       'register_now': 'Register now',
-      
-      // Medical History
+
       'medical_history_title': 'Medical History',
       'exam_results': 'Exam Results',
       'personal_profile': 'Personal Profile',
       'nearest_appointment': 'Nearest Appointment',
       'no_appointment_yet': 'You have no appointments yet.',
       'book_new_exam': 'Book New Exam',
-      'exam_history': 'Exam History',
-      'no_exam_history': 'No exam history found',
-      'exam_history_desc': 'Your medical activities will be displayed here after you complete your visits.',
+      'exam_history': 'Medical History',
+      'no_exam_history': 'No medical history found',
+      'exam_history_desc':
+          'Your medical activities will be displayed here after you complete your visits.',
       'want_buy_medicine': 'Want to buy medicine?',
-      'order_now': 'Order Now',
-      
-      // Payments
+      'order_now': 'Order now',
+
       'payments_title': 'Payments',
       'wallet_balance': 'Care4U Wallet Balance',
       'top_up': 'Top Up',
       'scan_qr': 'Scan QR',
       'services': 'Services',
       'care4u_wallet': 'Care4U Wallet',
-      'manage_wallet': 'Manage wallet & transactions',
-      // Auth Flow
+      'manage_wallet': 'Manage wallet and transactions',
+
       'register_title': 'Welcome to Care4U',
-      'register_subtitle': 'Please enter your email or phone number\nto register an account',
+      'register_subtitle':
+          'Please enter your email or phone number\nto register an account',
       'register_email_hint': 'Enter your email or phone number',
       'register_pwd_hint': 'Enter password (6 digits)',
       'register_confirm_pwd_hint': 'Confirm password',
       'register_btn': 'Register',
       'register_success_title': 'Registration Successful!',
-      'register_success_msg': 'Your account has been created. Please login to continue.',
-      'login_now': 'Login now',
-      
+      'register_success_msg':
+          'Your account has been created. Please log in to continue.',
+      'login_now': 'Log in now',
+
       'doctor_welcome': 'Welcome back to the\nDoctor Portal',
       'doctor_phone_hint': 'Enter your phone number',
       'doctor_id_hint': 'Enter your professional ID',
-      
+
       'reset_pwd_title': 'Reset Password',
-      'reset_pwd_subtitle': 'Enter a new password to login',
+      'reset_pwd_subtitle': 'Enter a new password to log in',
       'reset_pwd_hint': 'Enter new password (6 digits)',
       'reset_pwd_success_title': 'Success',
-      'reset_pwd_success_msg': 'Password has been successfully reset!',
+      'reset_pwd_success_msg': 'Password has been reset successfully!',
       'back_to_login': 'Back to login',
       'confirm_btn': 'Confirm',
-      
-      // Reviews
-      'review_service': 'Service Evaluation',
-      'no_review_needed': 'No services to evaluate',
-      'review_condition': 'You can only evaluate your experience after the appointment is completed.',
+
+      'review_service': 'Service Review',
+      'no_review_needed': 'No services need review',
+      'review_condition':
+          'You can only review your experience after the appointment is completed.',
       'reviewed': 'Reviewed',
-      'view_review': 'View',
+      'view_review': 'View Review',
       'evaluate': 'Evaluate',
       'review_rating_prompt': 'Tap to rate',
       'review_share_hint': 'Share your experience about this doctor...',
-      'review_recent': 'Recent reviews',
+      'review_recent': 'Recent Reviews',
       'review_submit': 'Submit Review',
       'review_choose_star': 'Please choose a star rating!',
       'review_success_title': 'Thank you for your review!',
-      'review_success_desc': 'Your review helps other patients find the right doctor.',
+      'review_success_desc':
+          'Your review helps other patients find the right doctor.',
       'back_to_previous': 'Back to previous page',
+
+      'prescription_detail': 'Prescription Detail',
+      'date_label': 'Date',
+      'active_status': 'In Use',
+      'done_status': 'Completed',
     },
   };
 

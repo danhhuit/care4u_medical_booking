@@ -72,11 +72,11 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: Colors.black,
+      scaffoldBackgroundColor: const Color(0xFF121212),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        surface: const Color(0xFF1E1E1E),
+        surface: const Color(0xFF1E2022),
         onSurface: Colors.white,
         error: const Color(0xFFCF6679),
         brightness: Brightness.dark,
@@ -84,7 +84,7 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF1A1A1A),
         foregroundColor: Colors.white,
         titleTextStyle: TextStyle(
           fontSize: 16,
@@ -108,7 +108,7 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1E1E1E),
+        color: const Color(0xFF1E2022),
         elevation: 0,
         shadowColor: Colors.white.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(

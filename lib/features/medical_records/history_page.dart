@@ -16,54 +16,65 @@ class HistoryPage extends StatelessWidget {
         return ValueListenableBuilder<ThemeMode>(
           valueListenable: SettingsManager.themeMode,
           builder: (context, mode, _) {
-            return Scaffold(
-              backgroundColor: const Color(0xFFF5F7F9), 
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0.5,
-                centerTitle: true,
-                title: Text(
-                  AppTranslations.tr('medical_history_title'),
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.assignment_turned_in_outlined, color: Colors.blue),
-                    tooltip: AppTranslations.tr('exam_results'),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ResultsPage()));
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person_outline, color: Colors.blue),
-                    tooltip: AppTranslations.tr('personal_profile'),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
-                    },
-                  ),
-                ],
-              ),
-              body: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // --- Section 1: Nearest Appointment ---
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                      child: Text(
-                        AppTranslations.tr('nearest_appointment'),
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    final cardColor = isDark ? const Color(0xFF1E2022) : Colors.white;
+                    final textColor = isDark ? Colors.white : Colors.black;
+
+                    return Scaffold(
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      appBar: AppBar(
+                        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                        elevation: 0.5,
+                        centerTitle: true,
+                        title: Text(
+                          AppTranslations.tr('medical_history_title'),
+                          style: TextStyle(
+                            color: Theme.of(context).appBarTheme.titleTextStyle?.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        actions: [
+                          IconButton(
+                            icon: const Icon(Icons.assignment_turned_in_outlined, color: Colors.blue),
+                            tooltip: AppTranslations.tr('exam_results'),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ResultsPage()));
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.person_outline, color: Colors.blue),
+                            tooltip: AppTranslations.tr('personal_profile'),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+                            },
+                          ),
                         ],
                       ),
+                      body: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // --- Section 1: Nearest Appointment ---
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+                              child: Text(
+                                AppTranslations.tr('nearest_appointment'),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: cardColor,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                  )
+                                ],
+                              ),
                       child: Column(
                         children: [
                           Padding(
@@ -112,7 +123,7 @@ class HistoryPage extends StatelessWidget {
                         children: [
                           Text(
                             AppTranslations.tr('exam_history'),
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
                           ),
                           GestureDetector(
                             onTap: () {},
@@ -149,7 +160,7 @@ class HistoryPage extends StatelessWidget {
 
                     // --- Section 3: Bottom actions ---
                     const SizedBox(height: 10),           
-                    _buildActionTile(AppTranslations.tr('want_buy_medicine'), AppTranslations.tr('order_now')),
+                    _buildActionTile(context, AppTranslations.tr('want_buy_medicine'), AppTranslations.tr('order_now')),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -161,15 +172,22 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildActionTile(String title, String actionText) {
+  Widget _buildActionTile(BuildContext context, String title, String actionText) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      color: Colors.white,
+      color: isDark ? const Color(0xFF1E2022) : Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+          ),
           Text(
             actionText,
             style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
