@@ -45,12 +45,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<String>(
-      valueListenable: SettingsManager.languageCode,
-      builder: (context, lang, _) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        
-        return Scaffold(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Scaffold(
           key: _scaffoldKey,
           drawer: _buildDrawer(context, isDark),
           body: Stack(
@@ -98,8 +95,6 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         );
-      },
-    );
   }
 
   Widget _navItem(int index, IconData icon, IconData activeIcon, String label) {

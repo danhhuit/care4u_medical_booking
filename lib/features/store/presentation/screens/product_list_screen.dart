@@ -110,26 +110,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
           {'label': AppTranslations.tr('supplements'), 'icon': Icons.eco},
         ];
 
+        final isDark = mode == ThemeMode.dark ||
+                (mode == ThemeMode.system &&
+                    MediaQuery.of(context).platformBrightness == Brightness.dark);
+        final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
+        final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+        final textColor = isDark ? Colors.white : Colors.black;
+
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: bgColor,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: cardColor,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: Icon(Icons.arrow_back, color: textColor),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
               AppTranslations.tr('product_category'),
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: textColor,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+                icon: Icon(Icons.shopping_cart_outlined, color: textColor),
                 onPressed: () {},
               ),
             ],
@@ -141,7 +148,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
@@ -177,8 +184,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFFA1E4D5)
-                              : Colors.grey[100],
+                              ? const Color(0xFFA1E4D5).withValues(alpha: isDark ? 0.2 : 1.0)
+                              : (isDark ? const Color(0xFF2C2C2C) : Colors.grey[100]),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -228,7 +235,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   itemCount: _filteredProducts.length,
                   itemBuilder: (context, index) {
                     final product = _filteredProducts[index];
-                    return _buildProductCard(product);
+                    return _buildProductCard(product, isDark, cardColor, textColor);
                   },
                 ),
               ),
@@ -241,17 +248,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Widget _buildProductCard(Map<String, dynamic> product) {
+  Widget _buildProductCard(Map<String, dynamic> product, bool isDark, Color cardColor, Color textColor) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
         ],
       ),
       child: Stack(
@@ -264,15 +272,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.medication,
                     size: 60,
-                    color: Colors.grey,
+                    color: isDark ? Colors.grey[600] : Colors.grey,
                   ),
                 ),
               ),
@@ -287,27 +295,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       product['name'] as String,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.black87,
+                        color: textColor.withValues(alpha: 0.87),
                       ),
                     ),
                     const SizedBox(height: 4),
                     if (product['originalPrice'] != null)
                       Text(
                         _formatPrice(product['originalPrice'] as int),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey,
+                          color: isDark ? Colors.grey[400] : Colors.grey,
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),
                     Text(
                       _formatPrice(product['price'] as int),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: textColor,
                       ),
                     ),
                   ],

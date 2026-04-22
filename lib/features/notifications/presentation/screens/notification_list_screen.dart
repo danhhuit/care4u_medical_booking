@@ -220,23 +220,28 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     final unreadCount =
         _notifications.where((n) => n['isRead'] == false).length;
 
-    return ValueListenableBuilder<String>(
-      valueListenable: SettingsManager.languageCode,
-      builder: (context, lang, _) {
-        return ValueListenableBuilder<ThemeMode>(
-          valueListenable: SettingsManager.themeMode,
-          builder: (context, mode, _) {
+    final mode = SettingsManager.themeMode.value;
+    final isDark = mode == ThemeMode.dark ||
+                (mode == ThemeMode.system &&
+                    MediaQuery.of(context).platformBrightness == Brightness.dark);
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.textDark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
           '${AppTranslations.tr('notifications_header')}${unreadCount > 0 ? ' ($unreadCount)' : ''}',
-          style: AppTextStyles.heading2,
+          style: AppTextStyles.heading2.copyWith(color: textColor),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: cardColor,
         elevation: 0.5,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: textColor),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           if (unreadCount > 0)
             TextButton(
@@ -293,19 +298,20 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: isRead
-                            ? Colors.white
-                            : AppColors.primary.withValues(alpha: 0.06),
+                            ? cardColor
+                            : AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.06),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isRead
                               ? Colors.transparent
                               : AppColors.primary.withValues(alpha: 0.2),
                         ),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              offset: Offset(0, 2)),
+                        boxShadow: [
+                          if (!isDark)
+                            const BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2)),
                         ],
                       ),
                       child: Padding(
@@ -333,12 +339,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                                       Expanded(
                                         child: Text(
                                           _translateTitle(n['title']!, type),
-                                          style:
-                                              AppTextStyles.bodyDark.copyWith(
-                                            fontWeight: isRead
-                                                ? FontWeight.w500
-                                                : FontWeight.bold,
-                                          ),
+                                          style: AppTextStyles.bodyDark.copyWith(
+                                              fontWeight: isRead
+                                                  ? FontWeight.w500
+                                                  : FontWeight.bold,
+                                              color: textColor,
+                                            ),
                                         ),
                                       ),
                                       if (!isRead)
@@ -404,10 +410,6 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               },
             ),
     );
-          },
-        );
-      },
-    );
   }
 }
 
@@ -436,9 +438,11 @@ class _AppointmentDetailSheet extends StatelessWidget {
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           Container(
             width: 40,
             height: 4,
@@ -542,6 +546,7 @@ class _AppointmentDetailSheet extends StatelessWidget {
           ],
           const SizedBox(height: 8),
         ],
+      ),
       ),
     );
   }

@@ -26,10 +26,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return ValueListenableBuilder<String>(
-      valueListenable: SettingsManager.languageCode,
-      builder: (context, lang, _) {
-        return Scaffold(
+    return Scaffold(
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -178,8 +175,6 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
             ],
           ),
         );
-      },
-    );
   }
 
   Widget _infoCard(List<Widget> children) => Card(
