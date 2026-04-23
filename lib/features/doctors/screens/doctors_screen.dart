@@ -162,7 +162,10 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
           appBar: AppBar(
             title: Text(AppTranslations.tr('doctors_list_title')),
             centerTitle: true,
-            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
           body: Column(
             children: [

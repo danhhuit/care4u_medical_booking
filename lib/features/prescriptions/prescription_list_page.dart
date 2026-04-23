@@ -36,10 +36,10 @@ class PrescriptionListPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return _buildPrescriptionCard(
                     context,
-                    title: index == 0 ? 'Đơn thuốc điều trị dạ dày' : 'Đơn thuốc viêm họng',
+                    title: index == 0 ? AppTranslations.tr('prescription_stomach') : AppTranslations.tr('prescription_throat'),
                     doctor: index == 0 ? 'BS. Lê Văn B' : 'BS. Phạm Thị Dung',
                     date: index == 0 ? '25/03/2026' : '10/04/2026',
-                    status: index == 0 ? 'Đang dùng' : 'Đã hoàn thành',
+                    status: index == 0 ? AppTranslations.tr('active_status') : AppTranslations.tr('done_status'),
                     isDark: isDark,
                     cardColor: cardColor,
                     textColor: textColor,
@@ -63,7 +63,7 @@ class PrescriptionListPage extends StatelessWidget {
     required Color cardColor,
     required Color textColor,
   }) {
-    final statusColor = status == 'Đang dùng' ? Colors.green : Colors.grey;
+    final statusColor = status == AppTranslations.tr('active_status') ? Colors.green : Colors.grey;
     
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

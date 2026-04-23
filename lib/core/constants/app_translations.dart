@@ -257,6 +257,12 @@ Care4U có quyền cập nhật điều khoản bất cứ lúc nào mà không 
       'date_label': 'Ngày',
       'active_status': 'Đang dùng',
       'done_status': 'Đã hoàn thành',
+      'prescription_stomach': 'Đơn thuốc điều trị dạ dày',
+      'prescription_throat': 'Đơn thuốc viêm họng',
+      'bio_1': 'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch, từng tu nghiệp tại Pháp.',
+      'bio_2': 'Bác sĩ Bình chuyên khoa Nhi, luôn tận tâm và yêu thương trẻ nhỏ.',
+      'bio_3': 'Chuyên gia hàng đầu về các bệnh lý thần kinh và phẫu thuật thần kinh.',
+      'bio_4': 'Bác sĩ Dung có kinh nghiệm phong phú điều trị các bệnh về da và thẩm mỹ da liễu.',
     },
 
     'en': {
@@ -511,6 +517,12 @@ Care4U reserves the right to update terms at any time without prior notice.''',
       'date_label': 'Date',
       'active_status': 'In Use',
       'done_status': 'Completed',
+      'prescription_stomach': 'Stomach Treatment Prescription',
+      'prescription_throat': 'Sore Throat Prescription',
+      'bio_1': 'Doctor An has over 10 years of experience in Cardiology, previously trained in France.',
+      'bio_2': 'Doctor Binh is a Pediatrician, always dedicated and loving towards children.',
+      'bio_3': 'Leading expert in neurological diseases and neurosurgery.',
+      'bio_4': 'Doctor Dung has extensive experience in treating skin diseases and dermatological aesthetics.',
     },
   };
 

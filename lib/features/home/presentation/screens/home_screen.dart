@@ -294,16 +294,28 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(2, (index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
-                width: _currentQuickActionPage == index ? 20 : 8,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: _currentQuickActionPage == index
-                      ? AppColors.primary
-                      : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: _currentQuickActionPage == index ? 20 : 8,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: _currentQuickActionPage == index
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                 ),
               );
             }),

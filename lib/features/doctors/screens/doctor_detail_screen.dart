@@ -103,7 +103,9 @@ class DoctorDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      doctorData['bio'] ?? AppTranslations.tr('no_bio'),
+                      AppTranslations.tr('bio_${doctorData['id']}') != 'bio_${doctorData['id']}' 
+                          ? AppTranslations.tr('bio_${doctorData['id']}') 
+                          : (doctorData['bio'] ?? AppTranslations.tr('no_bio')),
                       style: TextStyle(fontSize: 15, height: 1.5, color: textColor.withValues(alpha: 0.9)),
                     ),
                     const SizedBox(height: 32),
