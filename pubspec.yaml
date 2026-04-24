@@ -43,6 +43,7 @@ dependencies:
   url_launcher: ^6.3.2
   sqflite: ^2.3.3+1
   path: ^1.9.0
+  image: ^4.8.0
 
 
 dev_dependencies:
@@ -70,6 +71,7 @@ flutter:
   assets:
     - assests/images/google_logo.png
     - assests/images/logo.png
+    - assests/images/logo_transparent.png
     - assests/images/quote_banner.png
     - assests/images/bacsi_4.jpg
     - assests/images/bacsi_3.jpg

@@ -1,77 +1,179 @@
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: true,
-        title: const Text('Hồ sơ cá nhân', 
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Header: Ảnh đại diện và tên
-            const CircleAvatar(
-              radius: 45,
-              backgroundColor: Colors.blueAccent,
-              child: Icon(Icons.person, size: 50, color: Colors.white),
-            ),
-            const SizedBox(height: 10),
-            const Text('Nguyễn Văn A', 
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const Text('ID: BN-20260330', style: TextStyle(color: Colors.grey)),
-            
-            const SizedBox(height: 20),
-            
-            // Khối thông tin sinh hiệu
-            _buildInfoCard([
-              _buildRowInfo(Icons.cake, 'Ngày sinh', '01/01/1985'),
-              _buildRowInfo(Icons.wc, 'Giới tính', 'Nam'),
-              _buildRowInfo(Icons.bloodtype, 'Nhóm máu', 'O+', isLast: true),
-            ]),
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final patient = MockData.currentPatient;
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Chỉ số sức khỏe', style: TextStyle(fontWeight: FontWeight.bold)),
+            // Format date from YYYY-MM-DD to DD/MM/YYYY
+            String formatDate(String iso) {
+              if (iso.length < 10) return iso;
+              final parts = iso.split('-');
+              if (parts.length == 3) {
+                return '${parts[2]}/${parts[1]}/${parts[0]}';
+              }
+              return iso;
+            }
+
+            return Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(
+                  AppTranslations.tr('personal_profile'),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                ),
               ),
-            ),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Header: Ảnh đại diện và tên
+                    CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.blueAccent,
+                      child: Text(
+                        patient['name']!.split(' ').last.substring(0, 1),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      patient['name'] ?? 'Bệnh nhân',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    Text(
+                      'ID: BN-${patient['phone']?.substring(patient['phone'].length > 4 ? patient['phone'].length - 4 : 0) ?? "0000"}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
 
-            _buildInfoCard([
-              _buildRowInfo(Icons.monitor_weight, 'Cân nặng', '70 kg'),
-              _buildRowInfo(Icons.height, 'Chiều cao', '175 cm'),
-              _buildRowInfo(Icons.warning_amber, 'Dị ứng', 'Tôm, Cua', isLast: true),
-            ]),
-            
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+                    const SizedBox(height: 20),
+
+                    // Khối thông tin sinh hiệu
+                    _buildInfoCard(context, [
+                      _buildRowInfo(
+                        context,
+                        Icons.cake,
+                        AppTranslations.tr('dob_label'),
+                        formatDate(patient['dob'] ?? ''),
+                      ),
+                      _buildRowInfo(
+                        context,
+                        Icons.wc,
+                        AppTranslations.tr('gender_label'),
+                        patient['gender'] ?? 'Khác',
+                      ),
+                      _buildRowInfo(
+                        context,
+                        Icons.bloodtype,
+                        AppTranslations.tr('blood_group_label'),
+                        patient['bloodType'] ?? 'O+',
+                        isLast: true,
+                      ),
+                    ]),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          AppTranslations.tr('health_indicators') ??
+                              'Chỉ số sức khỏe',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    _buildInfoCard(context, [
+                      _buildRowInfo(
+                        context,
+                        Icons.monitor_weight,
+                        AppTranslations.tr('weight_label') ?? 'Cân nặng',
+                        patient['weight'] ?? '70 kg',
+                      ),
+                      _buildRowInfo(
+                        context,
+                        Icons.height,
+                        AppTranslations.tr('height_label') ?? 'Chiều cao',
+                        patient['height'] ?? '175 cm',
+                      ),
+                      _buildRowInfo(
+                        context,
+                        Icons.warning_amber,
+                        AppTranslations.tr('allergies_label') ?? 'Dị ứng',
+                        patient['allergies'] ?? 'Không',
+                        isLast: true,
+                      ),
+                    ]),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  Widget _buildInfoCard(List<Widget> children) {
+  Widget _buildInfoCard(BuildContext context, List<Widget> children) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E2022) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+          ),
+        ],
       ),
       child: Column(children: children),
     );
   }
 
-  Widget _buildRowInfo(IconData icon, String label, String value, {bool isLast = false}) {
+  Widget _buildRowInfo(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value, {
+    bool isLast = false,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         Padding(
@@ -80,13 +182,24 @@ class ProfilePage extends StatelessWidget {
             children: [
               Icon(icon, color: Colors.blue, size: 22),
               const SizedBox(width: 15),
-              Text(label, style: const TextStyle(color: Colors.black87)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : Colors.black87,
+                ),
+              ),
               const Spacer(),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
             ],
           ),
         ),
-        if (!isLast) const Divider(height: 1, indent: 50),
+        if (!isLast) const Divider(height: 1, indent: 50, color: Colors.grey),
       ],
     );
   }

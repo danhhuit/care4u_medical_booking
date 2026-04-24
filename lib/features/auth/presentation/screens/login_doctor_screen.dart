@@ -44,7 +44,7 @@ class LoginDoctorScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: AppSpacing.md),
                       Center(
-                        child: Image.asset('assests/images/logo.png', height: 120),
+                        child: Image.asset('assests/images/logo_transparent.png', height: 120),
                       ),
                       const SizedBox(height: AppSpacing.huge),
                       Text(

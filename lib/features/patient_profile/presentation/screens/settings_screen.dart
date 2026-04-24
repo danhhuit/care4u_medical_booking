@@ -4,6 +4,7 @@ import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'user_guide_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -132,31 +133,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showFeedbackDialog() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(AppTranslations.tr('share_feedback'), style: AppTextStyles.heading2),
-            const SizedBox(height: 16),
-            const TextField(maxLines: 3),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,13 +169,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (mounted) setState(() {});
               }
             ),
-            _buildSettingItem(Icons.menu_book_outlined, AppTranslations.tr('user_guide'), () {}),
+            _buildSettingItem(Icons.menu_book_outlined, AppTranslations.tr('user_guide'), () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const UserGuideScreen()));
+            }),
           ]),
-          const SizedBox(height: 20),
-          _buildGroup(AppTranslations.tr('reviews_feedback'), [
-            _buildSettingItem(Icons.star_rate_outlined, AppTranslations.tr('rate_doctor'), () => Navigator.pushNamed(context, RouteNames.reviewDoctor)),
-            _buildSettingItem(Icons.feedback_outlined, AppTranslations.tr('share_feedback'), _showFeedbackDialog),
-          ]),
+
           const SizedBox(height: 20),
           _buildGroup(AppTranslations.tr('security_header'), [
             _buildSettingItem(Icons.lock_outline, AppTranslations.tr('change_password'), _showChangePasswordDialog),

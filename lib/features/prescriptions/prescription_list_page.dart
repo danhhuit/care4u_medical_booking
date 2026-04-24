@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'prescription_detail_page.dart';
 import 'revisit_schedule_page.dart';
 
@@ -7,33 +9,74 @@ class PrescriptionListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: true,
-        title: const Text('Đơn thuốc của tôi', 
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return _buildPrescriptionCard(context);
-        },
-      ),
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final cardColor = isDark ? const Color(0xFF1E2022) : Colors.white;
+            final textColor = isDark ? Colors.white : Colors.black;
+
+            return Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                elevation: 0.5,
+                centerTitle: true,
+                title: Text(
+                  AppTranslations.tr('prescriptions'),
+                  style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+              ),
+              body: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return _buildPrescriptionCard(
+                    context,
+                    title: index == 0 ? AppTranslations.tr('prescription_stomach') : AppTranslations.tr('prescription_throat'),
+                    doctor: index == 0 ? 'BS. Lê Văn B' : 'BS. Phạm Thị Dung',
+                    date: index == 0 ? '25/03/2026' : '10/04/2026',
+                    status: index == 0 ? AppTranslations.tr('active_status') : AppTranslations.tr('done_status'),
+                    isDark: isDark,
+                    cardColor: cardColor,
+                    textColor: textColor,
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  Widget _buildPrescriptionCard(BuildContext context) {
+  Widget _buildPrescriptionCard(
+    BuildContext context, {
+    required String title,
+    required String doctor,
+    required String date,
+    required String status,
+    required bool isDark,
+    required Color cardColor,
+    required Color textColor,
+  }) {
+    final statusColor = status == AppTranslations.tr('active_status') ? Colors.green : Colors.grey;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+          )
+        ],
       ),
       child: Column(
         children: [
@@ -41,27 +84,30 @@ class PrescriptionListPage extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: const Icon(Icons.medication_liquid, color: Colors.blue),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Đơn thuốc điều trị dạ dày', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('Bác sĩ: Lê Văn B', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
+                    Text('${AppTranslations.tr('doctor_label')}: $doctor', style: const TextStyle(color: Colors.grey, fontSize: 13)),
                   ],
                 ),
               ),
-              const Text('Đang dùng', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
+              Text(status, style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12)),
             ],
           ),
-          const Divider(height: 24),
+          const Divider(height: 24, color: Colors.grey),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Ngày kê: 25/03/2026', style: TextStyle(color: Colors.blueGrey, fontSize: 13)),
+              Text('${AppTranslations.tr('date_label') ?? "Ngày kê"}: $date', style: const TextStyle(color: Colors.blueGrey, fontSize: 13)),
               Row(
                 children: [
                   OutlinedButton(
@@ -77,7 +123,7 @@ class PrescriptionListPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Tái khám'),
+                    child: Text(AppTranslations.tr('revisit_schedule')),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -94,7 +140,7 @@ class PrescriptionListPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Chi tiết'),
+                    child: Text(AppTranslations.tr('see_all') ?? 'Chi tiết'),
                   ),
                 ],
               ),

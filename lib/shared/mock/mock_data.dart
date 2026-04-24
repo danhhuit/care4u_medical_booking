@@ -110,23 +110,153 @@ class MockData {
 
   // ─── Reviews ─────────────────────────────────────────────────────────────────
   static List<Map<String, dynamic>> reviews = [
+    // ─ BS. Nguyễn Văn An (doctorId: '1') ─
     {
-      'id': 'r1',
-      'doctorId': '1',
-      'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Nguyễn Văn Hùng',
-      'rating': 5,
-      'comment': 'Bác sĩ rất tận tâm, giải thích rõ ràng từng bước điều trị.',
-      'date': '2026-03-20',
+      'id': 'r1', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Trần Minh Quân', 'rating': 5,
+      'comment': 'Bác sĩ rất tận tâm, giải thích rõ ràng từng bước điều trị. Tôi rất yên tâm sau buổi khám.',
+      'date': '2026-04-18', 'time': '09:32',
     },
     {
-      'id': 'r2',
-      'doctorId': '2',
-      'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Lê Thị Mai',
-      'rating': 4,
-      'comment': 'Bác sĩ chuyên nghiệp, khám nhanh nhưng phòng chờ đông.',
-      'date': '2026-03-15',
+      'id': 'r2', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Lê Thị Hương', 'rating': 5,
+      'comment': 'Phòng khám sạch sẽ, bác sĩ nhiệt tình và chuyên nghiệp. Sẽ giới thiệu cho bạn bè.',
+      'date': '2026-04-10', 'time': '14:15',
+    },
+    {
+      'id': 'r3', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Phạm Văn Đức', 'rating': 4,
+      'comment': 'Bác sĩ khám kỹ, cho thuốc hợp lý. Thời gian chờ hơi dài nhưng chất lượng tốt.',
+      'date': '2026-04-05', 'time': '10:00',
+    },
+    {
+      'id': 'r4', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Nguyễn Thị Thu', 'rating': 5,
+      'comment': 'Rất hài lòng! Bác sĩ An đã giúp tôi phát hiện sớm vấn đề tim mạch. Cảm ơn bác sĩ rất nhiều.',
+      'date': '2026-03-28', 'time': '08:45',
+    },
+    {
+      'id': 'r5', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Đỗ Hoàng Nam', 'rating': 4,
+      'comment': 'Tư vấn rõ ràng, dễ hiểu. Bác sĩ lắng nghe bệnh nhân rất tốt.',
+      'date': '2026-03-20', 'time': '16:20',
+    },
+    {
+      'id': 'r6', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Vũ Thị Lan', 'rating': 5,
+      'comment': 'Kinh nghiệm 10 năm thực sự thấy rõ. Bác sĩ chẩn đoán chính xác và nhanh chóng.',
+      'date': '2026-03-15', 'time': '11:00',
+    },
+    // ─ BS. Trần Thị Bình (doctorId: '2') ─
+    {
+      'id': 'r7', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Hoàng Văn Minh', 'rating': 5,
+      'comment': 'Bác sĩ Bình rất nhẹ nhàng với trẻ em. Con tôi không còn sợ đi khám bệnh nữa!',
+      'date': '2026-04-20', 'time': '09:00',
+    },
+    {
+      'id': 'r8', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Nguyễn Lan Anh', 'rating': 5,
+      'comment': 'Con tôi 3 tuổi rất quấy nhưng bác sĩ kiên nhẫn và chăm sóc chu đáo. Rất hài lòng!',
+      'date': '2026-04-15', 'time': '14:30',
+    },
+    {
+      'id': 'r9', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Trần Thị Kim Oanh', 'rating': 4,
+      'comment': 'Phòng khám đông nhưng bác sĩ vẫn dành đủ thời gian cho từng bệnh nhân. Tốt!',
+      'date': '2026-04-08', 'time': '10:45',
+    },
+    {
+      'id': 'r10', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Lý Thành Đạt', 'rating': 5,
+      'comment': 'Bác sĩ giỏi chuyên môn, tư vấn dinh dưỡng cho trẻ rất hữu ích. Cảm ơn bác sĩ!',
+      'date': '2026-03-30', 'time': '08:00',
+    },
+    {
+      'id': 'r11', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Phạm Quốc Huy', 'rating': 4,
+      'comment': 'Bác sĩ chuyên nghiệp. Chẩn đoán chính xác bệnh của con tôi ngay lần đầu.',
+      'date': '2026-03-22', 'time': '15:00',
+    },
+    {
+      'id': 'r12', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Bùi Thị Thanh Nga', 'rating': 5,
+      'comment': 'Đội ngũ y tá hỗ trợ tốt, bác sĩ dặn dò kỹ trước khi ra về. Rất tin tưởng!',
+      'date': '2026-03-15', 'time': '11:30',
+    },
+    // ─ BS. Lê Trọng Chung (doctorId: '3') ─
+    {
+      'id': 'r13', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Ngô Thị Bích', 'rating': 5,
+      'comment': 'Bác sĩ Chung có chuyên môn cao về thần kinh, giải thích bệnh rất dễ hiểu.',
+      'date': '2026-04-19', 'time': '10:00',
+    },
+    {
+      'id': 'r14', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Đinh Quang Hải', 'rating': 4,
+      'comment': 'Bác sĩ khám cẩn thận, không vội vàng. Bệnh tôi tiến triển tốt sau khi uống thuốc theo toa.',
+      'date': '2026-04-12', 'time': '13:30',
+    },
+    {
+      'id': 'r15', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Trương Thị Hoa', 'rating': 4,
+      'comment': 'Tư vấn rõ về bệnh đau đầu mãn tính của tôi. Phác đồ điều trị hợp lý và hiệu quả.',
+      'date': '2026-04-05', 'time': '09:15',
+    },
+    {
+      'id': 'r16', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Võ Văn Khoa', 'rating': 5,
+      'comment': 'Bác sĩ rất tận tâm, theo dõi tiến trình điều trị chặt chẽ. Gia đình tôi rất biết ơn.',
+      'date': '2026-03-29', 'time': '16:00',
+    },
+    {
+      'id': 'r17', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Dương Thị Linh', 'rating': 3,
+      'comment': 'Bác sĩ giỏi nhưng thời gian chờ khá lâu. Mong cơ sở cải thiện thêm về hẹn lịch.',
+      'date': '2026-03-20', 'time': '11:45',
+    },
+    {
+      'id': 'r18', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Lê Đình Trường', 'rating': 5,
+      'comment': 'Sau 3 tháng điều trị theo hướng dẫn của bác sĩ, bệnh của tôi đã giảm hẳn!',
+      'date': '2026-03-10', 'time': '08:30',
+    },
+    // ─ BS. Phạm Thị Dung (doctorId: '4') ─
+    {
+      'id': 'r19', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Huỳnh Thị Tâm', 'rating': 5,
+      'comment': 'Bác sĩ Dung tư vấn chăm sóc da rất chi tiết và dễ thực hiện tại nhà. Rất cảm ơn!',
+      'date': '2026-04-21', 'time': '10:30',
+    },
+    {
+      'id': 'r20', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Trần Bảo Châu', 'rating': 5,
+      'comment': 'Phác đồ điều trị mụn của bác sĩ rất hiệu quả. Da tôi cải thiện rõ rệt sau 4 tuần.',
+      'date': '2026-04-14', 'time': '14:00',
+    },
+    {
+      'id': 'r21', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Nguyễn Khánh Linh', 'rating': 4,
+      'comment': 'Bác sĩ kiến thức sâu về da liễu. Khám rất kỹ, hỏi thăm tình trạng dị ứng trước khi kê thuốc.',
+      'date': '2026-04-07', 'time': '09:45',
+    },
+    {
+      'id': 'r22', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Phan Thị Mai', 'rating': 5,
+      'comment': 'Chữa được bệnh chàm mà tôi bị hơn 2 năm. Rất tin tưởng và sẽ tái khám ở đây.',
+      'date': '2026-03-31', 'time': '15:30',
+    },
+    {
+      'id': 'r23', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Cao Thành Nhân', 'rating': 4,
+      'comment': 'Bác sĩ tư vấn sản phẩm chăm sóc da phù hợp với loại da của tôi. Rất hữu ích.',
+      'date': '2026-03-24', 'time': '11:15',
+    },
+    {
+      'id': 'r24', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Lưu Thị Ánh', 'rating': 5,
+      'comment': 'Bác sĩ Dung rất thân thiện và chuyên nghiệp. Giải thích nguyên nhân bệnh rõ ràng, dễ hiểu.',
+      'date': '2026-03-16', 'time': '08:00',
     },
   ];
 
@@ -235,6 +365,13 @@ class MockData {
       final List<dynamic> decoded = json.decode(notificationsJson);
       notifications = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
     }
+
+    // Load reviews
+    final String? reviewsJson = prefs.getString('mock_reviews');
+    if (reviewsJson != null) {
+      final List<dynamic> decoded = json.decode(reviewsJson);
+      reviews = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
   }
 
   static Future<void> _saveAppointments() async {
@@ -263,6 +400,16 @@ class MockData {
   static void addNotification(Map<String, dynamic> notification) {
     notifications.insert(0, notification);
     _saveNotifications();
+  }
+
+  static Future<void> _saveReviews() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_reviews', json.encode(reviews));
+  }
+
+  static void addReview(Map<String, dynamic> review) {
+    reviews.insert(0, review);
+    _saveReviews();
   }
   
   static void markAllNotificationsRead() {

@@ -8,4 +8,4 @@ void main() async {
   await SettingsManager.init();
   await MockData.init();
   runApp(const Care4uApp());
-}
+}

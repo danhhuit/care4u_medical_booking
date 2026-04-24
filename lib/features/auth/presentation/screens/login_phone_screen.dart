@@ -37,7 +37,7 @@ class LoginPhoneScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: AppSpacing.huge),
-                      Image.asset('assests/images/logo.png', height: 120),
+                      Image.asset('assests/images/logo_transparent.png', height: 120),
                       const SizedBox(height: AppSpacing.huge),
                       Care4uTextField(hintText: AppTranslations.tr('login_email_hint')),
                       const SizedBox(height: AppSpacing.lg),

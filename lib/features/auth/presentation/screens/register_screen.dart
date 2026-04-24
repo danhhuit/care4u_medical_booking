@@ -42,7 +42,7 @@ class RegisterScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: AppSpacing.lg),
-                      Image.asset('assests/images/logo.png', height: 60),
+                      Image.asset('assests/images/logo_transparent.png', height: 60),
                       const SizedBox(height: AppSpacing.lg),
                       Text(AppTranslations.tr('register_title'),
                           style: AppTextStyles.heading2.copyWith(color: textColor)),
