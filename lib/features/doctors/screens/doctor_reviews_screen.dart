@@ -3,9 +3,17 @@ import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
-class DoctorReviewsScreen extends StatelessWidget {
+class DoctorReviewsScreen extends StatefulWidget {
   final Map<String, dynamic> doctorData;
   const DoctorReviewsScreen({super.key, required this.doctorData});
+
+  @override
+  State<DoctorReviewsScreen> createState() => _DoctorReviewsScreenState();
+}
+
+class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
+  int? selectedStar;
+  String selectedSort = 'newest';
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +27,25 @@ class DoctorReviewsScreen extends StatelessWidget {
                 (mode == ThemeMode.system &&
                     MediaQuery.of(context).platformBrightness == Brightness.dark);
 
-            final doctorId = doctorData['id']?.toString() ?? '';
-            final filteredReviews = MockData.reviews
+            final doctorId = widget.doctorData['id']?.toString() ?? '';
+            var filteredReviews = MockData.reviews
                 .where((r) => r['doctorId'] == doctorId)
                 .toList();
 
             final avgRating = filteredReviews.isEmpty
-                ? (doctorData['rating'] ?? 0.0)
+                ? (widget.doctorData['rating'] ?? 0.0)
                 : filteredReviews.map((r) => r['rating'] as int).reduce((a, b) => a + b) /
                     filteredReviews.length;
+
+            if (selectedStar != null) {
+              filteredReviews = filteredReviews.where((r) => (r['rating'] as int) == selectedStar).toList();
+            }
+
+            filteredReviews.sort((a, b) {
+              final dateA = DateTime.tryParse('${a['date']} ${a['time']}') ?? DateTime.now();
+              final dateB = DateTime.tryParse('${b['date']} ${b['time']}') ?? DateTime.now();
+              return selectedSort == 'newest' ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
+            });
 
             final cardColor = isDark ? const Color(0xFF1E2022) : Colors.white;
             final subTextColor = isDark ? Colors.white54 : Colors.grey[600]!;
@@ -49,7 +67,7 @@ class DoctorReviewsScreen extends StatelessWidget {
                           radius: 30,
                           backgroundColor: const Color(0xFF3CA796),
                           child: Text(
-                            (doctorData['name'] as String? ?? 'D')
+                            (widget.doctorData['name'] as String? ?? 'D')
                                 .split(' ')
                                 .last
                                 .substring(0, 1),
@@ -65,7 +83,7 @@ class DoctorReviewsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                doctorData['name'] ?? '',
+                                widget.doctorData['name'] ?? '',
                                 style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
@@ -83,7 +101,7 @@ class DoctorReviewsScreen extends StatelessWidget {
                                   )),
                                   const SizedBox(width: 6),
                                   Text(
-                                    '${avgRating.toStringAsFixed(1)} (${filteredReviews.length} ${AppTranslations.tr('reviews_count')})',
+                                    '${avgRating.toStringAsFixed(1)} (${MockData.reviews.where((r) => r['doctorId'] == doctorId).length} ${AppTranslations.tr('reviews_count')})',
                                     style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
@@ -93,6 +111,50 @@ class DoctorReviewsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1, thickness: 1),
+                  // ── Filters ──
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DropdownButton<String>(
+                          value: selectedSort,
+                          dropdownColor: cardColor,
+                          underline: const SizedBox(),
+                          icon: Icon(Icons.sort, color: subTextColor, size: 20),
+                          items: [
+                            DropdownMenuItem(value: 'newest', child: Text(AppTranslations.tr('sort_newest'), style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14))),
+                            DropdownMenuItem(value: 'oldest', child: Text(AppTranslations.tr('sort_oldest'), style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14))),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) setState(() => selectedSort = val);
+                          },
+                        ),
+                        DropdownButton<int?>(
+                          value: selectedStar,
+                          dropdownColor: cardColor,
+                          underline: const SizedBox(),
+                          icon: Icon(Icons.filter_list, color: subTextColor, size: 20),
+                          items: [
+                            DropdownMenuItem(value: null, child: Text(AppTranslations.tr('all_stars'), style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14))),
+                            ...List.generate(5, (index) => DropdownMenuItem(
+                              value: 5 - index,
+                              child: Row(
+                                children: [
+                                  Text('${5 - index} ', style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14)),
+                                  const Icon(Icons.star, color: Colors.amber, size: 16),
+                                ],
+                              ),
+                            )),
+                          ],
+                          onChanged: (val) {
+                            setState(() => selectedStar = val);
+                          },
                         ),
                       ],
                     ),

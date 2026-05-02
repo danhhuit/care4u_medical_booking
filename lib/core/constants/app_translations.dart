@@ -263,6 +263,12 @@ Care4U có quyền cập nhật điều khoản bất cứ lúc nào mà không 
       'bio_2': 'Bác sĩ Bình chuyên khoa Nhi, luôn tận tâm và yêu thương trẻ nhỏ.',
       'bio_3': 'Chuyên gia hàng đầu về các bệnh lý thần kinh và phẫu thuật thần kinh.',
       'bio_4': 'Bác sĩ Dung có kinh nghiệm phong phú điều trị các bệnh về da và thẩm mỹ da liễu.',
+
+      'filter_sort': 'Lọc & Sắp xếp',
+      'sort_newest': 'Mới nhất',
+      'sort_oldest': 'Cũ nhất',
+      'all_stars': 'Tất cả sao',
+      'star_rating': 'sao',
     },
 
     'en': {
@@ -523,6 +529,12 @@ Care4U reserves the right to update terms at any time without prior notice.''',
       'bio_2': 'Doctor Binh is a Pediatrician, always dedicated and loving towards children.',
       'bio_3': 'Leading expert in neurological diseases and neurosurgery.',
       'bio_4': 'Doctor Dung has extensive experience in treating skin diseases and dermatological aesthetics.',
+
+      'filter_sort': 'Filter & Sort',
+      'sort_newest': 'Newest',
+      'sort_oldest': 'Oldest',
+      'all_stars': 'All Stars',
+      'star_rating': 'stars',
     },
   };
 
