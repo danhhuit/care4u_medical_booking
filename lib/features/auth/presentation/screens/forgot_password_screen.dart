@@ -17,7 +17,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _accountController = TextEditingController();
 
-  void _handleContinue() {
+  void _handleContinue() async {
     final account = _accountController.text.trim();
 
     if (account.isEmpty) {
@@ -28,7 +28,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     // Check if account exists
-    bool exists = AppDatabase.instance.checkAccountExists(account);
+    bool exists = await AppDatabase.instance.checkAccountExists(account);
+
+    if (!mounted) return;
+
 
     if (!exists) {
       ScaffoldMessenger.of(context).showSnackBar(

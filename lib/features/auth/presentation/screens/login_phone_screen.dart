@@ -68,7 +68,9 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
         const SnackBar(content: Text('Đăng nhập thành công')),
       );
       
-      final user = AppDatabase.instance.getUserByAccount(account);
+      final user = await AppDatabase.instance.getUserByAccount(account);
+      if (!mounted) return;
+
       if (user != null) {
         if (user.isFirstLogin) {
           await AppDatabase.instance.markFirstLoginDone(account);
