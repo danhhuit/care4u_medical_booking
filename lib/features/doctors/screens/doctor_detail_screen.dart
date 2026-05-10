@@ -30,7 +30,7 @@ class DoctorDetailScreen extends StatelessWidget {
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.pop(context),
                 ),
-                backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.blue,
+                backgroundColor: isDark ? const Color(0xFF1E1E1E) : const Color(0xFF3CA796),
                 foregroundColor: Colors.white,
               ),
               body: SingleChildScrollView(
@@ -66,7 +66,7 @@ class DoctorDetailScreen extends StatelessWidget {
                                 doctorData['specialty'],
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.blue,
+                                  color: Color(0xFF3CA796),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -147,7 +147,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: const Color(0xFF3CA796),
                     ),
                     child: Text(
                       AppTranslations.tr('book_with_doctor'),
@@ -168,16 +168,16 @@ class DoctorDetailScreen extends StatelessWidget {
       width: 100,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.blue.withValues(alpha: 0.1),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF3CA796).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-          Icon(icon, color: Colors.blue, size: 28),
+          Icon(icon, color: const Color(0xFF3CA796), size: 28),
           const SizedBox(height: 8),
           Text(title, style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.grey)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)),
+          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF3CA796))),
         ],
       ),
     );
