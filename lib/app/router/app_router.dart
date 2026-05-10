@@ -19,7 +19,9 @@ import 'package:care4u_medical_booking/features/payments/presentation/screens/pa
 import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
 import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_doctor_screen.dart';
+import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_list_screen.dart';
 import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
+import 'package:care4u_medical_booking/features/prescriptions/prescription_list_page.dart';
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
@@ -138,6 +140,9 @@ class AppRouter {
       case RouteNames.medicalRecordDetail:
         return _buildRoute(settings, const HistoryPage());
 
+      case RouteNames.prescriptionList:
+        return _buildRoute(settings, const PrescriptionListPage());
+
       // ─── Notifications ──────────────────────────────────────────────────────
       case RouteNames.notificationList:
         return _buildRoute(settings, const NotificationListScreen());
@@ -189,10 +194,11 @@ class AppRouter {
             ReviewDoctorScreen(
               doctorId: args['doctorId'] as String?,
               doctorName: args['doctorName'] as String?,
+              isReadOnly: args['isReadOnly'] as bool? ?? false,
             ),
           );
         }
-        return _buildRoute(settings, const ReviewDoctorScreen());
+        return _buildRoute(settings, const ReviewListScreen());
 
       // ─── Health Center ───────────────────────────────────────────────────────
       case RouteNames.healthCenterMap:

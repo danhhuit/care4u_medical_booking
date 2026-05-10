@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/specialty_card.dart';
 import 'specialty_doctors_screen.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 
 class SpecialtiesScreen extends StatelessWidget {
   const SpecialtiesScreen({super.key});
@@ -14,56 +16,74 @@ class SpecialtiesScreen extends StatelessWidget {
     {'title': 'Tai Mũi Họng', 'icon': Icons.hearing, 'color': Colors.green},
     {'title': 'Tiêu hóa', 'icon': Icons.restaurant, 'color': Colors.brown},
   ];
+
+  String _getSpecialtyTranslationKey(String spec) {
+    if (spec == 'Tim mạch') return 'cardiology';
+    if (spec == 'Nhi khoa') return 'pediatrics';
+    if (spec == 'Thần kinh') return 'neurology';
+    if (spec == 'Da liễu') return 'dermatology';
+    if (spec == 'Nha khoa') return 'dentistry';
+    if (spec == 'Mắt') return 'ophthalmology';
+    if (spec == 'Tai Mũi Họng') return 'ent';
+    if (spec == 'Tiêu hóa') return 'gastroenterology';
+    return spec;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chuyên khoa'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Tìm bác sĩ theo chuyên khoa',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: GridView.builder(
-                physics: const BouncingScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.1,
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(AppTranslations.tr('specialties')),
+            centerTitle: true,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppTranslations.tr('specialty_search_title'),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                itemCount: _specialties.length,
-                itemBuilder: (context, index) {
-                  final spec = _specialties[index];
-                  return SpecialtyCard(
-                    title: spec['title'] as String,
-                    icon: spec['icon'] as IconData,
-                    color: spec['color'] as Color,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SpecialtyDoctorsScreen(
-                            specialty: spec['title'] as String,
-                          ),
-                        ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.1,
+                    ),
+                    itemCount: _specialties.length,
+                    itemBuilder: (context, index) {
+                      final spec = _specialties[index];
+                      return SpecialtyCard(
+                        title: AppTranslations.tr(_getSpecialtyTranslationKey(spec['title'] as String)),
+                        icon: spec['icon'] as IconData,
+                        color: spec['color'] as Color,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SpecialtyDoctorsScreen(
+                                specialty: spec['title'] as String,
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
