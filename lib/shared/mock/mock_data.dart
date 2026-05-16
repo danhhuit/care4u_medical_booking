@@ -358,7 +358,11 @@ class MockData {
     final String? reviewsJson = prefs.getString('mock_reviews');
     if (reviewsJson != null) {
       final List<dynamic> decoded = json.decode(reviewsJson);
-      reviews = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      final localReviews = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      // Bỏ qua SharedPreferences nếu nó có quá ít review (do phiên bản cũ)
+      if (localReviews.length >= reviews.length) {
+        reviews = localReviews;
+      }
     }
   }
 

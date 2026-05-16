@@ -42,8 +42,10 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
             }
 
             filteredReviews.sort((a, b) {
-              final dateA = DateTime.tryParse('${a['date']} ${a['time']}') ?? DateTime.now();
-              final dateB = DateTime.tryParse('${b['date']} ${b['time']}') ?? DateTime.now();
+              final strA = '${a['date'] ?? ''} ${a['time'] ?? '00:00'}'.trim();
+              final strB = '${b['date'] ?? ''} ${b['time'] ?? '00:00'}'.trim();
+              final dateA = DateTime.tryParse(strA) ?? DateTime.now();
+              final dateB = DateTime.tryParse(strB) ?? DateTime.now();
               return selectedSort == 'newest' ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
             });
 

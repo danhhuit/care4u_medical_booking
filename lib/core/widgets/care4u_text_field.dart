@@ -7,6 +7,8 @@ class Care4uTextField extends StatelessWidget {
   final bool isPassword;
   final Widget? prefix;
   final Widget? suffixIcon;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
 
   const Care4uTextField({
     Key? key,
@@ -14,6 +16,8 @@ class Care4uTextField extends StatelessWidget {
     this.isPassword = false,
     this.prefix,
     this.suffixIcon,
+    this.controller,
+    this.keyboardType,
   }) : super(key: key);
 
   @override
@@ -27,6 +31,8 @@ class Care4uTextField extends StatelessWidget {
         final textColor = isDark ? Colors.white : AppColors.textDark;
 
         return TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
           obscureText: isPassword,
           style: TextStyle(
             fontSize: 14,
