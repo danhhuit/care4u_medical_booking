@@ -77,7 +77,6 @@ class MockData {
       'type': 'reminder',
       'isRead': false,
       'time': '2026-04-01T08:00:00',
-      'appointmentId': 'a1',
     },
     {
       'id': 'n2',
@@ -87,7 +86,6 @@ class MockData {
       'type': 'confirmed',
       'isRead': false,
       'time': '2026-03-30T14:30:00',
-      'appointmentId': 'a2',
     },
     {
       'id': 'n3',
@@ -96,7 +94,6 @@ class MockData {
       'type': 'cancelled',
       'isRead': true,
       'time': '2026-03-29T10:00:00',
-      'appointmentId': 'a4',
     },
     {
       'id': 'n4',
@@ -288,15 +285,6 @@ class MockData {
       'time': '10:00',
       'status': 'completed',
       'hospital': 'BV 115',
-    },
-    {
-      'id': 'a4',
-      'doctorName': 'BS. Phạm Thị Dung',
-      'specialty': 'Da liễu',
-      'date': '2026-04-01',
-      'time': '14:30',
-      'status': 'cancelled',
-      'hospital': 'BV Da Liễu TP.HCM',
     },
   ];
 
