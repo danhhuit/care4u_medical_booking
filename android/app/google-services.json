@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836776250601",
+    "project_id": "care4u-medical-booking",
+    "storage_bucket": "care4u-medical-booking.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836776250601:android:2b174cf6dc338f65537478",
+        "android_client_info": {
+          "package_name": "com.example.care4u_medical_booking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPwvh75r3u3V6OGsdJGaJAmwOlSUxV1pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
