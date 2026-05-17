@@ -12,6 +12,22 @@ class _TopupScreenState extends State<TopupScreen> {
   int? selectedAmount;
   String selectedMethod = 'bank_transfer';
 
+  final TextEditingController _customAmountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _customAmountController.dispose();
+    super.dispose();
+  }
+
+  int get _finalAmount {
+    if (selectedAmount != null) return selectedAmount!;
+    final customVal = int.tryParse(_customAmountController.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    return customVal;
+  }
+
+  bool get _isValidAmount => _finalAmount >= 10000;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +53,34 @@ class _TopupScreenState extends State<TopupScreen> {
                 return ChoiceChip(
                   label: Text(_formatMoney(amount)),
                   selected: selected,
-                  onSelected: (_) => setState(() => selectedAmount = amount),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedAmount = amount;
+                      _customAmountController.clear();
+                    });
+                  },
                 );
               }).toList(),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _customAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Hoặc nhập số tiền khác (Tối thiểu 10.000đ)',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+              onChanged: (val) {
+                setState(() {
+                  selectedAmount = null; // Bỏ chọn chip nếu người dùng tự nhập
+                });
+              },
             ),
             const SizedBox(height: 28),
             Container(
@@ -75,7 +116,7 @@ class _TopupScreenState extends State<TopupScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: selectedAmount == null ? null : () {},
+                onPressed: _isValidAmount ? () {} : null,
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Text('Tiếp tục'),
