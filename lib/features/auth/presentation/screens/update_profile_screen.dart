@@ -4,8 +4,13 @@ import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
 
+import 'package:care4u_medical_booking/core/services/firestore_service.dart';
+import 'package:care4u_medical_booking/app/router/route_names.dart';
+
 class UpdateProfileScreen extends StatefulWidget {
-  const UpdateProfileScreen({Key? key}) : super(key: key);
+  final String account;
+  
+  const UpdateProfileScreen({Key? key, required this.account}) : super(key: key);
 
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
@@ -162,7 +167,39 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               const SizedBox(height: AppSpacing.xxxl),
               Care4uButton(
                 text: 'Cập nhật',
-                onPressed: () {},
+                onPressed: () async {
+                  final name = _nameController.text.trim();
+                  final dob = _dobController.text.trim();
+                  
+                  if (name.isEmpty || dob.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Vui lòng nhập đầy đủ họ tên và ngày sinh')),
+                    );
+                    return;
+                  }
+                  
+                  bool success = await FirestoreService.instance.saveUserProfile(
+                    widget.account,
+                    {
+                      'name': name,
+                      'dob': dob,
+                      'isMale': _isMale,
+                    }
+                  );
+                  
+                  if (success) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Cập nhật thông tin thành công')),
+                    );
+                    Navigator.pushReplacementNamed(context, RouteNames.home);
+                  } else {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Có lỗi xảy ra, vui lòng thử lại')),
+                    );
+                  }
+                },
               ),
             ],
           ),

@@ -21,9 +21,7 @@ class _Care4uAppState extends State<Care4uApp> {
   @override
   void initState() {
     super.initState();
-    _initialRoute = SettingsManager.isLoggedIn
-        ? RouteNames.home
-        : AppRouter.initialRoute;
+    _initialRoute = RouteNames.splash;
   }
 
   @override
