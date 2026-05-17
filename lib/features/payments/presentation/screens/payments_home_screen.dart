@@ -3,6 +3,7 @@ import '../../../../app/router/app_navigator.dart';
 import '../../../../app/router/route_names.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 
 class PaymentsHomeScreen extends StatefulWidget {
   final int walletBalance;
@@ -57,7 +58,7 @@ class _PaymentsHomeScreenState extends State<PaymentsHomeScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                       decoration: const BoxDecoration(
-                        color: Color(0xFF2F80ED),
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(28),
                           bottomRight: Radius.circular(28),
@@ -82,7 +83,7 @@ class _PaymentsHomeScreenState extends State<PaymentsHomeScreen> {
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF6A85F1), Color(0xFF7E57C2)],
+                                  colors: [Color(0xFF267D6F), Color(0xFF144D44)],
                                 ),
                                 borderRadius: BorderRadius.circular(22),
                                 boxShadow: const [
