@@ -15,25 +15,26 @@ class PaymentsHomeScreen extends StatefulWidget {
 
 class _PaymentsHomeScreenState extends State<PaymentsHomeScreen> {
   bool _isBalanceVisible = true;
+  bool _isHistoryVisible = true;
 
   final List<Map<String, dynamic>> _mockTransactions = [
     {
       'type': 'in',
-      'title': 'Nạp tiền từ Chuyển khoản',
+      'title_key': 'top_up_bank',
       'amount': 500000,
       'date': '17/05/2026',
       'time': '10:30',
     },
     {
       'type': 'out',
-      'title': 'Thanh toán dịch vụ Đặt lịch',
+      'title_key': 'pay_booking',
       'amount': 150000,
       'date': '16/05/2026',
       'time': '14:45',
     },
     {
       'type': 'in',
-      'title': 'Nạp tiền từ Ví MoMo',
+      'title_key': 'top_up_momo',
       'amount': 200000,
       'date': '15/05/2026',
       'time': '09:15',
@@ -152,23 +153,50 @@ class _PaymentsHomeScreenState extends State<PaymentsHomeScreen> {
                       ),
                     ),
                     Container(
-                      color: const Color(0xFFF2F4F7),
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       padding: const EdgeInsets.all(24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Lịch sử giao dịch',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppTranslations.tr('transaction_history'),
+                                style: TextStyle(
+                                  fontSize: 20, 
+                                  fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                ),
+                              ),
+                              TextButton.icon(
+                                onPressed: () {
+                                  setState(() {
+                                    _isHistoryVisible = !_isHistoryVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  _isHistoryVisible ? Icons.visibility_off : Icons.visibility,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  _isHistoryVisible 
+                                      ? AppTranslations.tr('hide_history') 
+                                      : AppTranslations.tr('show_history'),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 18),
-                          ..._mockTransactions.map((tx) => _TransactionTile(
-                            isIncome: tx['type'] == 'in',
-                            title: tx['title'],
-                            amount: tx['amount'],
-                            date: tx['date'],
-                            time: tx['time'],
-                          )).toList(),
+                          if (_isHistoryVisible) ...[
+                            const SizedBox(height: 18),
+                            ..._mockTransactions.map((tx) => _TransactionTile(
+                              isIncome: tx['type'] == 'in',
+                              title: AppTranslations.tr(tx['title_key']),
+                              amount: tx['amount'],
+                              date: tx['date'],
+                              time: tx['time'],
+                            )).toList(),
+                          ],
                         ],
                       ),
                     ),
@@ -181,14 +209,14 @@ class _PaymentsHomeScreenState extends State<PaymentsHomeScreen> {
       },
     );
   }
+}
 
-  static String _formatMoney(int value) {
-    final text = value.toString().replaceAllMapped(
-      RegExp(r'\B(?=(\d{3})+(?!\d))'),
-      (match) => '.',
-    );
-    return '${text}đ';
-  }
+String _formatMoney(int value) {
+  final text = value.toString().replaceAllMapped(
+    RegExp(r'\B(?=(\d{3})+(?!\d))'),
+    (match) => '.',
+  );
+  return '${text}đ';
 }
 
 class _TransactionTile extends StatelessWidget {
@@ -208,13 +236,19 @@ class _TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black45 : Colors.black12, 
+            blurRadius: 4
+          )
+        ],
       ),
       child: Row(
         children: [
@@ -234,14 +268,24 @@ class _TransactionTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                Text(
+                  title, 
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600, 
+                    fontSize: 16,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  )
+                ),
                 const SizedBox(height: 4),
-                Text('$time - $date', style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                Text(
+                  '$time - $date', 
+                  style: const TextStyle(color: Colors.grey, fontSize: 13)
+                ),
               ],
             ),
           ),
           Text(
-            '${isIncome ? '+' : '-'}${PaymentsHomeScreen._formatMoney(amount)}',
+            '${isIncome ? '+' : '-'}${_formatMoney(amount)}',
             style: TextStyle(
               color: isIncome ? Colors.green : Colors.red,
               fontWeight: FontWeight.bold,
