@@ -24,165 +24,198 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Scaffold(
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 200,
-                pinned: true,
-                automaticallyImplyLeading: false,
-                backgroundColor: isDark ? Colors.black : AppColors.primary,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: isDark 
-                          ? [const Color(0xFF121212), Colors.black]
-                          : [const Color(0xFF2BB5A0), const Color(0xFF1A7A6E)],
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final textColor = Theme.of(context).textTheme.bodyLarge?.color;
+            final headingStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor);
+            final bodyStyle = TextStyle(fontSize: 16, color: textColor, fontWeight: FontWeight.w500);
+            final captionStyle = const TextStyle(fontSize: 13, color: Colors.grey);
+
+            return Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 200,
+                    pinned: true,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: isDark ? Colors.black : AppColors.primary,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: isDark 
+                              ? [const Color(0xFF121212), Colors.black]
+                              : [const Color(0xFF2BB5A0), const Color(0xFF1A7A6E)],
+                          ),
+                        ),
+                        child: SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 16),
+                              CircleAvatar(
+                                radius: 44,
+                                backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+                                child: Text(
+                                  _patient['name']!.split(' ').last.substring(0, 1),
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark ? Colors.white : AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _patient['name']!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                _patient['email']!,
+                                style: const TextStyle(color: Colors.white70, fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    child: SafeArea(
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: _goEdit,
+                      ),
+                    ],
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 16),
-                          CircleAvatar(
-                            radius: 44,
-                            backgroundColor: isDark ? Colors.grey[900] : Colors.white,
-                            child: Text(
-                              _patient['name']!.split(' ').last.substring(0, 1),
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : AppColors.primary,
+                          Text(AppTranslations.tr('personal_info_header'), style: headingStyle),
+                          const SizedBox(height: 8),
+                          _infoCard(
+                            isDark,
+                            [
+                              _infoRow(Icons.phone, AppTranslations.tr('phone_label'), _patient['phone']!, bodyStyle, captionStyle),
+                              _divider(),
+                              _infoRow(Icons.cake, AppTranslations.tr('dob_label'), _formatDate(_patient['dob']!), bodyStyle, captionStyle),
+                              _divider(),
+                              _infoRow(Icons.person, AppTranslations.tr('gender_label'), _patient['gender']!, bodyStyle, captionStyle),
+                              _divider(),
+                              _infoRow(Icons.location_on, AppTranslations.tr('address_label'), _patient['address']!, bodyStyle, captionStyle),
+                              _divider(),
+                              _infoRow(Icons.water_drop, AppTranslations.tr('blood_group_label'), _patient['bloodType']!, bodyStyle, captionStyle),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Text(AppTranslations.tr('activity_header'), style: headingStyle),
+                          const SizedBox(height: 8),
+                          _actionCard(
+                            context,
+                            isDark,
+                            Icons.calendar_today,
+                            AppTranslations.tr('my_appointments'),
+                            AppTranslations.tr('manage_appointments'),
+                            () => Navigator.pushNamed(context, RouteNames.appointmentList),
+                            bodyStyle,
+                            captionStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          _actionCard(
+                            context,
+                            isDark,
+                            Icons.folder_open,
+                            AppTranslations.tr('medical_records'),
+                            AppTranslations.tr('medical_history_desc'),
+                            () => Navigator.pushNamed(context, RouteNames.medicalRecordList),
+                            bodyStyle,
+                            captionStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          _actionCard(
+                            context,
+                            isDark,
+                            Icons.medication,
+                            AppTranslations.tr('prescriptions'),
+                            AppTranslations.tr('prescriptions_desc'),
+                            () => Navigator.pushNamed(context, RouteNames.prescriptionList),
+                            bodyStyle,
+                            captionStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          _actionCard(
+                            context,
+                            isDark,
+                            Icons.star_rate,
+                            AppTranslations.tr('rate_doctor'),
+                            AppTranslations.tr('rate_doctor_desc'),
+                            () => Navigator.pushNamed(context, RouteNames.reviewDoctor),
+                            bodyStyle,
+                            captionStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          _actionCard(
+                            context,
+                            isDark,
+                            Icons.settings,
+                            AppTranslations.tr('settings'),
+                            AppTranslations.tr('settings_desc'),
+                            () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                            bodyStyle,
+                            captionStyle,
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                await SettingsManager.setLoggedIn(false);
+                                if (context.mounted) {
+                                  Navigator.pushReplacementNamed(context, RouteNames.login);
+                                }
+                              },
+                              icon: const Icon(Icons.logout, color: Colors.red),
+                              label: Text(AppTranslations.tr('logout'), style: const TextStyle(color: Colors.red)),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Colors.red),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _patient['name']!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            _patient['email']!,
-                            style: const TextStyle(color: Colors.white70, fontSize: 13),
-                          ),
+                          const SizedBox(height: 24),
                         ],
                       ),
                     ),
                   ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.white),
-                    onPressed: _goEdit,
-                  ),
                 ],
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(AppTranslations.tr('personal_info_header'), style: AppTextStyles.heading2),
-                      const SizedBox(height: 8),
-                      _infoCard([
-                        _infoRow(Icons.phone, AppTranslations.tr('phone_label'), _patient['phone']!),
-                        _divider(),
-                        _infoRow(Icons.cake, AppTranslations.tr('dob_label'), _formatDate(_patient['dob']!)),
-                        _divider(),
-                        _infoRow(Icons.person, AppTranslations.tr('gender_label'), _patient['gender']!),
-                        _divider(),
-                        _infoRow(Icons.location_on, AppTranslations.tr('address_label'), _patient['address']!),
-                        _divider(),
-                        _infoRow(Icons.water_drop, AppTranslations.tr('blood_group_label'), _patient['bloodType']!),
-                      ]),
-                      const SizedBox(height: 20),
-                      Text(AppTranslations.tr('activity_header'), style: AppTextStyles.heading2),
-                      const SizedBox(height: 8),
-                      _actionCard(
-                        context,
-                        Icons.calendar_today,
-                        AppTranslations.tr('my_appointments'),
-                        AppTranslations.tr('manage_appointments'),
-                        () => Navigator.pushNamed(context, RouteNames.appointmentList),
-                      ),
-                      const SizedBox(height: 8),
-                      _actionCard(
-                        context,
-                        Icons.folder_open,
-                        AppTranslations.tr('medical_records'),
-                        AppTranslations.tr('medical_history_desc'),
-                        () => Navigator.pushNamed(context, RouteNames.medicalRecordList),
-                      ),
-                      const SizedBox(height: 8),
-                      _actionCard(
-                        context,
-                        Icons.medication,
-                        AppTranslations.tr('prescriptions'),
-                        AppTranslations.tr('prescriptions_desc'),
-                        () => Navigator.pushNamed(context, RouteNames.prescriptionList),
-                      ),
-                      const SizedBox(height: 8),
-                      _actionCard(
-                        context,
-                        Icons.star_rate,
-                        AppTranslations.tr('rate_doctor'),
-                        AppTranslations.tr('rate_doctor_desc'),
-                        () => Navigator.pushNamed(context, RouteNames.reviewDoctor),
-                      ),
-                      const SizedBox(height: 8),
-                      _actionCard(
-                        context,
-                        Icons.settings,
-                        AppTranslations.tr('settings'),
-                        AppTranslations.tr('settings_desc'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            await SettingsManager.setLoggedIn(false);
-                            if (context.mounted) {
-                              Navigator.pushReplacementNamed(context, RouteNames.login);
-                            }
-                          },
-                          icon: const Icon(Icons.logout, color: Colors.red),
-                          label: Text(AppTranslations.tr('logout'), style: const TextStyle(color: Colors.red)),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.red),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
+      },
+    );
   }
 
-  Widget _infoCard(List<Widget> children) => Card(
+  Widget _infoCard(bool isDark, List<Widget> children) => Card(
         margin: EdgeInsets.zero,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         child: Column(children: children),
       );
 
-  Widget _infoRow(IconData icon, String label, String value) => Padding(
+  Widget _infoRow(IconData icon, String label, String value, TextStyle bodyStyle, TextStyle captionStyle) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
@@ -192,9 +225,9 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(label, style: AppTextStyles.captionLight),
+                   Text(label, style: captionStyle),
                   const SizedBox(height: 2),
-                  Text(value, style: AppTextStyles.bodyDark),
+                  Text(value, style: bodyStyle),
                 ],
               ),
             ),
@@ -204,8 +237,9 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
   Widget _divider() => const Divider(height: 1, indent: 48);
 
-  Widget _actionCard(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) => Card(
+  Widget _actionCard(BuildContext context, bool isDark, IconData icon, String title, String subtitle, VoidCallback onTap, TextStyle bodyStyle, TextStyle captionStyle) => Card(
         margin: EdgeInsets.zero,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
@@ -227,8 +261,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: AppTextStyles.bodyDark),
-                      Text(subtitle, style: AppTextStyles.captionLight),
+                      Text(title, style: bodyStyle),
+                      Text(subtitle, style: captionStyle),
                     ],
                   ),
                 ),

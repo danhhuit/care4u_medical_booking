@@ -269,6 +269,20 @@ Care4U có quyền cập nhật điều khoản bất cứ lúc nào mà không 
       'sort_oldest': 'Cũ nhất',
       'all_stars': 'Tất cả sao',
       'star_rating': 'sao',
+
+      // Payment & Transactions
+      'transaction_history': 'Lịch sử giao dịch',
+      'top_up_bank': 'Tiền vào (từ Ngân hàng)',
+      'pay_booking': 'Tiền ra (thanh toán đặt lịch)',
+      'top_up_momo': 'Tiền vào (từ MoMo)',
+      'choose_amount': 'Chọn số tiền',
+      'or_enter_amount': 'Hoặc nhập số tiền khác (Tối thiểu 10.000đ)',
+      'payment_method': 'Phương thức thanh toán',
+      'bank_transfer': 'Chuyển khoản ngân hàng',
+      'momo_wallet': 'Ví MoMo',
+      'continue': 'Tiếp tục',
+      'hide_history': 'Ẩn lịch sử',
+      'show_history': 'Hiện lịch sử',
     },
 
     'en': {
@@ -535,6 +549,20 @@ Care4U reserves the right to update terms at any time without prior notice.''',
       'sort_oldest': 'Oldest',
       'all_stars': 'All Stars',
       'star_rating': 'stars',
+
+      // Payment & Transactions
+      'transaction_history': 'Transaction History',
+      'top_up_bank': 'Cash-in (From Bank)',
+      'pay_booking': 'Cash-out (Booking Payment)',
+      'top_up_momo': 'Cash-in (From MoMo)',
+      'choose_amount': 'Choose amount',
+      'or_enter_amount': 'Or enter other amount (Min 10.000đ)',
+      'payment_method': 'Payment method',
+      'bank_transfer': 'Bank transfer',
+      'momo_wallet': 'MoMo wallet',
+      'continue': 'Continue',
+      'hide_history': 'Hide history',
+      'show_history': 'Show history',
     },
   };
 
