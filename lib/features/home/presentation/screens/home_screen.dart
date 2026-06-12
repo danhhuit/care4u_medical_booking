@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
-import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
-import 'package:care4u_medical_booking/features/store/presentation/screens/product_list_screen.dart';
-import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
-import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
-import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
-import 'package:care4u_medical_booking/features/chat/presentation/screens/chatbot_screen.dart';
-import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+import 'package:care4u_medical_booking/features/chat/presentation/screens/patient_chat_rooms_screen.dart';
+import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
+import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
+import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
+import 'package:care4u_medical_booking/features/store/presentation/screens/product_list_screen.dart';
+import 'package:care4u_medical_booking/features/store/presentation/screens/wallet_screen.dart';
+import 'package:care4u_medical_booking/shared/mock/mock_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,10 +23,53 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
+  final Care4UApiService _api = Care4UApiService();
+
   int _currentQuickActionPage = 0;
+
+  String _patientName = 'Người dùng';
 
   int get _unreadCount =>
       MockData.notifications.where((n) => n['isRead'] == false).length;
+
+  String get _shortName {
+    final name = _patientName.trim();
+    if (name.isEmpty) return 'Bạn';
+
+    final parts = name.split(RegExp(r'\s+'));
+    return parts.isNotEmpty ? parts.last : name;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentPatient();
+  }
+
+  Future<void> _loadCurrentPatient() async {
+    try {
+      final patientId = SettingsManager.currentPatientId;
+      final patient = await _api.getPatientById(patientId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _patientName = '${patient['fullName'] ?? 'Người dùng'}'.trim();
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _patientName = 'Người dùng';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,29 +77,32 @@ class _HomeScreenState extends State<HomeScreen> {
       valueListenable: SettingsManager.languageCode,
       builder: (context, lang, _) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final patient = MockData.currentPatient;
         final turquoiseBg = isDark ? Colors.black : const Color(0xFFA1E4D5);
 
         return Container(
           color: turquoiseBg,
           child: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(context, patient, isDark),
-                    const SizedBox(height: 24),
-                    _buildSearchBar(context, isDark),
-                    const SizedBox(height: 24),
-                    _buildQuickActionsSlider(context, isDark),
-                    const SizedBox(height: 24),
-                    _buildHealthProducts(context, isDark),
-                    const SizedBox(height: 24),
-                    _buildFeaturedServices(isDark),
-                    const SizedBox(height: 24),
-                  ],
+            child: RefreshIndicator(
+              onRefresh: _loadCurrentPatient,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(context, isDark),
+                      const SizedBox(height: 24),
+                      _buildSearchBar(context, isDark),
+                      const SizedBox(height: 24),
+                      _buildQuickActionsSlider(context, isDark),
+                      const SizedBox(height: 24),
+                      _buildHealthProducts(context, isDark),
+                      const SizedBox(height: 24),
+                      _buildFeaturedServices(isDark),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -63,11 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    Map<String, dynamic> patient,
-    bool isDark,
-  ) {
+  Widget _buildHeader(BuildContext context, bool isDark) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -79,7 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.menu,
                   color: isDark ? Colors.white : Colors.black87,
                 ),
-                onPressed: () => Scaffold.of(context).openDrawer(),
+                onPressed: () {
+                  _loadCurrentPatient();
+                  Scaffold.of(context).openDrawer();
+                },
               ),
             ),
             Column(
@@ -93,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Text(
-                  patient['name']!.split(' ').last,
+                  _shortName,
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black87,
                     fontSize: 20,
@@ -106,6 +154,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Row(
           children: [
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WalletScreen()),
+              ),
+              child: _iconBtn(Icons.account_balance_wallet, isDark),
+            ),
+            const SizedBox(width: 12),
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
@@ -146,7 +202,9 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ChatBotScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const PatientChatRoomsScreen(),
+                ),
               ),
               child: _iconBtn(Icons.chat_bubble_outline, isDark),
             ),
@@ -257,11 +315,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _actionItem(
-                      Icons.folder_special,
-                      AppTranslations.tr('vaccine_record'),
+                      Icons.calendar_today_outlined,
+                      AppTranslations.tr('nav_appointments'),
                       const Color(0xFF5C6BC0),
                       const Color(0xFFE2E9FE),
-                      () {},
+                      () => Navigator.pushNamed(
+                        context,
+                        RouteNames.appointmentList,
+                      ),
                       isDark,
                     ),
                     _actionItem(
@@ -280,10 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       AppTranslations.tr('book_now'),
                       const Color(0xFF5C6BC0),
                       const Color(0xFFE2E9FE),
-                      () => Navigator.pushNamed(
-                        context,
-                        RouteNames.appointmentList,
-                      ),
+                      () => Navigator.pushNamed(context, RouteNames.mapBooking),
                       isDark,
                     ),
                   ],
@@ -304,7 +362,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 8,
+                  ),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     width: _currentQuickActionPage == index ? 20 : 8,
@@ -476,73 +537,112 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedServices(bool isDark) {
+    final hotProducts = MockData.products
+        .where((p) => p['isHot'] == true)
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          AppTranslations.tr('featured_services'),
-          style: AppTextStyles.heading2,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Sản phẩm nổi bật', style: AppTextStyles.heading2),
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProductListScreen()),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    AppTranslations.tr('see_all'),
+                    style: const TextStyle(color: Colors.blue, fontSize: 13),
+                  ),
+                  const Icon(Icons.arrow_forward, color: Colors.blue, size: 16),
+                ],
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 150,
-          child: ListView(
+          height: 160,
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            children: [
-              _serviceItem(
-                AppTranslations.tr('home_care'),
-                'assests/images/bacsi_1.jpg',
-                isDark,
-              ),
-              const SizedBox(width: 16),
-              _serviceItem(
-                AppTranslations.tr('testing'),
-                'assests/images/default_doctor.jpg',
-                isDark,
-              ),
-              const SizedBox(width: 16),
-              _serviceItem(
-                AppTranslations.tr('psychological_counseling'),
-                'assests/images/logo.png',
-                isDark,
-              ),
-            ],
+            itemCount: hotProducts.length,
+            itemBuilder: (context, index) {
+              final product = hotProducts[index];
+
+              return Container(
+                width: 140,
+                margin: const EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF2C2C2C)
+                              : Colors.grey[100],
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.medication,
+                          size: 50,
+                          color: isDark ? Colors.grey[600] : Colors.grey,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${product['name'] ?? ''}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${(product['price'] as int).toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')} đ',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ],
-    );
-  }
-
-  Widget _serviceItem(String title, String imagePath, bool isDark) {
-    return Container(
-      width: 140,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Expanded(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Container(color: Colors.grey.shade300),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

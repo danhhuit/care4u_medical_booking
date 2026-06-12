@@ -26,6 +26,7 @@ class RouteNames {
   static const String appointmentDetail = '/appointment-detail';
   static const String appointmentBooking = '/appointment-booking';
   static const String appointmentSuccess = '/appointment-success';
+  static const String mapBooking = '/map-booking';
 
   // Medical records
   static const String medicalRecordList = '/medical-record-list';

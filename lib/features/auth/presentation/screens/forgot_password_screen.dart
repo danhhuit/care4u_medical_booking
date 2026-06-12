@@ -1,14 +1,14 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
+import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
-import 'package:care4u_medical_booking/core/services/firebase_auth_service.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/otp_verification_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({Key? key}) : super(key: key);
+  const ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -16,9 +16,28 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _accountController = TextEditingController();
+  final Care4UApiService _api = Care4UApiService();
 
-  void _handleContinue() async {
-    final account = _accountController.text.trim();
+  bool _isLoading = false;
+
+  String _normalizeAccount(String value) {
+    var account = value.trim().replaceAll(' ', '').replaceAll('-', '');
+
+    if (account.startsWith('+84')) {
+      account = '0${account.substring(3)}';
+    }
+
+    if (account.startsWith('84') && account.length == 11) {
+      account = '0${account.substring(2)}';
+    }
+
+    return account;
+  }
+
+  Future<void> _sendOtp() async {
+    if (_isLoading) return;
+
+    final account = _normalizeAccount(_accountController.text);
 
     if (account.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -27,59 +46,49 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    // Check if account exists
-    bool exists = await FirebaseAuthService.instance.checkAccountExists(account);
-
-    if (!mounted) return;
-
-
-    if (!exists) {
+    if (!account.contains('@') && !RegExp(r'^\d{10}$').hasMatch(account)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tài khoản không tồn tại trên hệ thống')),
+        const SnackBar(content: Text('Email hoặc số điện thoại không hợp lệ')),
       );
       return;
     }
 
-    bool isEmail = account.contains('@');
-    if (isEmail) {
+    setState(() => _isLoading = true);
+
+    try {
+      final result = await _api.sendForgotPasswordOtp(account: account);
+
+      final devOtp = '${result['devOtp'] ?? ''}'.trim();
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tính năng cấp lại mật khẩu hiện chỉ hỗ trợ qua Số điện thoại')),
-      );
-      return;
-    }
-
-    // Hiển thị vòng xoay tải
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    // Gọi API gửi SMS
-    await FirebaseAuthService.instance.verifyPhoneNumber(
-      phone: account,
-      codeSent: (String verificationId, int? resendToken) {
-        // Tắt vòng xoay tải
-        Navigator.pop(context);
-        
-        // Chuyển sang màn hình xác thực OTP và truyền verificationId sang
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OtpVerificationScreen(
-              account: account,
-              verificationId: verificationId, // Sửa expectedOtp thành verificationId
-            ),
+        SnackBar(
+          content: Text(
+            devOtp.isNotEmpty ? 'Mã OTP demo: $devOtp' : 'Mã OTP đã được gửi',
           ),
-        );
-      },
-      verificationFailed: (e) {
-        Navigator.pop(context); // Tắt loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi gửi SMS: ${e.message}')),
-        );
-      },
-    );
+          duration: const Duration(seconds: 4),
+        ),
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              OtpVerificationScreen(account: account, devOtp: devOtp),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gửi OTP thất bại: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -94,6 +103,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Quên mật khẩu'),
+        centerTitle: true,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -103,21 +113,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: AppSpacing.xxxl),
+              const SizedBox(height: AppSpacing.xl),
               const Text(
-                'Nhập số điện thoại hoặc email đã đăng ký để nhận mã xác thực (OTP).',
-                style: TextStyle(fontSize: 16, color: Colors.black87),
+                'Nhập số điện thoại hoặc email đã đăng ký để nhận mã xác thực OTP.',
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppColors.textDark,
+                  height: 1.5,
+                ),
               ),
-              const SizedBox(height: AppSpacing.xxxl),
+              const SizedBox(height: AppSpacing.xl),
               Care4uTextField(
                 controller: _accountController,
-                hintText: 'Nhập email hoặc số điện thoại',
+                hintText: 'Email hoặc số điện thoại',
+                keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: AppSpacing.xxxl),
+              const SizedBox(height: AppSpacing.xl),
               Care4uButton(
-                text: 'Nhận mã OTP',
-                onPressed: _handleContinue,
+                text: _isLoading ? 'Đang gửi...' : 'Nhận mã OTP',
+                onPressed: _sendOtp,
               ),
             ],
           ),

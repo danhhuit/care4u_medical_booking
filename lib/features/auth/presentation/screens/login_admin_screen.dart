@@ -10,7 +10,7 @@ import 'package:care4u_medical_booking/core/services/firebase_auth_service.dart'
 import 'package:care4u_medical_booking/app/router/route_names.dart';
 
 class LoginAdminScreen extends StatefulWidget {
-  const LoginAdminScreen({Key? key}) : super(key: key);
+  const LoginAdminScreen({super.key});
 
   @override
   State<LoginAdminScreen> createState() => _LoginAdminScreenState();

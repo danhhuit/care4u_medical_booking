@@ -69,8 +69,6 @@ class Formatter {
 
   // ── Họ tên & chữ viết tắt ────────────────────────────────────────────────
 
-  /// Lấy chữ cái đầu của tên (phần cuối họ tên).
-  /// `"Nguyễn Thành Danh"` → `"D"`
   static String initials(String fullName, {int maxChars = 2}) {
     final parts = fullName.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return '?';

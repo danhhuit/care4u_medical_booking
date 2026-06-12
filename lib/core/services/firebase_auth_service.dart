@@ -68,7 +68,7 @@ class FirebaseAuthService {
     try {
       User? user = _auth.currentUser;
       if (user == null) {
-         return false;
+        return false;
       }
       await user.updatePassword(newPassword);
       return true;
@@ -92,8 +92,8 @@ class FirebaseAuthService {
       if (e.code == 'user-not-found') {
         return false;
       } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-        // Lưu ý: Nếu Firebase bật tính năng bảo mật Email Enumeration Protection, 
-        // nó sẽ luôn trả về 'invalid-credential'. Ta tạm mặc định là tài khoản tồn tại 
+        // Lưu ý: Nếu Firebase bật tính năng bảo mật Email Enumeration Protection,
+        // nó sẽ luôn trả về 'invalid-credential'. Ta tạm mặc định là tài khoản tồn tại
         // để cho phép luồng chạy tiếp.
         return true;
       }
@@ -110,8 +110,13 @@ class FirebaseAuthService {
     return await loginUser(account, password);
   }
 
-  Future<User?> loginDoctor(String phone, String password, String doctorId) async {
-    // Tương tự admin, loginDoctor cần check role
+  Future<User?> loginDoctor(
+    String phone,
+    String password,
+    String doctorId,
+  ) async {
+    // Tương tự loginUser, loginDoctor cần check role ở Firestore/Custom Claims
+    // Hiện tại dùng chung login của Firebase Auth
     return await loginUser(phone, password);
   }
 

@@ -10,7 +10,7 @@ import 'package:care4u_medical_booking/app/router/route_names.dart';
 class UpdateProfileScreen extends StatefulWidget {
   final String account;
   
-  const UpdateProfileScreen({Key? key, required this.account}) : super(key: key);
+  const UpdateProfileScreen({super.key, required this.account});
 
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();

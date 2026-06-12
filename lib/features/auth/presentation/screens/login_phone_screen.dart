@@ -1,21 +1,22 @@
+import 'package:care4u_medical_booking/core/services/care4u_fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+
+import 'package:care4u_medical_booking/features/admin/presentation/screens/admin_users_screen.dart';
+import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
-import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
+import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/forgot_password_screen.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/login_doctor_screen.dart';
-
-import 'package:care4u_medical_booking/core/services/firebase_auth_service.dart';
-import 'package:care4u_medical_booking/core/services/firestore_service.dart';
-import 'package:care4u_medical_booking/app/router/route_names.dart';
-import 'package:care4u_medical_booking/features/auth/presentation/screens/update_profile_screen.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
 
 class LoginPhoneScreen extends StatefulWidget {
-  const LoginPhoneScreen({Key? key}) : super(key: key);
+  const LoginPhoneScreen({super.key});
 
   @override
   State<LoginPhoneScreen> createState() => _LoginPhoneScreenState();
@@ -25,131 +26,115 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _handleLogin() async {
+  final Care4UApiService _api = Care4UApiService();
+
+  bool _isLoading = false;
+  bool _showPassword = false;
+
+  String _text(dynamic value) {
+    if (value == null || '$value' == 'null') return '';
+    return '$value'.trim();
+  }
+
+  bool _isGuid(String value) {
+    return RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(value);
+  }
+
+  Future<void> _handleLogin() async {
+    if (_isLoading) return;
+
     final account = _accountController.text.trim();
     final password = _passwordController.text.trim();
 
     if (account.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đủ thông tin')),
+        const SnackBar(content: Text('Vui lòng nhập tài khoản và mật khẩu')),
       );
       return;
     }
 
-    bool isEmail = account.contains('@');
-    bool isPhoneOnlyDigits = RegExp(r'^\d+$').hasMatch(account);
+    setState(() => _isLoading = true);
 
-    if (isPhoneOnlyDigits) {
-      if (account.length != 10) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Số điện thoại không hợp lệ')),
+    try {
+      final result = await _api.loginWithDatabase(
+        account: account,
+        password: password,
+      );
+
+      final role = _text(result['role']);
+      final userId = _text(
+        result['userId'] ?? result['user_id'] ?? result['id'],
+      );
+
+      debugPrint('LOGIN RESULT: $result');
+      debugPrint('LOGIN USER ID: $userId');
+
+      if (role == 'admin') {
+        await SettingsManager.setAdminSession(
+          account: account,
+          email: _text(result['email']),
+          phone: _text(result['phone']),
+          userId: _isGuid(userId) ? userId : null,
         );
+
+        if (!mounted) return;
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminUsersScreen()),
+          (route) => false,
+        );
+
         return;
       }
-    } else {
-      if (!isEmail) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Định dạng tài khoản không hợp lệ')),
-        );
-        return;
+
+      final patientId = int.tryParse('${result['patientId'] ?? ''}');
+
+      if (role != 'patient' || patientId == null) {
+        throw Exception('Tài khoản này không phải tài khoản bệnh nhân');
       }
-    }
 
-    if (!RegExp(r'^\d{6}$').hasMatch(password)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mật khẩu không hợp lệ')),
-      );
-      return;
-    }
-
-    final user = await FirebaseAuthService.instance.loginUser(account, password);
-    if (user != null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đăng nhập thành công')),
-      );
-      
-      final userProfile = await FirestoreService.instance.getUserProfile(account);
-      if (!mounted) return;
-
-      if (userProfile != null) {
-        bool isFirstLogin = userProfile['isFirstLogin'] ?? true;
-        String? name = userProfile['name'];
-
-        if (isFirstLogin) {
-          await FirestoreService.instance.markFirstLoginDone(account);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                title: const Text('Chào mừng!'),
-                content: const Text('Đây là lần đầu bạn đăng nhập. Bạn có muốn cập nhật thông tin cá nhân ngay bây giờ không?'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext); // Đóng dialog
-                      Navigator.pushReplacementNamed(context, RouteNames.home); // Bỏ qua
-                    },
-                    child: const Text('Bỏ qua', style: TextStyle(color: Colors.grey)),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext); // Đóng dialog
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => UpdateProfileScreen(account: account)),
-                      );
-                    },
-                    child: const Text('Cập nhật thông tin', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              );
-            },
-          );
-        } else if (name == null || name.isEmpty) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                title: const Text('Thông báo'),
-                content: const Text('Bạn chưa cập nhật thông tin người dùng, hãy cập nhật sớm nhất có thể.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      Navigator.pushReplacementNamed(context, RouteNames.home);
-                    },
-                    child: const Text('Bỏ qua', style: TextStyle(color: Colors.grey)),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => UpdateProfileScreen(account: account)),
-                      );
-                    },
-                    child: const Text('Cập nhật thông tin người dùng', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              );
-            },
-          );
-        } else {
-          Navigator.pushReplacementNamed(context, RouteNames.home);
-        }
-      } else {
-        Navigator.pushReplacementNamed(context, RouteNames.home);
+      if (!_isGuid(userId)) {
+        throw Exception('API đăng nhập chưa trả userId hợp lệ');
       }
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sai tài khoản hoặc mật khẩu')),
+
+      await SettingsManager.setPatientSession(
+        patientIdValue: patientId,
+        account: account,
+        email: _text(result['email']),
+        phone: _text(result['phone']),
+        fullName: _text(
+          result['fullName'] ?? result['name'] ?? result['email'],
+        ),
+        userId: userId,
       );
+
+      try {
+        await Care4UFcmService.instance.registerTokenToApi(userId: userId);
+        debugPrint('SAVE FCM TOKEN OK');
+      } catch (e) {
+        debugPrint('SAVE FCM TOKEN ERROR: $e');
+      }
+
+      if (!mounted) return;
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        RouteNames.home,
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Đăng nhập thất bại: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -173,53 +158,99 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
               const SizedBox(height: AppSpacing.huge),
               Image.asset('assests/images/logo.png', height: 120),
               const SizedBox(height: AppSpacing.huge),
+
               Care4uTextField(
                 controller: _accountController,
                 hintText: 'Nhập email hoặc số điện thoại',
               ),
+
               const SizedBox(height: AppSpacing.lg),
-              Care4uTextField(
+
+              TextField(
                 controller: _passwordController,
-                hintText: 'Mật khẩu',
-                isPassword: true,
+                obscureText: !_showPassword,
                 keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Mật khẩu',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _showPassword ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showPassword = !_showPassword;
+                      });
+                    },
+                  ),
+                ),
               ),
+
               const SizedBox(height: AppSpacing.sm),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordScreen(),
-                      ),
-                    );
-                  },
+                  onTap: _isLoading
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ForgotPasswordScreen(),
+                            ),
+                          );
+                        },
                   child: const Text(
                     'Quên mật khẩu?',
                     style: AppTextStyles.captionDark,
                   ),
                 ),
               ),
+
               const SizedBox(height: AppSpacing.xl),
+
               Care4uButton(
-                text: 'Đăng nhập',
+                text: _isLoading ? 'Đang đăng nhập...' : 'Đăng nhập',
                 onPressed: _handleLogin,
               ),
+
               const SizedBox(height: AppSpacing.lg),
+
               Care4uButton(
                 text: 'Đăng nhập với tư cách Bác sĩ',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginDoctorScreen(),
-                    ),
-                  );
-                },
+                onPressed: _isLoading
+                    ? () {}
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LoginDoctorScreen(),
+                          ),
+                        );
+                      },
               ),
+
               const SizedBox(height: AppSpacing.lg),
+
               RichText(
                 text: TextSpan(
                   text: 'Bạn chưa có tài khoản? ',
@@ -230,10 +261,12 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
                       style: AppTextStyles.captionDark,
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
+                          if (_isLoading) return;
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
+                              builder: (_) => const RegisterScreen(),
                             ),
                           );
                         },
@@ -241,6 +274,7 @@ class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: AppSpacing.xl),
             ],
           ),

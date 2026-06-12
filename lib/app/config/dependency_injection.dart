@@ -20,7 +20,7 @@ class DependencyInjection {
   static late AppDatabase appDatabase;
 
   static Future<void> init() async {
-    dioClient = const DioClient();
+    dioClient = DioClient();
     tokenStorage = TokenStorage();
     notificationService = NotificationService();
     locationService = LocationService();

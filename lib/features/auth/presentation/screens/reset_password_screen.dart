@@ -1,70 +1,129 @@
 import 'package:flutter/material.dart';
+
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
-import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
-import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
+import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
-import 'package:care4u_medical_booking/core/services/firebase_auth_service.dart';
+import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
+import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String account;
-  
-  const ResetPasswordScreen({Key? key, required this.account}) : super(key: key);
+  final String resetToken;
+
+  const ResetPasswordScreen({super.key, required this.resetToken});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final Care4UApiService _api = Care4UApiService();
+
+  bool _isLoading = false;
+  bool _showNewPassword = false;
+  bool _showConfirmPassword = false;
+  Widget _passwordField({
+    required TextEditingController controller,
+    required String hintText,
+    required bool isVisible,
+    required VoidCallback onToggle,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: !isVisible,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primary),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            isVisible ? Icons.visibility_off : Icons.visibility,
+            color: Colors.grey,
+          ),
+          onPressed: onToggle,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _resetPassword() async {
+    if (_isLoading) return;
+
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (!RegExp(r'^\d{6}$').hasMatch(password)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mật khẩu mới phải gồm 6 chữ số')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mật khẩu xác nhận không khớp')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await _api.resetPasswordWithToken(
+        resetToken: widget.resetToken,
+        newPassword: password,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Đổi mật khẩu thành công')));
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPhoneScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Đổi mật khẩu thất bại: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   void dispose() {
-    _newPasswordController.dispose();
+    _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  void _handleResetPassword() async {
-    final newPassword = _newPasswordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
-
-    if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin')),
-      );
-      return;
-    }
-
-    if (!RegExp(r'^\d{6}$').hasMatch(newPassword)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mật khẩu mới phải là 6 chữ số')),
-      );
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mật khẩu không khớp')),
-      );
-      return;
-    }
-
-    bool success = await FirebaseAuthService.instance.updatePassword(widget.account, newPassword);
-
-    if (!mounted) return;
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật mật khẩu thành công')),
-      );
-      Navigator.popUntil(context, (route) => route.isFirst); // Quay trở lại trang Login
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Có lỗi xảy ra')),
-      );
-    }
   }
 
   @override
@@ -72,50 +131,49 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: const Text('Đặt lại mật khẩu'),
+        centerTitle: true,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: AppSpacing.xl),
-              Image.asset(
-                'assests/images/logo.png',
-                height: 60,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              const Text('Đặt lại mật khẩu mới', style: AppTextStyles.heading2),
-              const SizedBox(height: AppSpacing.xs),
               const Text(
-                'Nhập mật khẩu mới để đăng nhập tài khoản',
-                style: AppTextStyles.bodyLight,
+                'Nhập mật khẩu mới gồm 6 chữ số.',
                 textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: AppColors.textDark),
               ),
-              const SizedBox(height: AppSpacing.xxxl),
-              Care4uTextField(
-                controller: _newPasswordController,
-                hintText: 'Nhập mật khẩu mới (bao gồm 6 kí tự số)',
-                isPassword: true,
-                keyboardType: TextInputType.number,
+              const SizedBox(height: AppSpacing.xl),
+              _passwordField(
+                controller: _passwordController,
+                hintText: 'Nhập mật khẩu mới',
+                isVisible: _showNewPassword,
+                onToggle: () {
+                  setState(() {
+                    _showNewPassword = !_showNewPassword;
+                  });
+                },
               ),
               const SizedBox(height: AppSpacing.lg),
-              Care4uTextField(
+              _passwordField(
                 controller: _confirmPasswordController,
-                hintText: 'Nhập lại mật khẩu',
-                isPassword: true,
-                keyboardType: TextInputType.number,
+                hintText: 'Nhập lại mật khẩu mới',
+                isVisible: _showConfirmPassword,
+                onToggle: () {
+                  setState(() {
+                    _showConfirmPassword = !_showConfirmPassword;
+                  });
+                },
               ),
               const SizedBox(height: AppSpacing.xl),
               Care4uButton(
-                text: 'Xác nhận',
-                onPressed: _handleResetPassword,
+                text: _isLoading ? 'Đang đổi...' : 'Đổi mật khẩu',
+                onPressed: _resetPassword,
               ),
             ],
           ),

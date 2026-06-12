@@ -1,7 +1,8 @@
 import 'package:care4u_medical_booking/app/router/route_args.dart';
-import 'package:care4u_medical_booking/features/admin/presentation/screens/admin_dashboard_screen.dart';
+import 'package:care4u_medical_booking/features/admin/presentation/screens/admin_users_screen.dart';
 import 'package:care4u_medical_booking/features/appointments/screens/appointments_screen.dart';
 import 'package:care4u_medical_booking/features/appointments/screens/book_appointment_screen.dart';
+import 'package:care4u_medical_booking/features/appointments/screens/map_booking_screen.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/register_screen.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/splash_screen.dart';
@@ -9,19 +10,22 @@ import 'package:care4u_medical_booking/features/doctors/screens/doctor_detail_sc
 import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
 import 'package:care4u_medical_booking/features/health_center/health_center_page.dart';
 import 'package:care4u_medical_booking/features/home/presentation/screens/main_screen.dart';
-import 'package:care4u_medical_booking/features/medical_records/history_page.dart';
+// import 'package:care4u_medical_booking/features/medical_records/screens/results_page.dart';
 import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/edit_profile_screen.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/patient_profile_screen.dart';
 import 'package:care4u_medical_booking/features/payments/domain/entities/transaction_entity.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/payment_qr_screen.dart';
-import 'package:care4u_medical_booking/features/payments/presentation/screens/payments_home_screen.dart';
+import 'package:care4u_medical_booking/features/store/presentation/screens/wallet_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
 import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_doctor_screen.dart';
-import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_list_screen.dart';
+// import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_list_screen.dart';
 import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
-import 'package:care4u_medical_booking/features/prescriptions/prescription_list_page.dart';
+// import 'package:care4u_medical_booking/features/prescriptions/screens/prescription_list_page.dart';
+import 'package:care4u_medical_booking/features/medical_records/screens/medical_record_list_screen.dart';
+import 'package:care4u_medical_booking/features/prescriptions/screens/prescription_list_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../../core/widgets/error_view.dart';
@@ -77,7 +81,8 @@ class AppRouter {
                 'imageUrl': 'assests/images/default_doctor.jpg',
                 'rating': 4.8,
                 'reviews': 120,
-                'bio': 'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch.',
+                'bio':
+                    'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch.',
                 'hospital': 'BV Chợ Rẫy',
                 'fee': 300000,
               },
@@ -127,21 +132,23 @@ class AppRouter {
           ),
         );
 
+      case RouteNames.mapBooking:
+        return _buildRoute(settings, const MapBookingScreen());
 
       case RouteNames.appointmentDetail:
       case RouteNames.appointmentSuccess:
-        return _buildRoute(
-          settings,
-          const AppointmentsScreen(),
-        );
+        return _buildRoute(settings, const AppointmentsScreen());
 
       // ─── Medical Records ────────────────────────────────────────────────────
       case RouteNames.medicalRecordList:
-      case RouteNames.medicalRecordDetail:
-        return _buildRoute(settings, const HistoryPage());
+        return MaterialPageRoute(
+          builder: (_) => const MedicalRecordListScreen(),
+        );
 
       case RouteNames.prescriptionList:
-        return _buildRoute(settings, const PrescriptionListPage());
+        return MaterialPageRoute(
+          builder: (_) => const PrescriptionListScreen(),
+        );
 
       // ─── Notifications ──────────────────────────────────────────────────────
       case RouteNames.notificationList:
@@ -149,10 +156,7 @@ class AppRouter {
 
       // ─── Payments ───────────────────────────────────────────────────────────
       case RouteNames.paymentsHome:
-        return _buildRoute(
-          settings,
-          const PaymentsHomeScreen(walletBalance: 1500000),
-        );
+        return _buildRoute(settings, const WalletScreen());
 
       case RouteNames.paymentTopup:
         return _buildRoute(settings, const TopupScreen());
@@ -188,17 +192,25 @@ class AppRouter {
       // ─── Reviews ────────────────────────────────────────────────────────────
       case RouteNames.reviewDoctor:
         final args = settings.arguments;
-        if (args is Map<String, dynamic>) {
+
+        if (args is Map) {
+          final rawDoctorId = args['doctorId'];
+          final doctorId = rawDoctorId is int
+              ? rawDoctorId
+              : int.tryParse('${rawDoctorId ?? ''}');
+
           return _buildRoute(
             settings,
             ReviewDoctorScreen(
-              doctorId: args['doctorId'] as String?,
+              doctorId: doctorId,
               doctorName: args['doctorName'] as String?,
+              appointmentId: args['appointmentId'] as String?,
               isReadOnly: args['isReadOnly'] as bool? ?? false,
             ),
           );
         }
-        return _buildRoute(settings, const ReviewListScreen());
+
+        return _buildRoute(settings, const ReviewDoctorScreen());
 
       // ─── Health Center ───────────────────────────────────────────────────────
       case RouteNames.healthCenterMap:
@@ -207,7 +219,7 @@ class AppRouter {
 
       // ─── Admin ──────────────────────────────────────────────────────────────
       case RouteNames.adminDashboard:
-        return _buildRoute(settings, const AdminDashboardScreen());
+        return _buildRoute(settings, const AdminUsersScreen());
 
       default:
         return _undefinedRoute(

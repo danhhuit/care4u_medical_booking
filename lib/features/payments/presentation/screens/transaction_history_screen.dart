@@ -14,7 +14,7 @@ class TransactionHistoryScreen extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.all(24),
         itemCount: transactions.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 18),
+        separatorBuilder: (_, _) => const SizedBox(height: 18),
         itemBuilder: (context, index) {
           final item = transactions[index];
           final isIncome = item.amount > 0;

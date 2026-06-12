@@ -1,230 +1,237 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:care4u_medical_booking/core/services/firebase_auth_service.dart';
 import 'dart:async';
-import 'dart:math';
+
+import 'package:flutter/material.dart';
+
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_spacing.dart';
-import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
+import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/core/widgets/care4u_button.dart';
+import 'package:care4u_medical_booking/core/widgets/care4u_text_field.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/reset_password_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String account;
-  final String verificationId; // Đổi tên biến cho rõ nghĩa
+  final String? devOtp;
 
-  const OtpVerificationScreen({
-    Key? key,
-    required this.account,
-    required this.verificationId,
-  }) : super(key: key);
+  const OtpVerificationScreen({super.key, required this.account, this.devOtp});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  late String _currentVerificationId;
-  bool _isExpired = false;
+  final TextEditingController _otpController = TextEditingController();
+  final Care4UApiService _api = Care4UApiService();
+
+  bool _isLoading = false;
+  bool _isResending = false;
+  int _secondsLeft = 30;
   Timer? _timer;
-  int _countdown = 60;
+  String? _latestDevOtp;
 
   @override
   void initState() {
     super.initState();
-    _currentVerificationId = widget.verificationId;
-    _startTimer();
+    _latestDevOtp = widget.devOtp;
+    _startCountdown();
   }
 
-  void _startTimer() {
+  void _startCountdown() {
     _timer?.cancel();
+
     setState(() {
-      _isExpired = false;
-      _countdown = 60;
+      _secondsLeft = 30;
     });
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_countdown > 0) {
+      if (!mounted) return;
+
+      if (_secondsLeft <= 1) {
+        timer.cancel();
         setState(() {
-          _countdown--;
+          _secondsLeft = 0;
         });
       } else {
         setState(() {
-          _isExpired = true;
+          _secondsLeft--;
         });
-        timer.cancel();
       }
     });
   }
 
-  void _verifyOtp() async {
-    String enteredOtp = _controllers.map((c) => c.text).join();
-    
-    // Check if fully entered
-    if (enteredOtp.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập đủ 6 chữ số')),
-      );
+  Future<void> _verifyOtp() async {
+    if (_isLoading) return;
+
+    final otp = _otpController.text.trim();
+
+    if (!RegExp(r'^\d{6}$').hasMatch(otp)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('OTP phải gồm 6 chữ số')));
       return;
     }
 
-    if (_isExpired) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mã OTP đã hết hạn, vui lòng yêu cầu gửi lại')),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
+    setState(() => _isLoading = true);
 
     try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _currentVerificationId,
-        smsCode: enteredOtp,
+      final result = await _api.verifyForgotPasswordOtp(
+        account: widget.account,
+        otp: otp,
       );
 
-      // Xác thực mã OTP với Firebase
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      
-      if (!mounted) return;
-      Navigator.pop(context); // Đóng loading
+      final resetToken = '${result['resetToken'] ?? ''}'.trim();
 
-      // OTP đúng, chuyển sang trang đổi mật khẩu
+      if (resetToken.isEmpty) {
+        throw Exception('Không nhận được reset token');
+      }
+
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ResetPasswordScreen(account: widget.account),
+          builder: (_) => ResetPasswordScreen(resetToken: resetToken),
         ),
       );
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context); // Đóng loading
+
+      final message = e.toString().contains('OTP hết hiệu lực')
+          ? 'OTP hết hiệu lực'
+          : 'Xác thực OTP thất bại: $e';
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+
+      if (message == 'OTP hết hiệu lực') {
+        setState(() {
+          _secondsLeft = 0;
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isResending || _secondsLeft > 0) return;
+
+    setState(() => _isResending = true);
+
+    try {
+      final result = await _api.sendForgotPasswordOtp(account: widget.account);
+
+      _latestDevOtp = '${result['devOtp'] ?? ''}'.trim();
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mã OTP không chính xác hoặc đã hết hạn!')),
+        SnackBar(
+          content: Text(
+            _latestDevOtp != null && _latestDevOtp!.isNotEmpty
+                ? 'Mã OTP mới demo: $_latestDevOtp'
+                : 'Đã gửi lại mã OTP',
+          ),
+          duration: const Duration(seconds: 4),
+        ),
       );
+
+      _otpController.clear();
+      _startCountdown();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gửi lại OTP thất bại: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isResending = false);
+      }
     }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    for (var c in _controllers) {
-      c.dispose();
-    }
-    for (var f in _focusNodes) {
-      f.dispose();
-    }
+    _otpController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final canResend = _secondsLeft == 0;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Xác thực OTP'),
+        centerTitle: true,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: AppSpacing.huge),
-              const Text(
-                'Chúng tôi đã gửi mã đến số điện thoại/email sau:',
-                style: AppTextStyles.bodyLight,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: AppSpacing.xl),
               Text(
-                widget.account,
-                style: AppTextStyles.heading2,
-              ),
-              const SizedBox(height: AppSpacing.xxxl),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  6,
-                  (index) => SizedBox(
-                    width: 45,
-                    height: 50,
-                    child: TextField(
-                      controller: _controllers[index],
-                      focusNode: _focusNodes[index],
-                      textAlign: TextAlign.center,
-                      textAlignVertical: TextAlignVertical.center,
-                      keyboardType: TextInputType.number,
-                      cursorColor: AppColors.primary,
-                      maxLength: 1,
-                      style: AppTextStyles.heading2,
-                      decoration: InputDecoration(
-                        counterText: '',
-                        contentPadding: EdgeInsets.zero,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: AppColors.borderLight, width: 1.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty && index < 5) {
-                          FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-                        } else if (value.isEmpty && index > 0) {
-                          FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-                        }
-                      },
-                    ),
-                  ),
+                'Nhập mã OTP 6 số đã gửi đến:\n${widget.account}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColors.textDark,
+                  height: 1.5,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxxl),
-              Care4uButton(
-                text: 'Xác nhận',
-                onPressed: _verifyOtp,
+              if (_latestDevOtp != null && _latestDevOtp!.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'OTP: $_latestDevOtp',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              const SizedBox(height: AppSpacing.xl),
+              Care4uTextField(
+                controller: _otpController,
+                hintText: 'Nhập OTP',
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                canResend
+                    ? 'OTP đã hết hiệu lực. Vui lòng gửi lại mã.'
+                    : 'OTP hết hiệu lực sau $_secondsLeft giây',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: canResend ? Colors.red : AppColors.textLight,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              const Text(
-                'Bạn chưa nhận được mã?',
-                style: AppTextStyles.heading2,
+              Care4uButton(
+                text: _isLoading ? 'Đang xác thực...' : 'Xác thực OTP',
+                onPressed: _verifyOtp,
               ),
-              const SizedBox(height: AppSpacing.sm),
-              RichText(
-                text: TextSpan(
-                  text: _isExpired ? 'Gửi lại mã' : 'Vui lòng chờ $_countdown giây để gửi lại',
-                  style: AppTextStyles.bodyLight.copyWith(
-                    color: _isExpired ? AppColors.primary : Colors.grey,
-                    fontWeight: _isExpired ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = () async {
-                    if (!_isExpired) return;
-                    
-                    // Vì dùng mã Test cố định của Firebase nên mã sẽ không thay đổi.
-                    // Việc gọi lại API verifyPhoneNumber là không cần thiết (trừ khi session quá 15 phút).
-                    // Ta chỉ cần reset lại giao diện và bộ đếm thời gian.
-                    setState(() {
-                      for (var c in _controllers) {
-                        c.clear();
-                      }
-                      FocusScope.of(context).requestFocus(_focusNodes[0]);
-                    });
-                    _startTimer();
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đã yêu cầu lại. Vui lòng nhập Mã Test mà bạn đã thiết lập trên Firebase Console!')),
-                    );
-                  },
+              const SizedBox(height: AppSpacing.md),
+              TextButton(
+                onPressed: canResend && !_isResending ? _resendOtp : null,
+                child: Text(
+                  _isResending
+                      ? 'Đang gửi lại...'
+                      : canResend
+                      ? 'Gửi lại mã'
+                      : 'Gửi lại mã sau $_secondsLeft giây',
                 ),
               ),
             ],

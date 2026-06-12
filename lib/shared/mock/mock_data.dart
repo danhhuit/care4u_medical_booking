@@ -57,6 +57,74 @@ class MockData {
     },
   ];
 
+  // ─── Products ─────────────────────────────────────────────────────────────
+  static const List<Map<String, dynamic>> products = [
+    {
+      'name': 'Lactacyd milky vỏ 500ml Milky',
+      'price': 190000,
+      'originalPrice': null,
+      'isHot': true,
+      'discount': null,
+      'category': 1,
+    },
+    {
+      'name': 'Sorbitol Salalende - Gói',
+      'price': 2200,
+      'originalPrice': null,
+      'isHot': true,
+      'discount': null,
+      'category': 1,
+    },
+    {
+      'name': 'Prospan 100ml Chai',
+      'price': 190000,
+      'originalPrice': null,
+      'isHot': true,
+      'discount': null,
+      'category': 2,
+    },
+    {
+      'name': 'Serum dưỡng ẩm da, kẽ...',
+      'price': 190000,
+      'originalPrice': null,
+      'isHot': true,
+      'discount': null,
+      'category': 3,
+    },
+    {
+      'name': 'Serum dưỡng ẩm da, kẽ...',
+      'price': 75000,
+      'originalPrice': 150000,
+      'isHot': false,
+      'discount': '50%',
+      'category': 2,
+    },
+    {
+      'name': 'Hạt huyết dưỡng não...',
+      'price': 75000,
+      'originalPrice': 150000,
+      'isHot': false,
+      'discount': '50%',
+      'category': 3,
+    },
+    {
+      'name': 'Sanlinin 0.1% - lọ',
+      'price': 190000,
+      'originalPrice': null,
+      'isHot': false,
+      'discount': null,
+      'category': 2,
+    },
+    {
+      'name': 'Refresh Tears 15 ml Hộp',
+      'price': 190000,
+      'originalPrice': null,
+      'isHot': false,
+      'discount': null,
+      'category': 3,
+    },
+  ];
+
   // ─── Specialties ─────────────────────────────────────────────────────────────
   static const List<Map<String, dynamic>> specialties = [
     {'id': 's1', 'name': 'Tim mạch', 'icon': 'favorite', 'doctorCount': 12},
@@ -112,151 +180,270 @@ class MockData {
   static List<Map<String, dynamic>> reviews = [
     // ─ BS. Nguyễn Văn An (doctorId: '1') ─
     {
-      'id': 'r1', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Trần Minh Quân', 'rating': 5,
-      'comment': 'Bác sĩ rất tận tâm, giải thích rõ ràng từng bước điều trị. Tôi rất yên tâm sau buổi khám.',
-      'date': '2026-04-18', 'time': '09:32',
+      'id': 'r1',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Trần Minh Quân',
+      'rating': 5,
+      'comment':
+          'Bác sĩ rất tận tâm, giải thích rõ ràng từng bước điều trị. Tôi rất yên tâm sau buổi khám.',
+      'date': '2026-04-18',
+      'time': '09:32',
     },
     {
-      'id': 'r2', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Lê Thị Hương', 'rating': 5,
-      'comment': 'Phòng khám sạch sẽ, bác sĩ nhiệt tình và chuyên nghiệp. Sẽ giới thiệu cho bạn bè.',
-      'date': '2026-04-10', 'time': '14:15',
+      'id': 'r2',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Lê Thị Hương',
+      'rating': 5,
+      'comment':
+          'Phòng khám sạch sẽ, bác sĩ nhiệt tình và chuyên nghiệp. Sẽ giới thiệu cho bạn bè.',
+      'date': '2026-04-10',
+      'time': '14:15',
     },
     {
-      'id': 'r3', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Phạm Văn Đức', 'rating': 4,
-      'comment': 'Bác sĩ khám kỹ, cho thuốc hợp lý. Thời gian chờ hơi dài nhưng chất lượng tốt.',
-      'date': '2026-04-05', 'time': '10:00',
+      'id': 'r3',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Phạm Văn Đức',
+      'rating': 4,
+      'comment':
+          'Bác sĩ khám kỹ, cho thuốc hợp lý. Thời gian chờ hơi dài nhưng chất lượng tốt.',
+      'date': '2026-04-05',
+      'time': '10:00',
     },
     {
-      'id': 'r4', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Nguyễn Thị Thu', 'rating': 5,
-      'comment': 'Rất hài lòng! Bác sĩ An đã giúp tôi phát hiện sớm vấn đề tim mạch. Cảm ơn bác sĩ rất nhiều.',
-      'date': '2026-03-28', 'time': '08:45',
+      'id': 'r4',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Nguyễn Thị Thu',
+      'rating': 5,
+      'comment':
+          'Rất hài lòng! Bác sĩ An đã giúp tôi phát hiện sớm vấn đề tim mạch. Cảm ơn bác sĩ rất nhiều.',
+      'date': '2026-03-28',
+      'time': '08:45',
     },
     {
-      'id': 'r5', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Đỗ Hoàng Nam', 'rating': 4,
+      'id': 'r5',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Đỗ Hoàng Nam',
+      'rating': 4,
       'comment': 'Tư vấn rõ ràng, dễ hiểu. Bác sĩ lắng nghe bệnh nhân rất tốt.',
-      'date': '2026-03-20', 'time': '16:20',
+      'date': '2026-03-20',
+      'time': '16:20',
     },
     {
-      'id': 'r6', 'doctorId': '1', 'doctorName': 'BS. Nguyễn Văn An',
-      'patientName': 'Vũ Thị Lan', 'rating': 5,
-      'comment': 'Kinh nghiệm 10 năm thực sự thấy rõ. Bác sĩ chẩn đoán chính xác và nhanh chóng.',
-      'date': '2026-03-15', 'time': '11:00',
+      'id': 'r6',
+      'doctorId': '1',
+      'doctorName': 'BS. Nguyễn Văn An',
+      'patientName': 'Vũ Thị Lan',
+      'rating': 5,
+      'comment':
+          'Kinh nghiệm 10 năm thực sự thấy rõ. Bác sĩ chẩn đoán chính xác và nhanh chóng.',
+      'date': '2026-03-15',
+      'time': '11:00',
     },
     // ─ BS. Trần Thị Bình (doctorId: '2') ─
     {
-      'id': 'r7', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Hoàng Văn Minh', 'rating': 5,
-      'comment': 'Bác sĩ Bình rất nhẹ nhàng với trẻ em. Con tôi không còn sợ đi khám bệnh nữa!',
-      'date': '2026-04-20', 'time': '09:00',
+      'id': 'r7',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Hoàng Văn Minh',
+      'rating': 5,
+      'comment':
+          'Bác sĩ Bình rất nhẹ nhàng với trẻ em. Con tôi không còn sợ đi khám bệnh nữa!',
+      'date': '2026-04-20',
+      'time': '09:00',
     },
     {
-      'id': 'r8', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Nguyễn Lan Anh', 'rating': 5,
-      'comment': 'Con tôi 3 tuổi rất quấy nhưng bác sĩ kiên nhẫn và chăm sóc chu đáo. Rất hài lòng!',
-      'date': '2026-04-15', 'time': '14:30',
+      'id': 'r8',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Nguyễn Lan Anh',
+      'rating': 5,
+      'comment':
+          'Con tôi 3 tuổi rất quấy nhưng bác sĩ kiên nhẫn và chăm sóc chu đáo. Rất hài lòng!',
+      'date': '2026-04-15',
+      'time': '14:30',
     },
     {
-      'id': 'r9', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Trần Thị Kim Oanh', 'rating': 4,
-      'comment': 'Phòng khám đông nhưng bác sĩ vẫn dành đủ thời gian cho từng bệnh nhân. Tốt!',
-      'date': '2026-04-08', 'time': '10:45',
+      'id': 'r9',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Trần Thị Kim Oanh',
+      'rating': 4,
+      'comment':
+          'Phòng khám đông nhưng bác sĩ vẫn dành đủ thời gian cho từng bệnh nhân. Tốt!',
+      'date': '2026-04-08',
+      'time': '10:45',
     },
     {
-      'id': 'r10', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Lý Thành Đạt', 'rating': 5,
-      'comment': 'Bác sĩ giỏi chuyên môn, tư vấn dinh dưỡng cho trẻ rất hữu ích. Cảm ơn bác sĩ!',
-      'date': '2026-03-30', 'time': '08:00',
+      'id': 'r10',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Lý Thành Đạt',
+      'rating': 5,
+      'comment':
+          'Bác sĩ giỏi chuyên môn, tư vấn dinh dưỡng cho trẻ rất hữu ích. Cảm ơn bác sĩ!',
+      'date': '2026-03-30',
+      'time': '08:00',
     },
     {
-      'id': 'r11', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Phạm Quốc Huy', 'rating': 4,
-      'comment': 'Bác sĩ chuyên nghiệp. Chẩn đoán chính xác bệnh của con tôi ngay lần đầu.',
-      'date': '2026-03-22', 'time': '15:00',
+      'id': 'r11',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Phạm Quốc Huy',
+      'rating': 4,
+      'comment':
+          'Bác sĩ chuyên nghiệp. Chẩn đoán chính xác bệnh của con tôi ngay lần đầu.',
+      'date': '2026-03-22',
+      'time': '15:00',
     },
     {
-      'id': 'r12', 'doctorId': '2', 'doctorName': 'BS. Trần Thị Bình',
-      'patientName': 'Bùi Thị Thanh Nga', 'rating': 5,
-      'comment': 'Đội ngũ y tá hỗ trợ tốt, bác sĩ dặn dò kỹ trước khi ra về. Rất tin tưởng!',
-      'date': '2026-03-15', 'time': '11:30',
+      'id': 'r12',
+      'doctorId': '2',
+      'doctorName': 'BS. Trần Thị Bình',
+      'patientName': 'Bùi Thị Thanh Nga',
+      'rating': 5,
+      'comment':
+          'Đội ngũ y tá hỗ trợ tốt, bác sĩ dặn dò kỹ trước khi ra về. Rất tin tưởng!',
+      'date': '2026-03-15',
+      'time': '11:30',
     },
     // ─ BS. Lê Trọng Chung (doctorId: '3') ─
     {
-      'id': 'r13', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Ngô Thị Bích', 'rating': 5,
-      'comment': 'Bác sĩ Chung có chuyên môn cao về thần kinh, giải thích bệnh rất dễ hiểu.',
-      'date': '2026-04-19', 'time': '10:00',
+      'id': 'r13',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Ngô Thị Bích',
+      'rating': 5,
+      'comment':
+          'Bác sĩ Chung có chuyên môn cao về thần kinh, giải thích bệnh rất dễ hiểu.',
+      'date': '2026-04-19',
+      'time': '10:00',
     },
     {
-      'id': 'r14', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Đinh Quang Hải', 'rating': 4,
-      'comment': 'Bác sĩ khám cẩn thận, không vội vàng. Bệnh tôi tiến triển tốt sau khi uống thuốc theo toa.',
-      'date': '2026-04-12', 'time': '13:30',
+      'id': 'r14',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Đinh Quang Hải',
+      'rating': 4,
+      'comment':
+          'Bác sĩ khám cẩn thận, không vội vàng. Bệnh tôi tiến triển tốt sau khi uống thuốc theo toa.',
+      'date': '2026-04-12',
+      'time': '13:30',
     },
     {
-      'id': 'r15', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Trương Thị Hoa', 'rating': 4,
-      'comment': 'Tư vấn rõ về bệnh đau đầu mãn tính của tôi. Phác đồ điều trị hợp lý và hiệu quả.',
-      'date': '2026-04-05', 'time': '09:15',
+      'id': 'r15',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Trương Thị Hoa',
+      'rating': 4,
+      'comment':
+          'Tư vấn rõ về bệnh đau đầu mãn tính của tôi. Phác đồ điều trị hợp lý và hiệu quả.',
+      'date': '2026-04-05',
+      'time': '09:15',
     },
     {
-      'id': 'r16', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Võ Văn Khoa', 'rating': 5,
-      'comment': 'Bác sĩ rất tận tâm, theo dõi tiến trình điều trị chặt chẽ. Gia đình tôi rất biết ơn.',
-      'date': '2026-03-29', 'time': '16:00',
+      'id': 'r16',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Võ Văn Khoa',
+      'rating': 5,
+      'comment':
+          'Bác sĩ rất tận tâm, theo dõi tiến trình điều trị chặt chẽ. Gia đình tôi rất biết ơn.',
+      'date': '2026-03-29',
+      'time': '16:00',
     },
     {
-      'id': 'r17', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Dương Thị Linh', 'rating': 3,
-      'comment': 'Bác sĩ giỏi nhưng thời gian chờ khá lâu. Mong cơ sở cải thiện thêm về hẹn lịch.',
-      'date': '2026-03-20', 'time': '11:45',
+      'id': 'r17',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Dương Thị Linh',
+      'rating': 3,
+      'comment':
+          'Bác sĩ giỏi nhưng thời gian chờ khá lâu. Mong cơ sở cải thiện thêm về hẹn lịch.',
+      'date': '2026-03-20',
+      'time': '11:45',
     },
     {
-      'id': 'r18', 'doctorId': '3', 'doctorName': 'BS. Lê Trọng Chung',
-      'patientName': 'Lê Đình Trường', 'rating': 5,
-      'comment': 'Sau 3 tháng điều trị theo hướng dẫn của bác sĩ, bệnh của tôi đã giảm hẳn!',
-      'date': '2026-03-10', 'time': '08:30',
+      'id': 'r18',
+      'doctorId': '3',
+      'doctorName': 'BS. Lê Trọng Chung',
+      'patientName': 'Lê Đình Trường',
+      'rating': 5,
+      'comment':
+          'Sau 3 tháng điều trị theo hướng dẫn của bác sĩ, bệnh của tôi đã giảm hẳn!',
+      'date': '2026-03-10',
+      'time': '08:30',
     },
     // ─ BS. Phạm Thị Dung (doctorId: '4') ─
     {
-      'id': 'r19', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Huỳnh Thị Tâm', 'rating': 5,
-      'comment': 'Bác sĩ Dung tư vấn chăm sóc da rất chi tiết và dễ thực hiện tại nhà. Rất cảm ơn!',
-      'date': '2026-04-21', 'time': '10:30',
+      'id': 'r19',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Huỳnh Thị Tâm',
+      'rating': 5,
+      'comment':
+          'Bác sĩ Dung tư vấn chăm sóc da rất chi tiết và dễ thực hiện tại nhà. Rất cảm ơn!',
+      'date': '2026-04-21',
+      'time': '10:30',
     },
     {
-      'id': 'r20', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Trần Bảo Châu', 'rating': 5,
-      'comment': 'Phác đồ điều trị mụn của bác sĩ rất hiệu quả. Da tôi cải thiện rõ rệt sau 4 tuần.',
-      'date': '2026-04-14', 'time': '14:00',
+      'id': 'r20',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Trần Bảo Châu',
+      'rating': 5,
+      'comment':
+          'Phác đồ điều trị mụn của bác sĩ rất hiệu quả. Da tôi cải thiện rõ rệt sau 4 tuần.',
+      'date': '2026-04-14',
+      'time': '14:00',
     },
     {
-      'id': 'r21', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Nguyễn Khánh Linh', 'rating': 4,
-      'comment': 'Bác sĩ kiến thức sâu về da liễu. Khám rất kỹ, hỏi thăm tình trạng dị ứng trước khi kê thuốc.',
-      'date': '2026-04-07', 'time': '09:45',
+      'id': 'r21',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Nguyễn Khánh Linh',
+      'rating': 4,
+      'comment':
+          'Bác sĩ kiến thức sâu về da liễu. Khám rất kỹ, hỏi thăm tình trạng dị ứng trước khi kê thuốc.',
+      'date': '2026-04-07',
+      'time': '09:45',
     },
     {
-      'id': 'r22', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Phan Thị Mai', 'rating': 5,
-      'comment': 'Chữa được bệnh chàm mà tôi bị hơn 2 năm. Rất tin tưởng và sẽ tái khám ở đây.',
-      'date': '2026-03-31', 'time': '15:30',
+      'id': 'r22',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Phan Thị Mai',
+      'rating': 5,
+      'comment':
+          'Chữa được bệnh chàm mà tôi bị hơn 2 năm. Rất tin tưởng và sẽ tái khám ở đây.',
+      'date': '2026-03-31',
+      'time': '15:30',
     },
     {
-      'id': 'r23', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Cao Thành Nhân', 'rating': 4,
-      'comment': 'Bác sĩ tư vấn sản phẩm chăm sóc da phù hợp với loại da của tôi. Rất hữu ích.',
-      'date': '2026-03-24', 'time': '11:15',
+      'id': 'r23',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Cao Thành Nhân',
+      'rating': 4,
+      'comment':
+          'Bác sĩ tư vấn sản phẩm chăm sóc da phù hợp với loại da của tôi. Rất hữu ích.',
+      'date': '2026-03-24',
+      'time': '11:15',
     },
     {
-      'id': 'r24', 'doctorId': '4', 'doctorName': 'BS. Phạm Thị Dung',
-      'patientName': 'Lưu Thị Ánh', 'rating': 5,
-      'comment': 'Bác sĩ Dung rất thân thiện và chuyên nghiệp. Giải thích nguyên nhân bệnh rõ ràng, dễ hiểu.',
-      'date': '2026-03-16', 'time': '08:00',
+      'id': 'r24',
+      'doctorId': '4',
+      'doctorName': 'BS. Phạm Thị Dung',
+      'patientName': 'Lưu Thị Ánh',
+      'rating': 5,
+      'comment':
+          'Bác sĩ Dung rất thân thiện và chuyên nghiệp. Giải thích nguyên nhân bệnh rõ ràng, dễ hiểu.',
+      'date': '2026-03-16',
+      'time': '08:00',
     },
   ];
 
@@ -336,6 +523,65 @@ class MockData {
     },
   ];
 
+  // ─── Doctor Credentials for Login ───────────────────────────────────────────────
+  static const List<Map<String, dynamic>> doctorCredentials = [
+    {
+      'doctorId': 'd1',
+      'phone': '0912345678',
+      'email': 'bsnguyen@care4u.vn',
+      'password': '123456',
+      'name': 'BS. Nguyễn Văn An',
+      'specialty': 'Tim mạch',
+      'licenseNumber': 'BST001234567',
+      'hospital': 'BV Chợ Rẫy',
+      'bio':
+          'Bác sĩ An có hơn 10 năm kinh nghiệm trong lĩnh vực Tim mạch, từng tu nghiệp tại Pháp.',
+      'profileImageUrl': 'assests/images/bacsi_1.jpg',
+      'isActive': true,
+    },
+    {
+      'doctorId': 'd2',
+      'phone': '0923456789',
+      'email': 'bstran@care4u.vn',
+      'password': '123456',
+      'name': 'BS. Trần Thị Bình',
+      'specialty': 'Nhi khoa',
+      'licenseNumber': 'BST001234568',
+      'hospital': 'BV Nhi Đồng 1',
+      'bio': 'Bác sĩ Bình chuyên khoa Nhi, luôn tận tâm và yêu thương trẻ nhỏ.',
+      'profileImageUrl': 'assests/images/bacsi_2.jpg',
+      'isActive': true,
+    },
+    {
+      'doctorId': 'd3',
+      'phone': '0934567890',
+      'email': 'bsle@care4u.vn',
+      'password': '123456',
+      'name': 'BS. Lê Trọng Chung',
+      'specialty': 'Thần kinh',
+      'licenseNumber': 'BST001234569',
+      'hospital': 'BV 115',
+      'bio':
+          'Chuyên gia hàng đầu về các bệnh lý thần kinh và phẫu thuật thần kinh.',
+      'profileImageUrl': 'assests/images/bacsi_3.jpg',
+      'isActive': true,
+    },
+    {
+      'doctorId': 'd4',
+      'phone': '0945678901',
+      'email': 'bspham@care4u.vn',
+      'password': '123456',
+      'name': 'BS. Phạm Thị Dung',
+      'specialty': 'Da liễu',
+      'licenseNumber': 'BST001234570',
+      'hospital': 'BV Da Liễu TP.HCM',
+      'bio':
+          'Bác sĩ Dung có kinh nghiệm phong phú điều trị các bệnh về da và thẩm mỹ da liễu.',
+      'profileImageUrl': 'assests/images/bacsi_4.jpg',
+      'isActive': true,
+    },
+  ];
+
   // ─── Current Patient Profile ──────────────────────────────────────────────────
   static Map<String, dynamic> currentPatient = {
     'name': 'Nguyễn Thành Danh',
@@ -348,17 +594,17 @@ class MockData {
     'bloodType': 'O+',
   };
 
-// ─── Actions ────────────────────────────────────────────────────────────────
+  // ─── Actions ────────────────────────────────────────────────────────────────
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Load appointments
     final String? appointmentsJson = prefs.getString('mock_appointments');
     if (appointmentsJson != null) {
       final List<dynamic> decoded = json.decode(appointmentsJson);
       appointments = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
     }
-    
+
     // Load notifications
     final String? notificationsJson = prefs.getString('mock_notifications');
     if (notificationsJson != null) {
@@ -411,14 +657,54 @@ class MockData {
     reviews.insert(0, review);
     _saveReviews();
   }
-  
+
+  // ─── Doctor Authentication Methods ───────────────────────────────────────────
+  /// Xác thực thông tin đăng nhập bác sĩ
+  /// Trả về thông tin bác sĩ nếu đăng nhập thành công, null nếu thất bại
+  static Map<String, dynamic>? authenticateDoctor({
+    required String phoneOrEmail,
+    required String password,
+    required String doctorId,
+  }) {
+    try {
+      final doctor = doctorCredentials.firstWhere(
+        (doc) =>
+            (doc['phone'] == phoneOrEmail || doc['email'] == phoneOrEmail) &&
+            doc['password'] == password &&
+            doc['doctorId'] == doctorId,
+      );
+      return doctor;
+    } catch (e) {
+      print('Doctor authentication failed: $e');
+      return null;
+    }
+  }
+
+  /// Lấy thông tin bác sĩ theo doctorId
+  static Map<String, dynamic>? getDoctorById(String doctorId) {
+    try {
+      return doctorCredentials.firstWhere((doc) => doc['doctorId'] == doctorId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Lấy thông tin bác sĩ theo số điện thoại
+  static Map<String, dynamic>? getDoctorByPhone(String phone) {
+    try {
+      return doctorCredentials.firstWhere((doc) => doc['phone'] == phone);
+    } catch (e) {
+      return null;
+    }
+  }
+
   static void markAllNotificationsRead() {
     for (final n in notifications) {
       n['isRead'] = true;
     }
     _saveNotifications();
   }
-  
+
   static void removeNotification(int index) {
     if (index >= 0 && index < notifications.length) {
       notifications.removeAt(index);
@@ -426,4 +712,3 @@ class MockData {
     }
   }
 }
-

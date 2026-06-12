@@ -1,56 +1,41 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrlDev = 'https://dev-api.care4u.vn/api';
-  static const String baseUrlProd = 'https://api.care4u.vn/api';
+  // Android Emulator dùng 10.0.2.2 thay cho localhost
+  static const String baseUrlDev = 'http://10.0.2.2:5130/api';
 
-  static const Duration connectTimeout = Duration(seconds: 20);
-  static const Duration receiveTimeout = Duration(seconds: 20);
+  // Sau này deploy API thật thì đổi link production ở đây
+  static const String baseUrlProd = 'https://your-production-domain.com/api';
 
-  // Auth
-  static const String login = '/auth/login';
-  static const String register = '/auth/register';
-  static const String logout = '/auth/logout';
-  static const String refreshToken = '/auth/refresh-token';
-  static const String forgotPassword = '/auth/forgot-password';
+  // Hiện tại đang test local API C# nên dùng dev
+  static const String baseUrl = baseUrlDev;
 
-  // User / patient
-  static const String patientProfile = '/patients/me';
-  static const String updatePatientProfile = '/patients/me/update';
+  static const String appointments = '$baseUrl/Appointments';
+  static const String chatMessages = '$baseUrl/ChatMessages';
+  static const String chatRooms = '$baseUrl/ChatRooms';
+  static const String doctors = '$baseUrl/Doctors';
+  static const String doctorSchedules = '$baseUrl/DoctorSchedules';
+  static const String healthCenters = '$baseUrl/HealthCenters';
+  static const String medicalRecords = '$baseUrl/MedicalRecords';
+  static const String medicines = '$baseUrl/Medicines';
+  static const String notifications = '$baseUrl/Notifications';
+  static const String orders = '$baseUrl/Orders';
+  static const String orderItems = '$baseUrl/OrderItems';
+  static const String patients = '$baseUrl/Patients';
+  static const String payments = '$baseUrl/Payments';
+  static const String prescriptions = '$baseUrl/Prescriptions';
+  static const String prescriptionItems = '$baseUrl/PrescriptionItems';
+  static const String productCategories = '$baseUrl/ProductCategories';
+  static const String reviews = '$baseUrl/Reviews';
+  static const String specialties = '$baseUrl/Specialties';
+  static const String storeProducts = '$baseUrl/StoreProducts';
+  static const String users = '$baseUrl/Users';
 
-  // Doctors
-  static const String doctors = '/doctors';
-  static const String doctorDetail = '/doctors/{id}';
-  static const String specialties = '/specialties';
-
-  // Appointments
-  static const String appointments = '/appointments';
-  static const String appointmentDetail = '/appointments/{id}';
-  static const String availableSlots = '/appointments/available-slots';
-  static const String rescheduleAppointment = '/appointments/{id}/reschedule';
-  static const String cancelAppointment = '/appointments/{id}/cancel';
-
-  // Medical records
-  static const String medicalRecords = '/medical-records';
-
-  // Notifications
-  static const String notifications = '/notifications';
-  static const String markNotificationAsRead = '/notifications/{id}/read';
-
-  // Payments
-  static const String payments = '/payments';
-  static const String paymentHistory = '/payments/history';
-
-  // Reviews
-  static const String reviews = '/reviews';
-
-  // Health centers
-  static const String healthCenters = '/health-centers';
-
-  // Payments
-  static const String wallet = '/payments/wallet';
-  static const String paymentMethods = '/payments/methods';
-  static const String createPayment = '/payments/create';
-  static const String topupCreate = '/payments/topup/create';
-  static const String transactionHistory = '/payments/transactions';
+  // Các endpoint cũ của payment_remote_datasource.dart
+  // Tạm khai báo để app hết lỗi compile.
+  // Nếu API C# chưa có các route này thì khi gọi sẽ 404, nhưng app sẽ build được.
+  static const String wallet = '$baseUrl/Payments/wallet';
+  static const String createPayment = '$baseUrl/Payments';
+  static const String topupCreate = '$baseUrl/Payments/topup';
+  static const String transactionHistory = '$baseUrl/Payments/transactions';
 }
