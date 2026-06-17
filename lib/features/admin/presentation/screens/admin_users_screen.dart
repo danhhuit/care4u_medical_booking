@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/features/admin/presentation/screens/admin_user_detail_screen.dart';
+import 'package:care4u_medical_booking/features/admin/presentation/widgets/revenue_chart.dart';
 import 'package:care4u_medical_booking/features/auth/presentation/screens/login_phone_screen.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -52,7 +55,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tải danh sách tài khoản thất bại: $e')),
+        SnackBar(content: Text('${AppTranslations.tr('cannot_load_accounts')}: $e')),
       );
     } finally {
       if (mounted) {
@@ -71,20 +74,20 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(nextActive ? 'Mở khóa tài khoản' : 'Khóa tài khoản'),
+        title: Text(nextActive ? AppTranslations.tr('unlock_account_title') : AppTranslations.tr('lock_account_title')),
         content: Text(
           nextActive
-              ? 'Bạn có chắc muốn mở khóa tài khoản này?'
-              : 'Bạn có chắc muốn khóa tài khoản này? Người dùng sẽ không thể đăng nhập.',
+              ? AppTranslations.tr('unlock_account_confirm')
+              : AppTranslations.tr('lock_account_confirm'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(AppTranslations.tr('cancel_label')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Đồng ý'),
+            child: Text(AppTranslations.tr('agree_label')),
           ),
         ],
       ),
@@ -99,9 +102,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            nextActive ? 'Đã mở khóa tài khoản' : 'Đã khóa tài khoản',
-          ),
+          content: Text(AppTranslations.tr('update_status_success')),
+          backgroundColor: AppColors.primary,
         ),
       );
 
@@ -110,7 +112,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Cập nhật trạng thái thất bại: $e')),
+        SnackBar(content: Text('${AppTranslations.tr('update_status_failed')}: $e')),
       );
     }
   }
@@ -120,9 +122,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       case 'admin':
         return 'Admin';
       case 'doctor':
-        return 'Bác sĩ';
+        return AppTranslations.tr('doctor_label');
       case 'patient':
-        return 'Bệnh nhân';
+        return AppTranslations.tr('patient_label');
       default:
         return role;
     }
@@ -131,17 +133,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Color _roleColor(String role) {
     switch (role) {
       case 'admin':
-        return Colors.purple;
+        return AppColors.primary;
       case 'doctor':
-        return Colors.blue;
+        return AppColors.primary.withValues(alpha: 0.75);
       case 'patient':
-        return Colors.green;
+        return AppColors.primary.withValues(alpha: 0.55);
       default:
-        return Colors.grey;
+        return AppColors.textLight;
     }
   }
 
-  Widget _buildRoleFilters() {
+  Widget _buildRoleFilters(Color textColor) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -150,11 +152,24 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           final label = item['label']!;
           final selected = _selectedRole == value;
 
+          final displayLabel = value == 'all'
+              ? AppTranslations.tr('all_label')
+              : value == 'doctor'
+              ? AppTranslations.tr('doctor_label')
+              : value == 'patient'
+              ? AppTranslations.tr('patient_label')
+              : label;
+
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(label),
+              label: Text(
+                displayLabel,
+                style: TextStyle(color: selected ? Colors.white : textColor),
+              ),
               selected: selected,
+              selectedColor: AppColors.primary,
+              backgroundColor: SettingsManager.isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200],
               onSelected: (_) {
                 setState(() {
                   _selectedRole = value;
@@ -168,7 +183,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     );
   }
 
-  Widget _buildUserCard(Map<String, dynamic> user) {
+  Widget _buildUserCard(Map<String, dynamic> user, Color cardColor, Color textColor, Color subTextColor) {
     final userId = '${user['userId'] ?? ''}';
     final email = '${user['email'] ?? ''}';
     final phone = '${user['phone'] ?? ''}';
@@ -180,6 +195,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 1.5,
+      color: cardColor,
       child: InkWell(
         onTap: () async {
           final changed = await Navigator.push<bool>(
@@ -201,7 +217,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: _roleColor(role).withOpacity(0.12),
+                    backgroundColor: _roleColor(role).withValues(alpha: 0.12),
                     child: Icon(
                       role == 'doctor'
                           ? Icons.medical_services
@@ -215,9 +231,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   Expanded(
                     child: Text(
                       fullName.isNotEmpty ? fullName : email,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -228,14 +245,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: isActive
-                          ? Colors.green.withOpacity(0.12)
-                          : Colors.red.withOpacity(0.12),
+                          ? AppColors.success.withValues(alpha: 0.12)
+                          : AppColors.error.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      isActive ? 'Đang hoạt động' : 'Đã khóa',
+                      isActive ? AppTranslations.tr('active_status_label') : AppTranslations.tr('locked_status_label'),
                       style: TextStyle(
-                        color: isActive ? Colors.green : Colors.red,
+                        color: isActive ? AppColors.success : AppColors.error,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -244,11 +261,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              Text('Email: $email'),
-              if (phone.isNotEmpty && phone != 'null') Text('SĐT: $phone'),
-              Text('Vai trò: ${_roleText(role)}'),
+              Text('Email: $email', style: TextStyle(color: subTextColor)),
+              if (phone.isNotEmpty && phone != 'null')
+                Text('${AppTranslations.tr('phone_label_short')}: $phone', style: TextStyle(color: subTextColor)),
+              Text('${AppTranslations.tr('role_label')}: ${_roleText(role)}', style: TextStyle(color: subTextColor)),
               if (licenseNumber.isNotEmpty && licenseNumber != 'null')
-                Text('Mã định danh: $licenseNumber'),
+                Text('${AppTranslations.tr('license_number')}: $licenseNumber', style: TextStyle(color: subTextColor)),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -268,7 +286,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         }
                       },
                       icon: const Icon(Icons.visibility),
-                      label: const Text('Chi tiết'),
+                      label: Text(AppTranslations.tr('details_label')),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: const BorderSide(color: AppColors.primary),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -276,11 +298,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => _toggleStatus(user),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isActive ? Colors.red : Colors.green,
+                        backgroundColor: isActive ? AppColors.error : AppColors.success,
                         foregroundColor: Colors.white,
                       ),
                       icon: Icon(isActive ? Icons.lock : Icons.lock_open),
-                      label: Text(isActive ? 'Khóa' : 'Mở khóa'),
+                      label: Text(isActive ? AppTranslations.tr('lock_action') : AppTranslations.tr('unlock_action')),
                     ),
                   ),
                 ],
@@ -307,14 +329,27 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   }
 
   Widget _buildAccountsTab() {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8FAF9);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.textDark;
+    final subTextColor = isDark ? Colors.white70 : AppColors.textLight;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Quản lý tài khoản'),
+        title: Text(AppTranslations.tr('admin_manage_accounts')),
         centerTitle: true,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            onPressed: () async {
+              await SettingsManager.toggleTheme(!isDark);
+              setState(() {});
+            },
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+          ),
           IconButton(onPressed: _loadUsers, icon: const Icon(Icons.refresh)),
           IconButton(onPressed: _logout, icon: const Icon(Icons.logout)),
         ],
@@ -322,14 +357,16 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       body: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: cardColor,
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 TextField(
                   controller: _searchController,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    hintText: 'Tìm email hoặc số điện thoại',
+                    hintText: AppTranslations.tr('admin_search_hint'),
+                    hintStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
                       onPressed: _loadUsers,
@@ -338,11 +375,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    filled: true,
+                    fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.white,
                   ),
                   onSubmitted: (_) => _loadUsers(),
                 ),
                 const SizedBox(height: 12),
-                _buildRoleFilters(),
+                _buildRoleFilters(textColor),
               ],
             ),
           ),
@@ -350,14 +389,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _users.isEmpty
-                ? const Center(child: Text('Không có tài khoản nào'))
+                ? Center(child: Text(AppTranslations.tr('no_users_yet'), style: TextStyle(color: textColor)))
                 : RefreshIndicator(
                     onRefresh: _loadUsers,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: _users.length,
                       itemBuilder: (_, index) {
-                        return _buildUserCard(_users[index]);
+                        return _buildUserCard(_users[index], cardColor, textColor, subTextColor);
                       },
                     ),
                   ),
@@ -371,18 +410,20 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _currentIndex == 0 ? _buildAccountsTab() : const AdminRevenueTab(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: AppColors.primary,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Tài khoản',
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) => setState(() => _currentIndex = index),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.people_outline),
+            selectedIcon: const Icon(Icons.people, color: AppColors.primary),
+            label: AppTranslations.tr('admin_manage_accounts'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Doanh thu',
+          NavigationDestination(
+            icon: const Icon(Icons.bar_chart_outlined),
+            selectedIcon: const Icon(Icons.bar_chart, color: AppColors.primary),
+            label: AppTranslations.tr('admin_revenue_stats'),
           ),
         ],
       ),
@@ -409,7 +450,8 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
 
   List<Map<String, dynamic>> _dailyStats = [];
   List<Map<String, dynamic>> _monthlyStats = [];
-  bool _isDailyView = true;
+  List<Map<String, dynamic>> _yearlyStats = [];
+  RevenuePeriod _period = RevenuePeriod.day;
 
   @override
   void initState() {
@@ -440,7 +482,7 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Không thể tải dữ liệu thống kê doanh thu: $e';
+        _error = '${AppTranslations.tr('cannot_load_revenue_stats')}: $e';
         _isLoading = false;
       });
     }
@@ -472,25 +514,25 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
 
     final Map<String, Map<String, dynamic>> dailyMap = {};
     final Map<String, Map<String, dynamic>> monthlyMap = {};
+    final Map<String, Map<String, dynamic>> yearlyMap = {};
 
     void addToMaps(String dateStr, double amount, String type) {
-      if (dateStr.length < 10) return;
-      final dayKey = dateStr.substring(0, 10);
-      final monthKey = dateStr.substring(0, 7);
+      if (dateStr.length < 4) return;
+      final dayKey = dateStr.length >= 10 ? dateStr.substring(0, 10) : dateStr;
+      final monthKey = dateStr.length >= 7 ? dateStr.substring(0, 7) : dateStr;
+      final yearKey = dateStr.substring(0, 4);
 
-      // Daily
-      if (!dailyMap.containsKey(dayKey)) {
-        dailyMap[dayKey] = {'date': dayKey, 'booking': 0.0, 'store': 0.0, 'total': 0.0};
+      void updateMap(Map<String, Map<String, dynamic>> map, String key) {
+        if (!map.containsKey(key)) {
+          map[key] = {'date': key, 'booking': 0.0, 'store': 0.0, 'total': 0.0};
+        }
+        map[key]![type] = (map[key]![type] as double) + amount;
+        map[key]!['total'] = (map[key]!['total'] as double) + amount;
       }
-      dailyMap[dayKey]![type] = (dailyMap[dayKey]![type] as double) + amount;
-      dailyMap[dayKey]!['total'] = (dailyMap[dayKey]!['total'] as double) + amount;
 
-      // Monthly
-      if (!monthlyMap.containsKey(monthKey)) {
-        monthlyMap[monthKey] = {'date': monthKey, 'booking': 0.0, 'store': 0.0, 'total': 0.0};
-      }
-      monthlyMap[monthKey]![type] = (monthlyMap[monthKey]![type] as double) + amount;
-      monthlyMap[monthKey]!['total'] = (monthlyMap[monthKey]!['total'] as double) + amount;
+      if (dateStr.length >= 10) updateMap(dailyMap, dayKey);
+      if (dateStr.length >= 7) updateMap(monthlyMap, monthKey);
+      updateMap(yearlyMap, yearKey);
     }
 
     // Process appointments
@@ -528,6 +570,10 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
     final monthlyList = monthlyMap.values.toList();
     monthlyList.sort((x, y) => '${y['date']}'.compareTo('${x['date']}'));
     _monthlyStats = monthlyList;
+
+    final yearlyList = yearlyMap.values.toList();
+    yearlyList.sort((x, y) => '${y['date']}'.compareTo('${x['date']}'));
+    _yearlyStats = yearlyList;
   }
 
   String _formatMoney(double amount) {
@@ -539,31 +585,52 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
   }
 
   String _formatDateDisplay(String key) {
+    if (key.length == 4) {
+      return '${AppTranslations.tr('year_view')} $key';
+    }
     if (key.length == 7) {
       final parts = key.split('-');
-      return 'Tháng ${parts[1]}/${parts[0]}';
+      return '${AppTranslations.tr('month_view')} ${parts[1]}/${parts[0]}';
     }
     final parts = key.split('-');
     if (parts.length != 3) return key;
     return '${parts[2]}/${parts[1]}/${parts[0]}';
   }
 
-  Widget _statsCard(String label, String value, IconData icon, Color color) {
+  List<Map<String, dynamic>> get _currentStats {
+    switch (_period) {
+      case RevenuePeriod.day:
+        return _dailyStats;
+      case RevenuePeriod.month:
+        return _monthlyStats;
+      case RevenuePeriod.year:
+        return _yearlyStats;
+    }
+  }
+
+  Widget _statsCard(String label, String value, IconData icon, Color cardColor, Color textColor) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 22),
+            ),
+            const SizedBox(height: 10),
             Text(
               value,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textColor),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -571,7 +638,7 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
+              style: TextStyle(fontSize: 11, color: textColor.withValues(alpha: 0.6)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -580,27 +647,79 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
     );
   }
 
+  Widget _periodSelector(Color cardColor, Color textColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          _periodChip(AppTranslations.tr('day_view'), RevenuePeriod.day, textColor),
+          _periodChip(AppTranslations.tr('month_view'), RevenuePeriod.month, textColor),
+          _periodChip(AppTranslations.tr('year_view'), RevenuePeriod.year, textColor),
+        ],
+      ),
+    );
+  }
+
+  Widget _periodChip(String label, RevenuePeriod period, Color textColor) {
+    final selected = _period == period;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _period = period),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              color: selected ? Colors.white : textColor.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8FAF9);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.textDark;
+    final subTextColor = isDark ? Colors.white70 : AppColors.textLight;
+
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: bgColor,
+        body: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
     }
 
     if (_error != null) {
       return Scaffold(
+        backgroundColor: bgColor,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 56, color: Colors.red),
+                Icon(Icons.error_outline, size: 56, color: AppColors.error.withValues(alpha: 0.8)),
                 const SizedBox(height: 12),
-                Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+                Text(_error!, textAlign: TextAlign.center, style: TextStyle(color: AppColors.error)),
                 const SizedBox(height: 16),
-                ElevatedButton(onPressed: _loadStats, child: const Text('Thử lại')),
+                ElevatedButton(onPressed: _loadStats, child: Text(AppTranslations.tr('retry'))),
               ],
             ),
           ),
@@ -608,65 +727,68 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
       );
     }
 
-    final currentStats = _isDailyView ? _dailyStats : _monthlyStats;
+    final currentStats = _currentStats;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Thống kê doanh thu'),
+        title: Text(AppTranslations.tr('admin_revenue_stats')),
         centerTitle: true,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            onPressed: () async {
+              await SettingsManager.toggleTheme(!isDark);
+              setState(() {});
+            },
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+          ),
           IconButton(onPressed: _loadStats, icon: const Icon(Icons.refresh)),
         ],
       ),
       body: RefreshIndicator(
+        color: AppColors.primary,
         onRefresh: _loadStats,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Row(
               children: [
-                _statsCard('Tổng doanh thu', _formatMoney(_totalRevenue), Icons.monetization_on, Colors.blue),
-                const SizedBox(width: 8),
-                _statsCard('Khám bệnh', _formatMoney(_bookingRevenue), Icons.calendar_today, Colors.green),
-                const SizedBox(width: 8),
-                _statsCard('Quầy thuốc', _formatMoney(_storeRevenue), Icons.medication, Colors.orange),
+                _statsCard(AppTranslations.tr('total_revenue'), _formatMoney(_totalRevenue), Icons.account_balance_wallet_outlined, cardColor, textColor),
+                const SizedBox(width: 10),
+                _statsCard(AppTranslations.tr('booking_revenue'), _formatMoney(_bookingRevenue), Icons.calendar_today_outlined, cardColor, textColor),
+                const SizedBox(width: 10),
+                _statsCard(AppTranslations.tr('store_revenue'), _formatMoney(_storeRevenue), Icons.local_pharmacy_outlined, cardColor, textColor),
               ],
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Chi tiết doanh thu',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                ToggleButtons(
-                  isSelected: [_isDailyView, !_isDailyView],
-                  onPressed: (index) {
-                    setState(() {
-                      _isDailyView = index == 0;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  constraints: const BoxConstraints(minHeight: 32, minWidth: 64),
-                  selectedColor: Colors.white,
-                  fillColor: AppColors.primary,
-                  children: const [
-                    Text('Ngày', style: TextStyle(fontSize: 12)),
-                    Text('Tháng', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ],
+            _periodSelector(cardColor, textColor),
+            const SizedBox(height: 20),
+            RevenueChart(
+              stats: currentStats,
+              period: _period,
+              cardColor: cardColor,
+              textColor: textColor,
+              subTextColor: subTextColor,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              AppTranslations.tr('revenue_details'),
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: textColor),
             ),
             const SizedBox(height: 12),
             if (currentStats.isEmpty)
-              const Card(
+              Card(
+                color: cardColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: subTextColor.withValues(alpha: 0.15)),
+                ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40),
-                  child: Center(child: Text('Chưa có dữ liệu doanh thu')),
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Center(child: Text(AppTranslations.tr('no_revenue_data'), style: TextStyle(color: subTextColor))),
                 ),
               )
             else
@@ -682,7 +804,12 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
                   final storeStr = _formatMoney(stat['store'] as double);
 
                   return Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    color: cardColor,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: subTextColor.withValues(alpha: 0.12)),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
                       child: Row(
@@ -690,10 +817,10 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.trending_up, color: AppColors.primary),
+                            child: const Icon(Icons.trending_up, color: AppColors.primary, size: 20),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -702,26 +829,19 @@ class _AdminRevenueTabState extends State<AdminRevenueTab> {
                               children: [
                                 Text(
                                   _formatDateDisplay('${stat['date']}'),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: textColor),
                                 ),
                                 const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.circle, size: 8, color: Colors.green),
-                                    const SizedBox(width: 4),
-                                    Text('Khám: $bookingStr', style: const TextStyle(fontSize: 11, color: Colors.black54)),
-                                    const SizedBox(width: 12),
-                                    const Icon(Icons.circle, size: 8, color: Colors.orange),
-                                    const SizedBox(width: 4),
-                                    Text('Thuốc: $storeStr', style: const TextStyle(fontSize: 11, color: Colors.black54)),
-                                  ],
+                                Text(
+                                  '${AppTranslations.tr('booking_short')}: $bookingStr  ·  ${AppTranslations.tr('store_short')}: $storeStr',
+                                  style: TextStyle(fontSize: 12, color: subTextColor),
                                 ),
                               ],
                             ),
                           ),
                           Text(
                             totalStr,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.primary),
                           ),
                         ],
                       ),

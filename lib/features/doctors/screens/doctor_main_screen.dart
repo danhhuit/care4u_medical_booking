@@ -11,6 +11,8 @@ import 'package:care4u_medical_booking/features/doctors/screens/doctor_prescript
 import 'package:care4u_medical_booking/features/doctors/screens/doctor_medical_records_screen.dart';
 import 'package:care4u_medical_booking/features/chat/presentation/screens/doctor_chat_rooms_screen.dart';
 
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
+
 class DoctorSession {
   static int get currentDoctorId => SettingsManager.currentDoctorId;
 }
@@ -35,6 +37,7 @@ class _DoctorMainScreenState extends State<DoctorMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
@@ -43,33 +46,34 @@ class _DoctorMainScreenState extends State<DoctorMainScreen> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         selectedFontSize: 11,
         unselectedFontSize: 11,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Tổng quan',
+            icon: const Icon(Icons.dashboard_outlined),
+            activeIcon: const Icon(Icons.dashboard),
+            label: AppTranslations.tr('dashboard_title'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
-            label: 'Lịch hẹn',
+            icon: const Icon(Icons.calendar_today_outlined),
+            activeIcon: const Icon(Icons.calendar_today),
+            label: AppTranslations.tr('nav_appointments'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            activeIcon: Icon(Icons.people),
-            label: 'Bệnh nhân',
+            icon: const Icon(Icons.people_outline),
+            activeIcon: const Icon(Icons.people),
+            label: AppTranslations.tr('patients'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Hồ sơ',
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: AppTranslations.tr('personal_profile'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message_outlined),
-            activeIcon: Icon(Icons.message),
-            label: 'Tin nhắn',
+            icon: const Icon(Icons.message_outlined),
+            activeIcon: const Icon(Icons.message),
+            label: AppTranslations.tr('chat_action'),
           ),
         ],
       ),
@@ -122,7 +126,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Không thể tải dữ liệu tổng quan: $e';
+        _errorMessage = '${AppTranslations.tr('cannot_load_overview_error')}: $e';
         _isLoading = false;
       });
     }
@@ -165,22 +169,28 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
   String _formatDateTime(dynamic value) {
     final raw = '${value ?? ''}';
     final dt = DateTime.tryParse(raw);
-    if (dt == null) return raw.isEmpty ? 'Chưa cập nhật' : raw;
+    if (dt == null) return raw.isEmpty ? AppTranslations.tr('not_updated') : raw;
     return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
+
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFFF5F7FA),
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: bgColor,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: bgColor,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -195,7 +205,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: _loadDashboard,
-                  child: const Text('Thử lại'),
+                  child: Text(AppTranslations.tr('retry')),
                 ),
               ],
             ),
@@ -204,12 +214,12 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
       );
     }
 
-    final name = _doctorText('fullName', 'Bác sĩ');
-    final specialty = _doctorText('specialtyName', 'Chuyên khoa');
+    final name = _doctorText('fullName', AppTranslations.tr('doctor_label'));
+    final specialty = _doctorText('specialtyName', AppTranslations.tr('specialties'));
     final rating = '${_doctor?['rating'] ?? 0}';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       body: RefreshIndicator(
         onRefresh: _loadDashboard,
         child: CustomScrollView(
@@ -254,9 +264,9 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Chào mừng trở lại,',
-                                  style: TextStyle(
+                                Text(
+                                  AppTranslations.tr('welcome_back'),
+                                  style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 13,
                                   ),
@@ -302,37 +312,53 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                     Row(
                       children: [
                         _statsCard(
-                          'Bệnh nhân hôm nay',
+                          AppTranslations.tr('patients_today'),
                           '${_todayAppts.length}',
                           Icons.calendar_today,
                           Colors.blue,
+                          cardColor,
+                          textColor,
                         ),
                         const SizedBox(width: 10),
                         _statsCard(
-                          'Hoàn thành',
+                          AppTranslations.tr('completed'),
                           '${_completedAppts.length}',
                           Icons.check_circle,
                           AppColors.success,
+                          cardColor,
+                          textColor,
                         ),
                         const SizedBox(width: 10),
                         _statsCard(
-                          'Đánh giá',
+                          AppTranslations.tr('rating'),
                           rating,
                           Icons.star,
                           Colors.amber,
+                          cardColor,
+                          textColor,
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Text('Lịch hẹn sắp tới', style: AppTextStyles.heading2),
+                    Text(
+                      AppTranslations.tr('upcoming_appointments'),
+                      style: AppTextStyles.heading2.copyWith(color: textColor),
+                    ),
                     const SizedBox(height: 10),
-                    ..._todayAppts.take(3).map((a) => _appointmentCard(a)),
+                    ..._todayAppts.take(3).map((a) => _appointmentCard(a, cardColor, textColor, subTextColor)),
                     if (_todayAppts.isEmpty)
-                      const _EmptyCard(message: 'Không có lịch hẹn sắp tới'),
+                      _EmptyCard(
+                        message: AppTranslations.tr('no_upcoming_appointments'),
+                        cardColor: cardColor,
+                        textColor: subTextColor,
+                      ),
                     const SizedBox(height: 20),
-                    Text('Nhanh chóng', style: AppTextStyles.heading2),
+                    Text(
+                      AppTranslations.tr('quick_actions'),
+                      style: AppTextStyles.heading2.copyWith(color: textColor),
+                    ),
                     const SizedBox(height: 10),
-                    _quickActionsGrid(context),
+                    _quickActionsGrid(context, cardColor, textColor, subTextColor),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -344,12 +370,12 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
     );
   }
 
-  Widget _statsCard(String label, String value, IconData icon, Color color) {
+  Widget _statsCard(String label, String value, IconData icon, Color color, Color cardColor, Color textColor) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: const [
             BoxShadow(
@@ -373,7 +399,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
             ),
             Text(
               label,
-              style: AppTextStyles.captionLight,
+              style: AppTextStyles.captionLight.copyWith(color: textColor.withOpacity(0.6)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -382,17 +408,17 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
     );
   }
 
-  Widget _appointmentCard(Map<String, dynamic> a) {
+  Widget _appointmentCard(Map<String, dynamic> a, Color cardColor, Color textColor, Color subTextColor) {
     final todayList = _todayAppts;
     final index = todayList.indexWhere((item) => '${item['id']}' == '${a['id']}');
     final sttText = index != -1 ? 'STT: ${index + 1}' : 'STT: -';
-    final roomText = 'Phòng ${100 + currentDoctorId}';
+    final roomText = '${AppTranslations.tr('room_label')} ${100 + currentDoctorId}';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
       ),
@@ -413,14 +439,14 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${a['patientName'] ?? 'Bệnh nhân #${a['patientId']}'}',
-                  style: AppTextStyles.bodyDark,
+                  '${a['patientName'] ?? '${AppTranslations.tr('patient_label')} #${a['patientId']}'}',
+                  style: AppTextStyles.bodyDark.copyWith(color: textColor),
                 ),
                 Row(
                   children: [
                     Text(
                       '${a['appointmentNo'] ?? ''}',
-                      style: AppTextStyles.captionLight,
+                      style: AppTextStyles.captionLight.copyWith(color: subTextColor),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -450,7 +476,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                 ),
                 Text(
                   _formatDateTime(a['createdAt']),
-                  style: AppTextStyles.captionLight,
+                  style: AppTextStyles.captionLight.copyWith(color: subTextColor),
                 ),
               ],
             ),
@@ -461,9 +487,9 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
               color: AppColors.success.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'Sắp tới',
-              style: TextStyle(
+            child: Text(
+              AppTranslations.tr('upcoming'),
+              style: const TextStyle(
                 color: AppColors.success,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -475,22 +501,22 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
     );
   }
 
-  Widget _quickActionsGrid(BuildContext context) {
+  Widget _quickActionsGrid(BuildContext context, Color cardColor, Color textColor, Color subTextColor) {
     final actions = [
       {
         'icon': Icons.add_circle_outline,
-        'label': 'Thêm lịch',
+        'label': AppTranslations.tr('add_schedule'),
         'color': Colors.blue,
       },
       {
         'icon': Icons.description_outlined,
-        'label': 'Đơn thuốc',
+        'label': AppTranslations.tr('prescriptions'),
         'color': Colors.purple,
       },
-      {'icon': Icons.history, 'label': 'Lịch sử', 'color': Colors.orange},
+      {'icon': Icons.history, 'label': AppTranslations.tr('history_label'), 'color': Colors.orange},
       {
         'icon': Icons.message_outlined,
-        'label': 'Tin nhắn',
+        'label': AppTranslations.tr('chat_action'),
         'color': Colors.teal,
       },
     ];
@@ -508,7 +534,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
         return InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () async {
-            if (label == 'Tin nhắn') {
+            if (label == AppTranslations.tr('chat_action')) {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -522,7 +548,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
 
               return;
             }
-            if (label == 'Lịch sử') {
+            if (label == AppTranslations.tr('history_label')) {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -536,7 +562,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
 
               return;
             }
-            if (label == 'Thêm lịch') {
+            if (label == AppTranslations.tr('add_schedule')) {
               await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const DoctorScheduleScreen()),
@@ -548,7 +574,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
 
               return;
             }
-            if (label == 'Đơn thuốc') {
+            if (label == AppTranslations.tr('prescriptions')) {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -562,10 +588,6 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
 
               return;
             }
-
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text('$label sẽ được làm ở bước tiếp theo')),
-            // );
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -582,7 +604,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
               const SizedBox(height: 6),
               Text(
                 label,
-                style: AppTextStyles.captionLight,
+                style: AppTextStyles.captionLight.copyWith(color: subTextColor),
                 textAlign: TextAlign.center,
                 maxLines: 1,
               ),
@@ -596,18 +618,20 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
 
 class _EmptyCard extends StatelessWidget {
   final String message;
+  final Color cardColor;
+  final Color textColor;
 
-  const _EmptyCard({required this.message});
+  const _EmptyCard({required this.message, required this.cardColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Center(child: Text(message, style: AppTextStyles.captionLight)),
+      child: Center(child: Text(message, style: AppTextStyles.captionLight.copyWith(color: textColor))),
     );
   }
 }

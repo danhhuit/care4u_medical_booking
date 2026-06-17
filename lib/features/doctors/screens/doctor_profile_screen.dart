@@ -5,6 +5,7 @@ import 'package:care4u_medical_booking/app/router/route_names.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 import 'package:care4u_medical_booking/features/doctors/screens/doctor_reviews_screen.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class DoctorProfileScreen extends StatefulWidget {
   const DoctorProfileScreen({super.key});
@@ -93,14 +94,19 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     final name = _text('fullName');
     final specialty = _text('specialtyName');
     final hospital = _text('healthCenterName');
-    final experience = '${_doctor?['experienceYears'] ?? 0} năm';
+    final experience = '${_doctor?['experienceYears'] ?? 0} ${AppTranslations.tr('years')}';
     final rating =
-        '${_doctor?['rating'] ?? 0} (${_doctor?['totalReviews'] ?? 0} đánh giá)';
+        '${_doctor?['rating'] ?? 0} (${_doctor?['totalReviews'] ?? 0} ${AppTranslations.tr('reviews_count')})';
     final license = _text('licenseNumber');
     final address = _text('healthCenterAddress');
 
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -168,27 +174,68 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Thông tin hành nghề', style: AppTextStyles.heading2),
+                  Text(
+                    AppTranslations.tr('practice_info'),
+                    style: AppTextStyles.heading2.copyWith(color: textColor),
+                  ),
                   const SizedBox(height: 8),
                   _infoCard([
-                    _row(Icons.badge, 'Mã định danh', license),
+                    _row(Icons.badge, AppTranslations.tr('license_number'), license, textColor),
                     _div(),
-                    _row(Icons.local_hospital, 'Bệnh viện', hospital),
+                    _row(Icons.local_hospital, AppTranslations.tr('hospital_label'), hospital, textColor),
                     _div(),
-                    _row(Icons.location_on, 'Địa chỉ', address),
+                    _row(Icons.location_on, AppTranslations.tr('address_label'), address, textColor),
                     _div(),
-                    _row(Icons.work, 'Kinh nghiệm', experience),
+                    _row(Icons.work, AppTranslations.tr('experience'), experience, textColor),
                     _div(),
-                    _row(Icons.star, 'Đánh giá TB', rating),
-                  ]),
+                    _row(Icons.star, AppTranslations.tr('avg_rating'), rating, textColor),
+                  ], cardColor),
                   const SizedBox(height: 20),
-                  Text('Liên hệ', style: AppTextStyles.heading2),
+                  Text(
+                    AppTranslations.tr('contact_label'),
+                    style: AppTextStyles.heading2.copyWith(color: textColor),
+                  ),
                   const SizedBox(height: 8),
                   _infoCard([
-                    _row(Icons.phone, 'Điện thoại', 'Chưa cập nhật'),
+                    _row(Icons.phone, AppTranslations.tr('phone_label_short'), AppTranslations.tr('not_updated'), textColor),
                     _div(),
-                    _row(Icons.email, 'Email', 'Chưa cập nhật'),
-                  ]),
+                    _row(Icons.email, AppTranslations.tr('email_label'), AppTranslations.tr('not_updated'), textColor),
+                  ], cardColor),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppTranslations.tr('system_settings'),
+                    style: AppTextStyles.heading2.copyWith(color: textColor),
+                  ),
+                  const SizedBox(height: 8),
+                  _infoCard([
+                    SwitchListTile(
+                      secondary: const Icon(Icons.dark_mode, color: AppColors.primary),
+                      title: Text(
+                        AppTranslations.tr('dark_mode'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      value: isDark,
+                      activeColor: AppColors.primary,
+                      onChanged: (value) async {
+                        await SettingsManager.toggleTheme(value);
+                        setState(() {});
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                value
+                                    ? 'Đã bật chế độ tối'
+                                    : 'Đã tắt chế độ tối',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ], cardColor),
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
@@ -203,9 +250,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                         }
                       },
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      label: const Text(
-                        'Đăng xuất',
-                        style: TextStyle(color: Colors.red),
+                      label: Text(
+                        AppTranslations.tr('logout'),
+                        style: const TextStyle(color: Colors.red),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
@@ -238,7 +285,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                         ),
                       ),
                       icon: const Icon(Icons.star),
-                      label: const Text('Xem đánh giá của tôi'),
+                      label: Text(AppTranslations.tr('view_my_reviews')),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -251,9 +298,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     );
   }
 
-  Widget _infoCard(List<Widget> children) => Container(
+  Widget _infoCard(List<Widget> children, Color cardColor) => Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: cardColor,
       borderRadius: BorderRadius.circular(16),
       boxShadow: const [
         BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
@@ -262,7 +309,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     child: Column(children: children),
   );
 
-  Widget _row(IconData icon, String label, String value) => Padding(
+  Widget _row(IconData icon, String label, String value, Color textColor) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     child: Row(
       children: [
@@ -274,7 +321,10 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             children: [
               Text(label, style: AppTextStyles.captionLight),
               const SizedBox(height: 2),
-              Text(value, style: AppTextStyles.bodyDark),
+              Text(
+                value,
+                style: AppTextStyles.bodyDark.copyWith(color: textColor),
+              ),
             ],
           ),
         ),

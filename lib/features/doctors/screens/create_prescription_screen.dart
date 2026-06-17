@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class CreatePrescriptionScreen extends StatefulWidget {
   final int doctorId;
@@ -78,7 +80,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Không thể tải danh sách thuốc: $e';
+        _error = '${AppTranslations.tr('cannot_load_medicines')}: $e';
         _isLoadingMedicines = false;
       });
     }
@@ -87,21 +89,21 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   void _addMedicineItem() {
     final quantity = int.tryParse(_quantityController.text.trim());
     if (_selectedMedicineId == null || quantity == null || quantity <= 0) {
-      _showError('Vui lòng chọn thuốc và nhập số lượng hợp lệ');
+      _showError(AppTranslations.tr('medicine_input_error'));
       return;
     }
 
     final selectedMedicine = _medicines.firstWhere(
       (m) => _toInt(m['id']) == _selectedMedicineId,
     );
-    final name = '${selectedMedicine['name'] ?? 'Thuốc'}';
+    final name = '${selectedMedicine['name'] ?? 'Medicine'}';
     final dosage = _dosageController.text.trim();
     final frequency = _frequencyController.text.trim();
     final duration = _durationController.text.trim();
     final instructions = _instructionsController.text.trim();
 
     if (dosage.isEmpty || frequency.isEmpty || duration.isEmpty) {
-      _showError('Vui lòng nhập đầy đủ liều dùng, tần suất và thời gian');
+      _showError(AppTranslations.tr('medicine_input_error'));
       return;
     }
 
@@ -118,9 +120,9 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Đã thêm thuốc vào đơn'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(AppTranslations.tr('med_added_success')),
+        duration: const Duration(seconds: 1),
       ),
     );
   }
@@ -140,12 +142,12 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     );
 
     if (patientId == null || medicalRecordId == null) {
-      _showError('Vui lòng kiểm tra lại mã bệnh nhân và mã hồ sơ bệnh án');
+      _showError(AppTranslations.tr('check_patient_record_id'));
       return;
     }
 
     if (_prescriptionItems.isEmpty) {
-      _showError('Vui lòng thêm ít nhất một loại thuốc vào đơn thuốc');
+      _showError(AppTranslations.tr('prescription_empty_error'));
       return;
     }
 
@@ -175,7 +177,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${result['message'] ?? 'Tạo đơn thuốc thành công'}'),
+          content: Text('${result['message'] ?? AppTranslations.tr('create_prescription_success')}'),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -184,7 +186,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      _showError('Tạo đơn thuốc thất bại: $e');
+      _showError('${AppTranslations.tr('create_prescription_failed')}: $e');
     }
   }
 
@@ -198,7 +200,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   }
 
   String _medicineLabel(Map<String, dynamic> medicine) {
-    final name = '${medicine['name'] ?? 'Thuốc'}';
+    final name = '${medicine['name'] ?? 'Medicine'}';
     final strength = '${medicine['strength'] ?? ''}'.trim();
     final form = '${medicine['dosageForm'] ?? ''}'.trim();
     final extra = [
@@ -210,21 +212,27 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Kê đơn thuốc'),
+        title: Text(AppTranslations.tr('create_prescription'), style: TextStyle(color: textColor)),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: appBarColor,
+        iconTheme: IconThemeData(color: textColor),
         elevation: 0.5,
       ),
       body: _isLoadingMedicines
           ? const Center(child: CircularProgressIndicator())
-          : _buildForm(),
+          : _buildForm(bgColor, cardColor: isDark ? const Color(0xFF1E1E1E) : Colors.white, textColor: textColor, isDark: isDark),
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(Color bgColor, {required Color cardColor, required Color textColor, required bool isDark}) {
     if (_error != null) {
       return Center(
         child: Padding(
@@ -239,15 +247,19 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     }
 
     if (_medicines.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'Chưa có thuốc đang hoạt động trong database. Hãy thêm dữ liệu vào bảng medicines trước.',
+            AppTranslations.tr('no_active_medicines'),
+            style: TextStyle(color: textColor),
+            textAlign: TextAlign.center,
           ),
         ),
       );
     }
+
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
 
     return Form(
       key: _formKey,
@@ -262,33 +274,38 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                 color: AppColors.primary.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                'Đơn thuốc này được tạo từ hồ sơ bệnh án đã chọn. Mã bệnh nhân và mã hồ sơ được khóa để tránh nhập sai.',
-                style: TextStyle(color: AppColors.primary),
+              child: Text(
+                AppTranslations.tr('prescription_locked_notice'),
+                style: const TextStyle(color: AppColors.primary),
               ),
             ),
           
           Card(
+            color: cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Thông tin chung', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(AppTranslations.tr('general_info'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
                   const SizedBox(height: 12),
                   _numberField(
                     _patientIdController,
-                    'Mã bệnh nhân',
+                    AppTranslations.tr('patient_code_label'),
                     Icons.person,
                     readOnly: widget.lockPatientAndRecord,
+                    isDark: isDark,
+                    textColor: textColor,
                   ),
                   const SizedBox(height: 12),
                   _numberField(
                     _medicalRecordIdController,
-                    'Mã hồ sơ bệnh án',
+                    AppTranslations.tr('medical_record_code_label'),
                     Icons.folder_shared,
                     readOnly: widget.lockPatientAndRecord,
+                    isDark: isDark,
+                    textColor: textColor,
                   ),
                 ],
               ),
@@ -298,21 +315,25 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
           const SizedBox(height: 12),
 
           Card(
+            color: cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Thêm thuốc vào đơn', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(AppTranslations.tr('add_medicine_to_prescription'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
                     value: _selectedMedicineId,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Chọn thuốc',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.medication),
+                    dropdownColor: cardColor,
+                    style: TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      labelText: AppTranslations.tr('select_medicine'),
+                      labelStyle: const TextStyle(color: Colors.grey),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.medication),
                     ),
                     items: _medicines
                         .map((medicine) {
@@ -322,6 +343,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                             child: Text(
                               _medicineLabel(medicine),
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: textColor),
                             ),
                           );
                         })
@@ -332,27 +354,29 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _textField(_dosageController, 'Liều dùng', Icons.local_hospital)),
+                      Expanded(child: _textField(_dosageController, AppTranslations.tr('med_dose'), Icons.local_hospital, isDark: isDark, textColor: textColor)),
                       const SizedBox(width: 8),
-                      Expanded(child: _textField(_frequencyController, 'Tần suất', Icons.repeat)),
+                      Expanded(child: _textField(_frequencyController, AppTranslations.tr('times_per_day'), Icons.repeat, isDark: isDark, textColor: textColor)),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _textField(_durationController, 'Thời gian', Icons.date_range)),
+                      Expanded(child: _textField(_durationController, AppTranslations.tr('days_duration'), Icons.date_range, isDark: isDark, textColor: textColor)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: _numberField(
                           _quantityController,
-                          'Số lượng',
+                          AppTranslations.tr('total_quantity'),
                           Icons.format_list_numbered,
+                          isDark: isDark,
+                          textColor: textColor,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _textField(_instructionsController, 'Hướng dẫn sử dụng', Icons.notes),
+                  _textField(_instructionsController, AppTranslations.tr('med_usage'), Icons.notes, isDark: isDark, textColor: textColor),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -365,7 +389,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       icon: const Icon(Icons.add),
-                      label: const Text('Thêm loại thuốc này'),
+                      label: Text(AppTranslations.tr('add_this_medicine')),
                     ),
                   )
                 ],
@@ -376,18 +400,19 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
           const SizedBox(height: 12),
 
           Card(
+            color: cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Danh sách thuốc đã kê', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(AppTranslations.tr('prescribed_meds_list'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
                   const SizedBox(height: 8),
                   if (_prescriptionItems.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(child: Text('Chưa có thuốc nào được thêm', style: TextStyle(color: Colors.grey))),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(child: Text(AppTranslations.tr('no_meds_prescribed'), style: const TextStyle(color: Colors.grey))),
                     )
                   else
                     ListView.builder(
@@ -397,14 +422,14 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                       itemBuilder: (context, index) {
                         final item = _prescriptionItems[index];
                         return Card(
-                          color: Colors.grey.shade50,
+                          color: isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade50,
                           child: ListTile(
-                            title: Text('${item['medicineName']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            title: Text('${item['medicineName']}', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
                             subtitle: Text(
-                              'Liều: ${item['dosage']} | Tần suất: ${item['frequency']}\n'
-                              'Thời gian: ${item['duration']} | SL: ${item['quantity']}\n'
-                              'HD: ${item['instructions']}',
-                              style: const TextStyle(fontSize: 13),
+                              '${AppTranslations.tr('med_dose')}: ${item['dosage']} | ${AppTranslations.tr('times_per_day')}: ${item['frequency']}\n'
+                              '${AppTranslations.tr('days_duration')}: ${item['duration']} | SL: ${item['quantity']}\n'
+                              '${AppTranslations.tr('med_usage')}: ${item['instructions']}',
+                              style: TextStyle(fontSize: 13, color: subTextColor),
                             ),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
@@ -424,12 +449,14 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
           TextFormField(
             controller: _notesController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Ghi chú đơn thuốc',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.edit_note),
+            style: TextStyle(color: textColor),
+            decoration: InputDecoration(
+              labelText: AppTranslations.tr('prescription_notes'),
+              labelStyle: const TextStyle(color: Colors.grey),
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.edit_note),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: cardColor,
             ),
           ),
           
@@ -456,7 +483,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                       ),
                     )
                   : const Icon(Icons.save),
-              label: Text(_isSaving ? 'Đang lưu...' : 'Lưu đơn thuốc'),
+              label: Text(_isSaving ? AppTranslations.tr('saving_label') : AppTranslations.tr('save_prescription')),
             ),
           ),
         ],
@@ -467,16 +494,20 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   Widget _textField(
     TextEditingController controller,
     String label,
-    IconData icon,
-  ) {
+    IconData icon, {
+    required bool isDark,
+    required Color textColor,
+  }) {
     return TextFormField(
       controller: controller,
+      style: TextStyle(color: textColor),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
         border: const OutlineInputBorder(),
         prefixIcon: Icon(icon),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       ),
     );
   }
@@ -486,21 +517,27 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     String label,
     IconData icon, {
     bool readOnly = false,
+    required bool isDark,
+    required Color textColor,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.number,
       readOnly: readOnly,
+      style: TextStyle(color: textColor),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
         border: const OutlineInputBorder(),
         prefixIcon: Icon(icon),
         filled: true,
-        fillColor: readOnly ? Colors.grey.shade100 : Colors.white,
+        fillColor: readOnly
+            ? (isDark ? const Color(0xFF2E2E2E) : Colors.grey.shade100)
+            : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
       ),
       validator: (value) {
-        if (value == null || value.trim().isEmpty) return 'Không được để trống';
-        if (int.tryParse(value.trim()) == null) return 'Phải là số';
+        if (value == null || value.trim().isEmpty) return AppTranslations.tr('field_required');
+        if (int.tryParse(value.trim()) == null) return AppTranslations.tr('must_be_number');
         return null;
       },
     );
@@ -513,4 +550,3 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     return int.tryParse('$value');
   }
 }
-

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
 
 class AdminUserDetailScreen extends StatefulWidget {
@@ -96,7 +98,7 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Tải chi tiết thất bại: $e')));
+      ).showSnackBar(SnackBar(content: Text('${AppTranslations.tr('load_detail_failed')}: $e')));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -126,22 +128,22 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
     final newPassword = _newPasswordController.text.trim();
 
     if (email.isEmpty) {
-      _showMessage('Email không được để trống');
+      _showMessage(AppTranslations.tr('email_empty_error'));
       return;
     }
 
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
-      _showMessage('Email không hợp lệ');
+      _showMessage(AppTranslations.tr('email_invalid_error'));
       return;
     }
 
     if (phone.isNotEmpty && !RegExp(r'^\d{10}$').hasMatch(phone)) {
-      _showMessage('Số điện thoại phải gồm 10 chữ số');
+      _showMessage(AppTranslations.tr('phone_length_error'));
       return;
     }
 
     if (newPassword.isNotEmpty && !RegExp(r'^\d{6}$').hasMatch(newPassword)) {
-      _showMessage('Mật khẩu mới phải gồm 6 chữ số');
+      _showMessage(AppTranslations.tr('password_length_error'));
       return;
     }
 
@@ -149,7 +151,7 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
       final license = _licenseController.text.trim().toUpperCase();
 
       if (license.isNotEmpty && !RegExp(r'^LIC-\d{6}$').hasMatch(license)) {
-        _showMessage('Mã định danh phải có dạng LIC-001234');
+        _showMessage(AppTranslations.tr('license_format_error'));
         return;
       }
     }
@@ -181,14 +183,14 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật tài khoản thành công')),
+        SnackBar(content: Text(AppTranslations.tr('update_account_success'))),
       );
 
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
 
-      _showMessage('Cập nhật thất bại: $e');
+      _showMessage('${AppTranslations.tr('update_account_failed')}: $e');
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -214,13 +216,13 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            nextActive ? 'Đã mở khóa tài khoản' : 'Đã khóa tài khoản',
+            nextActive ? AppTranslations.tr('unlocked_account_msg') : AppTranslations.tr('locked_account_msg'),
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      _showMessage('Cập nhật trạng thái thất bại: $e');
+      _showMessage('${AppTranslations.tr('update_status_failed')}: $e');
     }
   }
 
@@ -236,6 +238,8 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
     TextInputType? keyboardType,
     int maxLines = 1,
     String? helperText,
+    required Color textColor,
+    required Color subTextColor,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -243,36 +247,49 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: TextStyle(color: subTextColor),
           helperText: helperText,
+          helperStyle: TextStyle(color: subTextColor.withOpacity(0.8), fontSize: 11),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: subTextColor.withOpacity(0.3)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.primary),
+          ),
         ),
       ),
     );
   }
 
-  Widget _sectionTitle(String text) {
+  Widget _sectionTitle(String text, Color textColor) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 12),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: textColor),
       ),
     );
   }
 
-  Widget _buildStatusCard() {
+  Widget _buildStatusCard(Color cardColor, Color textColor, Color subTextColor) {
     return Card(
+      color: cardColor,
       child: SwitchListTile(
-        title: const Text(
-          'Trạng thái tài khoản',
-          style: TextStyle(fontWeight: FontWeight.w700),
+        title: Text(
+          AppTranslations.tr('account_status'),
+          style: TextStyle(fontWeight: FontWeight.w700, color: textColor),
         ),
         subtitle: Text(
           _isActive
-              ? 'Tài khoản đang được phép đăng nhập'
-              : 'Tài khoản đang bị khóa, không thể đăng nhập',
+              ? AppTranslations.tr('account_status_active_desc')
+              : AppTranslations.tr('account_status_locked_desc'),
+          style: TextStyle(color: subTextColor),
         ),
         value: _isActive,
         activeColor: Colors.green,
@@ -282,77 +299,93 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
     );
   }
 
-  Widget _buildCommonFields() {
+  Widget _buildCommonFields(Color textColor, Color subTextColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('Thông tin tài khoản'),
+        _sectionTitle(AppTranslations.tr('account_info_section'), textColor),
         _field(
           'Email',
           _emailController,
           keyboardType: TextInputType.emailAddress,
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
         _field(
-          'Số điện thoại',
+          AppTranslations.tr('phone_label'),
           _phoneController,
           keyboardType: TextInputType.phone,
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
         _field(
-          'Mật khẩu mới',
+          AppTranslations.tr('new_password_label'),
           _newPasswordController,
           keyboardType: TextInputType.number,
-          helperText: 'Để trống nếu không muốn đổi mật khẩu',
+          helperText: AppTranslations.tr('new_password_helper'),
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
-        _sectionTitle('Thông tin cá nhân'),
-        _field('Họ tên', _fullNameController),
+        _sectionTitle(AppTranslations.tr('personal_info_section'), textColor),
+        _field(AppTranslations.tr('fullname_label'), _fullNameController, textColor: textColor, subTextColor: subTextColor),
       ],
     );
   }
 
-  Widget _buildPatientFields() {
+  Widget _buildPatientFields(Color textColor, Color subTextColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _field(
-          'Giới tính',
+          AppTranslations.tr('gender_label'),
           _genderController,
-          helperText: 'M = Nam, F = Nữ, O = Khác',
+          helperText: AppTranslations.tr('gender_helper'),
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
         _field(
-          'Ngày sinh',
+          AppTranslations.tr('dob_label'),
           _dobController,
           keyboardType: TextInputType.datetime,
-          helperText: 'Định dạng: yyyy-MM-dd',
+          helperText: AppTranslations.tr('dob_helper'),
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
-        _field('Địa chỉ', _addressController),
-        _field('Nhóm máu', _bloodTypeController),
-        _field('Dị ứng', _allergiesController, maxLines: 2),
-        _field('Người liên hệ khẩn cấp', _emergencyNameController),
+        _field(AppTranslations.tr('address_label'), _addressController, textColor: textColor, subTextColor: subTextColor),
+        _field(AppTranslations.tr('blood_group_label'), _bloodTypeController, textColor: textColor, subTextColor: subTextColor),
+        _field(AppTranslations.tr('allergies_label'), _allergiesController, maxLines: 2, textColor: textColor, subTextColor: subTextColor),
+        _field(AppTranslations.tr('emergency_name_label'), _emergencyNameController, textColor: textColor, subTextColor: subTextColor),
         _field(
-          'SĐT liên hệ khẩn cấp',
+          AppTranslations.tr('emergency_phone_label'),
           _emergencyPhoneController,
           keyboardType: TextInputType.phone,
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
       ],
     );
   }
 
-  Widget _buildDoctorFields() {
+  Widget _buildDoctorFields(Color textColor, Color subTextColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _field('Học hàm / Chức danh', _titleController),
+        _field(AppTranslations.tr('title_label'), _titleController, textColor: textColor, subTextColor: subTextColor),
         _field(
-          'Mã định danh nghề nghiệp',
+          AppTranslations.tr('license_number'),
           _licenseController,
-          helperText: 'Ví dụ: LIC-001234',
+          helperText: AppTranslations.tr('license_helper'),
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
         _field(
-          'Phí tư vấn',
+          AppTranslations.tr('consultation_fee_label'),
           _consultationFeeController,
           keyboardType: TextInputType.number,
+          textColor: textColor,
+          subTextColor: subTextColor,
         ),
-        _field('Tiểu sử / Mô tả', _bioController, maxLines: 4),
+        _field(AppTranslations.tr('bio_label'), _bioController, maxLines: 4, textColor: textColor, subTextColor: subTextColor),
       ],
     );
   }
@@ -379,21 +412,34 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
+
     final roleText = _role == 'doctor'
-        ? 'Bác sĩ'
+        ? AppTranslations.tr('doctor_label')
         : _role == 'patient'
-        ? 'Bệnh nhân'
+        ? AppTranslations.tr('patient_label')
         : _role == 'admin'
-        ? 'Admin'
+        ? AppTranslations.tr('admin_label')
         : _role;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('Chi tiết tài khoản $roleText'),
+        title: Text('${AppTranslations.tr('account_detail_title')} $roleText'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            onPressed: () async {
+              await SettingsManager.toggleTheme(!isDark);
+              setState(() {});
+            },
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+          ),
           IconButton(onPressed: _loadDetail, icon: const Icon(Icons.refresh)),
         ],
       ),
@@ -403,11 +449,11 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _buildStatusCard(),
+                  _buildStatusCard(cardColor, textColor, subTextColor),
                   const SizedBox(height: 12),
-                  _buildCommonFields(),
-                  if (_role == 'patient') _buildPatientFields(),
-                  if (_role == 'doctor') _buildDoctorFields(),
+                  _buildCommonFields(textColor, subTextColor),
+                  if (_role == 'patient') _buildPatientFields(textColor, subTextColor),
+                  if (_role == 'doctor') _buildDoctorFields(textColor, subTextColor),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
@@ -419,7 +465,7 @@ class _AdminUserDetailScreenState extends State<AdminUserDetailScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       icon: const Icon(Icons.save),
-                      label: Text(_isSaving ? 'Đang lưu...' : 'Lưu cập nhật'),
+                      label: Text(_isSaving ? AppTranslations.tr('saving_label') : AppTranslations.tr('save_update_label')),
                     ),
                   ),
                 ],

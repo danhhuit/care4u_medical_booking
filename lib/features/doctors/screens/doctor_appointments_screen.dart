@@ -3,6 +3,7 @@ import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class DoctorAppointmentsScreen extends StatefulWidget {
   const DoctorAppointmentsScreen({super.key});
@@ -58,7 +59,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Không thể tải lịch hẹn: $e';
+        _errorMessage = '${AppTranslations.tr('cannot_load_appointments')}: $e';
         _isLoading = false;
       });
     }
@@ -80,13 +81,13 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
   String _statusLabel(String s) {
     switch (s.toLowerCase()) {
       case 'confirmed':
-        return 'Xác nhận';
+        return AppTranslations.tr('upcoming');
       case 'completed':
-        return 'Hoàn thành';
+        return AppTranslations.tr('completed');
       case 'cancelled':
-        return 'Đã huỷ';
+        return AppTranslations.tr('cancelled');
       default:
-        return 'Chờ';
+        return AppTranslations.tr('pending');
     }
   }
 
@@ -109,11 +110,11 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
   String _formatCreatedAt(dynamic value) {
     final raw = '${value ?? ''}';
     final dt = DateTime.tryParse(raw);
-    if (dt == null) return raw.isEmpty ? 'Chưa cập nhật' : raw;
+    if (dt == null) return raw.isEmpty ? AppTranslations.tr('not_updated') : raw;
     return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildTodayHeaderBanner() {
+  Widget _buildTodayHeaderBanner(Color textColor) {
     final now = DateTime.now();
     final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     
@@ -147,13 +148,13 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Lịch khám ngày hôm nay',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  AppTranslations.tr('today_appointments_banner'),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Tổng số bệnh nhân: ${todayAppts.length} | Phòng khám: Phòng ${100 + currentDoctorId}',
+                  '${AppTranslations.tr('total_patients_label')}: ${todayAppts.length} | ${AppTranslations.tr('room_label')}: ${100 + currentDoctorId}',
                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
@@ -164,7 +165,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
     );
   }
 
-  Widget _buildList(String type) {
+  Widget _buildList(String type, Color cardColor, Color textColor, Color subTextColor) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -184,7 +185,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _loadAppointments,
-                child: const Text('Thử lại'),
+                child: Text(AppTranslations.tr('retry')),
               ),
             ],
           ),
@@ -198,14 +199,14 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
       return RefreshIndicator(
         onRefresh: _loadAppointments,
         child: ListView(
-          children: const [
-            SizedBox(height: 180),
-            Icon(Icons.event_busy, size: 60, color: Colors.grey),
-            SizedBox(height: 12),
+          children: [
+            const SizedBox(height: 180),
+            const Icon(Icons.event_busy, size: 60, color: Colors.grey),
+            const SizedBox(height: 12),
             Center(
               child: Text(
-                'Không có lịch hẹn',
-                style: TextStyle(color: Colors.grey),
+                AppTranslations.tr('no_appointments'),
+                style: const TextStyle(color: Colors.grey),
               ),
             ),
           ],
@@ -240,10 +241,10 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
           final a = list[i];
           final status = '${a['status'] ?? 'pending'}';
           final patientName =
-              '${a['patientName'] ?? 'Bệnh nhân #${a['patientId']}'}';
+              '${a['patientName'] ?? '${AppTranslations.tr('patient_label')} #${a['patientId']}'}';
           final specialtyName =
-              '${a['specialtyName'] ?? 'Chưa có chuyên khoa'}';
-          final reason = '${a['reason'] ?? 'Không có lý do khám'}';
+              '${a['specialtyName'] ?? AppTranslations.tr('not_updated')}';
+          final reason = '${a['reason'] ?? AppTranslations.tr('not_updated')}';
           final appointmentNo = '${a['appointmentNo'] ?? ''}';
           final createdAt = _formatCreatedAt(a['createdAt']);
 
@@ -251,12 +252,12 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
           final dateRaw = '${a['scheduleDate'] ?? a['appointmentDate'] ?? a['date'] ?? a['createdAt'] ?? ''}';
           final isToday = dateRaw.startsWith(todayStr);
           final sttText = index != -1 ? 'STT: ${index + 1}' : 'STT: -';
-          final roomText = 'Phòng ${100 + currentDoctorId}';
+          final roomText = '${AppTranslations.tr('room_label')} ${100 + currentDoctorId}';
 
           return Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardColor,
               borderRadius: BorderRadius.circular(14),
               boxShadow: const [
                 BoxShadow(color: Colors.black12, blurRadius: 4),
@@ -282,15 +283,15 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(patientName, style: AppTextStyles.bodyDark),
-                      Text(specialtyName, style: AppTextStyles.captionLight),
+                      Text(patientName, style: AppTextStyles.bodyDark.copyWith(color: textColor)),
+                      Text(specialtyName, style: AppTextStyles.captionLight.copyWith(color: subTextColor)),
                       Row(
                         children: [
                           Text(
-                            'Mã lịch: $appointmentNo',
-                            style: const TextStyle(
+                            '${AppTranslations.tr('appointment_code')}: $appointmentNo',
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.blueGrey,
+                              color: subTextColor,
                             ),
                           ),
                           if (isToday) ...[
@@ -322,17 +323,17 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                         ],
                       ),
                       Text(
-                        'Lý do: $reason',
-                        style: const TextStyle(
+                        '${AppTranslations.tr('exam_reason')}: $reason',
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.blueGrey,
+                          color: subTextColor,
                         ),
                       ),
                       Text(
                         createdAt,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.blueGrey,
+                          color: subTextColor,
                         ),
                       ),
                     ],
@@ -366,19 +367,26 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: bgColor,
         appBar: AppBar(
-          title: const Text('Lịch hẹn của tôi'),
+          title: Text(AppTranslations.tr('my_appointments'), style: TextStyle(color: textColor)),
           centerTitle: true,
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
+          backgroundColor: appBarColor,
           elevation: 0.5,
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh, color: textColor),
               onPressed: _loadAppointments,
             ),
           ],
@@ -387,23 +395,23 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
             indicatorColor: AppColors.primary,
             labelColor: AppColors.primary,
             unselectedLabelColor: Colors.grey,
-            tabs: const [
-              Tab(text: 'Tất cả'),
-              Tab(text: 'Sắp tới'),
-              Tab(text: 'Hoàn thành'),
+            tabs: [
+              Tab(text: AppTranslations.tr('all_label')),
+              Tab(text: AppTranslations.tr('upcoming')),
+              Tab(text: AppTranslations.tr('completed')),
             ],
           ),
         ),
         body: Column(
           children: [
-            if (!_isLoading && _errorMessage == null) _buildTodayHeaderBanner(),
+            if (!_isLoading && _errorMessage == null) _buildTodayHeaderBanner(textColor),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildList('all'),
-                  _buildList('upcoming'),
-                  _buildList('completed'),
+                  _buildList('all', cardColor, textColor, subTextColor),
+                  _buildList('upcoming', cardColor, textColor, subTextColor),
+                  _buildList('completed', cardColor, textColor, subTextColor),
                 ],
               ),
             ),
@@ -413,4 +421,3 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
     );
   }
 }
-

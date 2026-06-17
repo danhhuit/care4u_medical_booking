@@ -44,7 +44,7 @@ class _TopupScreenState extends State<TopupScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppTranslations.tr('choose_amount') ?? 'Chọn số tiền',
+                AppTranslations.tr('choose_amount'),
                 style: TextStyle(
                   fontSize: 20, 
                   fontWeight: FontWeight.w700,
@@ -76,7 +76,7 @@ class _TopupScreenState extends State<TopupScreen> {
               keyboardType: TextInputType.number,
               style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
               decoration: InputDecoration(
-                hintText: AppTranslations.tr('or_enter_amount') ?? 'Hoặc nhập số tiền khác (Tối thiểu 10.000đ)',
+                hintText: AppTranslations.tr('or_enter_amount'),
                 hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: cardColor,
@@ -107,7 +107,7 @@ class _TopupScreenState extends State<TopupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppTranslations.tr('payment_method') ?? 'Phương thức thanh toán',
+                    AppTranslations.tr('payment_method'),
                     style: TextStyle(
                       fontSize: 18, 
                       fontWeight: FontWeight.w700,
@@ -116,7 +116,7 @@ class _TopupScreenState extends State<TopupScreen> {
                   ),
                   const SizedBox(height: 16),
                   _methodTile(
-                    title: AppTranslations.tr('bank_transfer') ?? 'Chuyển khoản ngân hàng',
+                    title: AppTranslations.tr('bank_transfer'),
                     value: 'bank_transfer',
                     iconWidget: Container(
                       width: 36,
@@ -130,7 +130,7 @@ class _TopupScreenState extends State<TopupScreen> {
                   ),
                   const SizedBox(height: 12),
                   _methodTile(
-                    title: AppTranslations.tr('momo_wallet') ?? 'Ví MoMo', 
+                    title: AppTranslations.tr('momo_wallet'), 
                     value: 'momo',
                     iconWidget: Container(
                       width: 36,
@@ -162,7 +162,7 @@ class _TopupScreenState extends State<TopupScreen> {
                 onPressed: _isValidAmount ? () {} : null,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text(AppTranslations.tr('continue') ?? 'Tiếp tục'),
+                  child: Text(AppTranslations.tr('continue')),
                 ),
               ),
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class DoctorReviewsScreen extends StatefulWidget {
   final Map<String, dynamic> doctorData;
@@ -23,7 +25,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
 
   int get _doctorId => int.tryParse('${widget.doctorData['id'] ?? 1}') ?? 1;
   String get _doctorName =>
-      '${widget.doctorData['fullName'] ?? widget.doctorData['name'] ?? 'Bác sĩ'}';
+      '${widget.doctorData['fullName'] ?? widget.doctorData['name'] ?? AppTranslations.tr('doctor_label')}';
   String get _specialty =>
       '${widget.doctorData['specialtyName'] ?? widget.doctorData['specialty'] ?? ''}';
 
@@ -49,7 +51,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Không thể tải đánh giá: $e';
+        _error = '${AppTranslations.tr('cannot_load_reviews')}: $e';
         _isLoading = false;
       });
     }
@@ -96,27 +98,36 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
 
     final reply = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Phản hồi đánh giá'),
-        content: TextField(
-          controller: controller,
-          maxLines: 4,
-          decoration: const InputDecoration(
-            hintText: 'Nhập phản hồi của bác sĩ...',
-            border: OutlineInputBorder(),
+      builder: (context) {
+        final isDark = SettingsManager.isDarkMode;
+        final textColor = isDark ? Colors.white : Colors.black87;
+        final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+
+        return AlertDialog(
+          backgroundColor: cardColor,
+          title: Text(AppTranslations.tr('reply_review_title'), style: TextStyle(color: textColor)),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            style: TextStyle(color: textColor),
+            decoration: InputDecoration(
+              hintText: AppTranslations.tr('reply_input_hint'),
+              hintStyle: const TextStyle(color: Colors.grey),
+              border: const OutlineInputBorder(),
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Lưu'),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppTranslations.tr('cancel_label')),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, controller.text.trim()),
+              child: Text(AppTranslations.tr('save_changes')),
+            ),
+          ],
+        );
+      },
     );
 
     controller.dispose();
@@ -124,8 +135,8 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
     if (reply == null) return;
     if (reply.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Phản hồi không được để trống'),
+        SnackBar(
+          content: Text(AppTranslations.tr('reply_cannot_be_empty')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -142,8 +153,8 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
       await _loadReviews();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã phản hồi đánh giá'),
+        SnackBar(
+          content: Text(AppTranslations.tr('reply_review_success')),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -151,7 +162,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Phản hồi thất bại: $e'),
+          content: Text('${AppTranslations.tr('reply_review_failed')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -164,28 +175,35 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
   Widget build(BuildContext context) {
     final filtered = _filteredReviews();
     final avg = _averageRating();
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
 
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Đánh giá của tôi'),
+        title: Text(AppTranslations.tr('view_my_reviews'), style: TextStyle(color: textColor)),
         centerTitle: true,
+        backgroundColor: appBarColor,
+        iconTheme: IconThemeData(color: textColor),
         actions: [
-          IconButton(onPressed: _loadReviews, icon: const Icon(Icons.refresh)),
+          IconButton(onPressed: _loadReviews, icon: Icon(Icons.refresh, color: textColor)),
         ],
       ),
       body: Column(
         children: [
-          _header(avg),
-          _filters(),
-          Expanded(child: _body(filtered)),
+          _header(avg, isDark, textColor),
+          _filters(isDark, textColor),
+          Expanded(child: _body(filtered, isDark, textColor)),
         ],
       ),
     );
   }
 
-  Widget _header(double avg) {
+  Widget _header(double avg, bool isDark, Color textColor) {
     return Container(
-      color: Colors.white,
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
@@ -210,9 +228,10 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
               children: [
                 Text(
                   _doctorName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17,
+                    color: textColor,
                   ),
                 ),
                 if (_specialty.trim().isNotEmpty)
@@ -233,7 +252,8 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${avg.toStringAsFixed(1)} (${_reviews.length} đánh giá)',
+                      '${avg.toStringAsFixed(1)} (${_reviews.length} ${AppTranslations.tr('reviews_count')})',
+                      style: TextStyle(color: textColor),
                     ),
                   ],
                 ),
@@ -245,9 +265,9 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
     );
   }
 
-  Widget _filters() {
+  Widget _filters(bool isDark, Color textColor) {
     return Container(
-      color: Colors.white,
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -255,9 +275,11 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
           DropdownButton<String>(
             value: _selectedSort,
             underline: const SizedBox(),
-            items: const [
-              DropdownMenuItem(value: 'newest', child: Text('Mới nhất')),
-              DropdownMenuItem(value: 'oldest', child: Text('Cũ nhất')),
+            dropdownColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            style: TextStyle(color: textColor),
+            items: [
+              DropdownMenuItem(value: 'newest', child: Text(AppTranslations.tr('sort_newest'))),
+              DropdownMenuItem(value: 'oldest', child: Text(AppTranslations.tr('sort_oldest'))),
             ],
             onChanged: (value) {
               if (value != null) setState(() => _selectedSort = value);
@@ -266,16 +288,18 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
           DropdownButton<int?>(
             value: _selectedStar,
             underline: const SizedBox(),
+            dropdownColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            style: TextStyle(color: textColor),
             items: [
-              const DropdownMenuItem<int?>(
+              DropdownMenuItem<int?>(
                 value: null,
-                child: Text('Tất cả sao'),
+                child: Text(AppTranslations.tr('all_stars')),
               ),
               ...List.generate(5, (i) {
                 final star = 5 - i;
                 return DropdownMenuItem<int?>(
                   value: star,
-                  child: Text('$star sao'),
+                  child: Text('$star ${AppTranslations.tr('star_rating')}'),
                 );
               }),
             ],
@@ -286,7 +310,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
     );
   }
 
-  Widget _body(List<Map<String, dynamic>> filtered) {
+  Widget _body(List<Map<String, dynamic>> filtered, bool isDark, Color textColor) {
     if (_isLoading || _isReplying)
       return const Center(child: CircularProgressIndicator());
 
@@ -305,7 +329,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _loadReviews,
-                child: const Text('Thử lại'),
+                child: Text(AppTranslations.tr('retry')),
               ),
             ],
           ),
@@ -317,15 +341,18 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
       return RefreshIndicator(
         onRefresh: _loadReviews,
         child: ListView(
-          children: const [
-            SizedBox(height: 180),
-            Icon(Icons.star_border, color: Colors.grey, size: 72),
-            SizedBox(height: 12),
-            Center(child: Text('Chưa có đánh giá')),
+          children: [
+            const SizedBox(height: 180),
+            const Icon(Icons.star_border, color: Colors.grey, size: 72),
+            const SizedBox(height: 12),
+            Center(child: Text(AppTranslations.tr('no_reviews_yet'), style: const TextStyle(color: Colors.grey))),
           ],
         ),
       );
     }
+
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
 
     return RefreshIndicator(
       onRefresh: _loadReviews,
@@ -333,18 +360,21 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
         padding: const EdgeInsets.all(16),
         itemCount: filtered.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) => _reviewCard(filtered[index]),
+        itemBuilder: (context, index) => _reviewCard(filtered[index], cardColor, textColor, subTextColor),
       ),
     );
   }
 
-  Widget _reviewCard(Map<String, dynamic> review) {
+  Widget _reviewCard(Map<String, dynamic> review, Color cardColor, Color textColor, Color subTextColor) {
     final rating = int.tryParse('${review['rating'] ?? 0}') ?? 0;
-    final patientName = '${review['patientName'] ?? 'Ẩn danh'}';
+    final patientName = review['patientName'] != null && '${review['patientName']}'.isNotEmpty
+        ? '${review['patientName']}'
+        : AppTranslations.tr('anonymous_user');
     final comment = '${review['comment'] ?? ''}'.trim();
     final reply = '${review['reply'] ?? ''}'.trim();
 
     return Card(
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -367,7 +397,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
                     children: [
                       Text(
                         patientName,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
                       ),
                       Text(
                         _formatDateTime(review['createdAt']),
@@ -393,7 +423,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
             ),
             if (comment.isNotEmpty) ...[
               const SizedBox(height: 10),
-              Text(comment, style: const TextStyle(height: 1.4)),
+              Text(comment, style: TextStyle(height: 1.4, color: textColor)),
             ],
             if (reply.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -404,7 +434,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
                   color: AppColors.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text('Phản hồi của bạn: $reply'),
+                child: Text('${AppTranslations.tr('doctor_reply_prefix')}: $reply', style: TextStyle(color: textColor)),
               ),
             ],
             const SizedBox(height: 10),
@@ -413,7 +443,7 @@ class _DoctorReviewsScreenState extends State<DoctorReviewsScreen> {
               child: TextButton.icon(
                 onPressed: () => _replyReview(review),
                 icon: const Icon(Icons.reply),
-                label: Text(reply.isEmpty ? 'Phản hồi' : 'Sửa phản hồi'),
+                label: Text(reply.isEmpty ? AppTranslations.tr('reply_action') : AppTranslations.tr('edit_reply_action')),
               ),
             ),
           ],

@@ -3,6 +3,7 @@ import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class DoctorScheduleScreen extends StatefulWidget {
   const DoctorScheduleScreen({super.key});
@@ -44,7 +45,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorMessage = 'Không thể tải lịch làm việc: $e';
+        _errorMessage = '${AppTranslations.tr('manage_schedule')}: $e';
         _isLoading = false;
       });
     }
@@ -78,7 +79,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(!current ? 'Đã bật lịch khám' : 'Đã tắt lịch khám'),
+          content: Text(!current ? AppTranslations.tr('schedule_enabled') : AppTranslations.tr('schedule_disabled')),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -89,7 +90,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cập nhật thất bại: $e'),
+          content: Text('${AppTranslations.tr('update_failed')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -105,8 +106,8 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Xóa lịch làm việc thành công'),
+        SnackBar(
+          content: Text(AppTranslations.tr('delete_schedule_success')),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -117,7 +118,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Xóa lịch thất bại: $e'),
+          content: Text('${AppTranslations.tr('delete_schedule_failed')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -126,16 +127,22 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Lịch làm việc'),
-        backgroundColor: Colors.white,
+        title: Text(AppTranslations.tr('manage_schedule'), style: TextStyle(color: textColor)),
+        backgroundColor: appBarColor,
+        iconTheme: IconThemeData(color: textColor),
         elevation: 0.5,
         actions: [
           IconButton(
             onPressed: _loadSchedules,
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh, color: textColor),
           ),
         ],
       ),
@@ -143,13 +150,13 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
         onPressed: _openAddSchedulePage,
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Thêm lịch', style: TextStyle(color: Colors.white)),
+        label: Text(AppTranslations.tr('add_schedule'), style: const TextStyle(color: Colors.white)),
       ),
-      body: _buildBody(),
+      body: _buildBody(bgColor, textColor, isDark),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(Color bgColor, Color textColor, bool isDark) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -171,7 +178,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadSchedules,
-                child: const Text('Thử lại'),
+                child: Text(AppTranslations.tr('retry')),
               ),
             ],
           ),
@@ -188,21 +195,24 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
             children: [
               const Icon(Icons.event_busy, size: 64, color: Colors.grey),
               const SizedBox(height: 12),
-              const Text(
-                'Chưa có lịch làm việc',
-                style: AppTextStyles.bodyLight,
+              Text(
+                AppTranslations.tr('no_schedules_yet'),
+                style: AppTextStyles.bodyLight.copyWith(color: isDark ? Colors.white70 : Colors.black54),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: _openAddSchedulePage,
                 icon: const Icon(Icons.add),
-                label: const Text('Thêm lịch đầu tiên'),
+                label: Text(AppTranslations.tr('add_schedule_first')),
               ),
             ],
           ),
         ),
       );
     }
+
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
 
     return RefreshIndicator(
       onRefresh: _loadSchedules,
@@ -212,13 +222,13 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final item = _schedules[index];
-          return _scheduleCard(item);
+          return _scheduleCard(item, cardColor, textColor, subTextColor, isDark);
         },
       ),
     );
   }
 
-  Widget _scheduleCard(Map<String, dynamic> item) {
+  Widget _scheduleCard(Map<String, dynamic> item, Color cardColor, Color textColor, Color subTextColor, bool isDark) {
     final scheduleDate = '${item['scheduleDate'] ?? ''}';
     final startTime = _shortTime('${item['startTime'] ?? ''}');
     final endTime = _shortTime('${item['endTime'] ?? ''}');
@@ -231,6 +241,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -257,21 +268,23 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                     children: [
                       Text(
                         _formatDateForDisplay(scheduleDate),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '$startTime - $endTime',
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: subTextColor),
                       ),
                     ],
                   ),
                 ),
                 _statusChip(isAvailable),
                 PopupMenuButton<String>(
+                  iconColor: textColor,
                   onSelected: (value) {
                     if (value == 'toggle') {
                       _toggleAvailability(item);
@@ -282,11 +295,11 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                   itemBuilder: (context) => [
                     PopupMenuItem(
                       value: 'toggle',
-                      child: Text(isAvailable ? 'Tắt lịch' : 'Bật lịch'),
+                      child: Text(isAvailable ? AppTranslations.tr('turn_off_schedule') : AppTranslations.tr('turn_on_schedule')),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
-                      child: Text('Xóa lịch'),
+                      child: Text(AppTranslations.tr('delete_schedule_action')),
                     ),
                   ],
                 ),
@@ -300,16 +313,18 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                 Expanded(
                   child: _infoBox(
                     icon: Icons.people_alt_outlined,
-                    label: 'Đã đặt',
+                    label: AppTranslations.tr('booked_label'),
                     value: '$bookedCount/$maxPatients',
+                    isDark: isDark,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _infoBox(
                     icon: Icons.timer_outlined,
-                    label: 'Thời gian',
-                    value: '$slotDuration phút',
+                    label: AppTranslations.tr('time_label'),
+                    value: '$slotDuration ${SettingsManager.currentLanguage == 'vi' ? 'phút' : 'mins'}',
+                    isDark: isDark,
                   ),
                 ),
               ],
@@ -319,8 +334,8 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Ghi chú: $note',
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  '${AppTranslations.tr('notes_label')}: $note',
+                  style: TextStyle(color: subTextColor, fontSize: 13),
                 ),
               ),
             ],
@@ -332,7 +347,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
 
   Widget _statusChip(bool isAvailable) {
     final color = isAvailable ? AppColors.success : Colors.grey;
-    final label = isAvailable ? 'Đang mở' : 'Đã tắt';
+    final label = isAvailable ? AppTranslations.tr('is_open') : AppTranslations.tr('is_closed');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -355,11 +370,12 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
     required IconData icon,
     required String label,
     required String value,
+    required bool isDark,
   }) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F7F6),
+        color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF1F7F6),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -377,7 +393,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
                 ),
               ],
             ),
@@ -473,7 +489,7 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
       final todayDate = DateTime(today.year, today.month, today.day);
       final compareDate = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
       if (compareDate.isBefore(todayDate)) {
-        _showError('Không thể thêm lịch làm việc trong quá khứ');
+        _showError(AppTranslations.tr('date_past_error'));
         return;
       }
     }
@@ -484,12 +500,12 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
     }
 
     if (!_isEndAfterStart(start, end)) {
-      _showError('Giờ kết thúc phải sau giờ bắt đầu');
+      _showError(AppTranslations.tr('time_range_error'));
       return;
     }
 
     if (maxPatients <= 0 || slotDuration <= 0) {
-      _showError('Số bệnh nhân và thời lượng ca phải lớn hơn 0');
+      _showError(AppTranslations.tr('max_patients_error'));
       return;
     }
 
@@ -511,7 +527,7 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${result['message'] ?? 'Tạo lịch làm việc thành công'}',
+            '${result['message'] ?? AppTranslations.tr('add_schedule_success')}',
           ),
           backgroundColor: AppColors.primary,
         ),
@@ -533,11 +549,17 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Thêm lịch làm việc'),
-        backgroundColor: Colors.white,
+        title: Text(AppTranslations.tr('add_schedule_title'), style: TextStyle(color: textColor)),
+        backgroundColor: appBarColor,
+        iconTheme: IconThemeData(color: textColor),
         elevation: 0.5,
       ),
       body: SingleChildScrollView(
@@ -547,50 +569,62 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
           children: [
             _field(
               controller: _dateController,
-              label: 'Ngày khám',
+              label: AppTranslations.tr('work_date'),
               hint: '2026-06-08',
               icon: Icons.calendar_today,
               keyboardType: TextInputType.datetime,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 12),
             _field(
               controller: _startTimeController,
-              label: 'Giờ bắt đầu',
+              label: AppTranslations.tr('start_time'),
               hint: '08:00',
               icon: Icons.access_time,
               keyboardType: TextInputType.datetime,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 12),
             _field(
               controller: _endTimeController,
-              label: 'Giờ kết thúc',
+              label: AppTranslations.tr('end_time'),
               hint: '08:30',
               icon: Icons.timer_outlined,
               keyboardType: TextInputType.datetime,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 12),
             _field(
               controller: _maxPatientsController,
-              label: 'Số bệnh nhân tối đa',
+              label: AppTranslations.tr('max_patients'),
               hint: '1',
               icon: Icons.people_alt_outlined,
               keyboardType: TextInputType.number,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 12),
             _field(
               controller: _slotController,
-              label: 'Thời lượng mỗi ca/phút',
+              label: AppTranslations.tr('slot_duration_label'),
               hint: '30',
               icon: Icons.timelapse,
               keyboardType: TextInputType.number,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 12),
             _field(
               controller: _noteController,
-              label: 'Ghi chú',
-              hint: 'Ca khám buổi sáng',
+              label: AppTranslations.tr('notes_label'),
+              hint: 'Morning shift',
               icon: Icons.note_alt_outlined,
               maxLines: 2,
+              isDark: isDark,
+              textColor: textColor,
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -604,7 +638,7 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.save),
-                label: Text(_isSaving ? 'Đang lưu...' : 'Lưu lịch làm việc'),
+                label: Text(_isSaving ? AppTranslations.tr('saving_label') : AppTranslations.tr('save_schedule')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -625,6 +659,8 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
     required String label,
     required String hint,
     required IconData icon,
+    required bool isDark,
+    required Color textColor,
     TextInputType? keyboardType,
     int maxLines = 1,
   }) {
@@ -632,12 +668,15 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      style: TextStyle(color: textColor),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
         hintText: hint,
+        hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Icon(icon, color: AppColors.primary),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
@@ -689,4 +728,3 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
     return text;
   }
 }
-

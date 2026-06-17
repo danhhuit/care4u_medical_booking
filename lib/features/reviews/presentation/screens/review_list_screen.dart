@@ -3,7 +3,7 @@ import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
-// import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_list_screen.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'review_doctor_screen.dart';
 
 class ReviewListScreen extends StatefulWidget {
@@ -63,7 +63,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Không thể tải danh sách đánh giá: $e';
+        _error = '${AppTranslations.tr('cannot_load_reviews')}: $e';
         _isLoading = false;
       });
     }
@@ -84,7 +84,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
 
   String _formatDate(dynamic value) {
     final dt = DateTime.tryParse('${value ?? ''}');
-    if (dt == null) return _text(value, fallback: 'Chưa cập nhật');
+    if (dt == null) return _text(value, fallback: AppTranslations.tr('not_updated'));
     final local = dt.toLocal();
     return '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
   }
@@ -99,7 +99,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         builder: (_) => ReviewDoctorScreen(
           patientId: currentPatientId,
           doctorId: int.tryParse('${appt['doctorId'] ?? ''}'),
-          doctorName: _text(appt['doctorName'], fallback: 'Bác sĩ'),
+          doctorName: _text(appt['doctorName'], fallback: AppTranslations.tr('doctor_label')),
           appointmentId: '${appt['id']}',
           existingReview: existingReview,
           isReadOnly: reviewed,
@@ -116,22 +116,26 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : AppColors.primary;
+    final textColor = isDark ? Colors.white : Colors.black87;
 
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Đánh giá bác sĩ'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        title: Text(AppTranslations.tr('rate_doctor'), style: const TextStyle(color: Colors.white)),
+        backgroundColor: appBarColor,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          IconButton(onPressed: _loadData, icon: const Icon(Icons.refresh)),
+          IconButton(onPressed: _loadData, icon: const Icon(Icons.refresh, color: Colors.white)),
         ],
       ),
-      body: _buildBody(isDark),
+      body: _buildBody(isDark, textColor),
     );
   }
 
-  Widget _buildBody(bool isDark) {
+  Widget _buildBody(bool isDark, Color textColor) {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
     if (_error != null) {
@@ -149,7 +153,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _loadData,
-                child: const Text('Thử lại'),
+                child: Text(AppTranslations.tr('retry')),
               ),
             ],
           ),
@@ -161,11 +165,16 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
       return RefreshIndicator(
         onRefresh: _loadData,
         child: ListView(
-          children: const [
-            SizedBox(height: 180),
-            Icon(Icons.rate_review_outlined, color: Colors.grey, size: 80),
-            SizedBox(height: 16),
-            Center(child: Text('Chưa có lịch hẹn phù hợp để đánh giá')),
+          children: [
+            const SizedBox(height: 180),
+            const Icon(Icons.rate_review_outlined, color: Colors.grey, size: 80),
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                AppTranslations.tr('no_appt_for_review'),
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
           ],
         ),
       );
@@ -178,16 +187,15 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         itemCount: _appointments.length,
         itemBuilder: (context, index) {
           final appt = _appointments[index];
-          return _appointmentCard(appt, isDark);
+          return _appointmentCard(appt, isDark, textColor);
         },
       ),
     );
   }
 
-  Widget _appointmentCard(Map<String, dynamic> appt, bool isDark) {
+  Widget _appointmentCard(Map<String, dynamic> appt, bool isDark, Color textColor) {
     final existingReview = _reviewForAppointment(appt['id']);
     final hasReviewed = existingReview != null;
-    final textColor = isDark ? Colors.white : Colors.black87;
     final subColor = isDark ? Colors.white70 : Colors.grey.shade600;
 
     return Card(
@@ -214,7 +222,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _text(appt['doctorName'], fallback: 'Bác sĩ'),
+                        _text(appt['doctorName'], fallback: AppTranslations.tr('doctor_label')),
                         style: AppTextStyles.heading2.copyWith(
                           fontSize: 16,
                           color: textColor,
@@ -222,7 +230,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _text(appt['specialtyName'], fallback: 'Chuyên khoa'),
+                        _text(appt['specialtyName'], fallback: AppTranslations.tr('specialties')),
                         style: TextStyle(color: subColor, fontSize: 13),
                       ),
                     ],
@@ -238,9 +246,9 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                       color: AppColors.success.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'Đã đánh giá',
-                      style: TextStyle(
+                    child: Text(
+                      AppTranslations.tr('reviewed'),
+                      style: const TextStyle(
                         color: AppColors.success,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -254,22 +262,22 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
             const SizedBox(height: 8),
             _info(
               Icons.confirmation_number_outlined,
-              'Mã lịch',
+              AppTranslations.tr('appointment_code'),
               _text(appt['appointmentNo']),
               textColor,
             ),
             const SizedBox(height: 6),
             _info(
               Icons.calendar_today,
-              'Thời gian',
+              AppTranslations.tr('time_label'),
               _formatDate(appt['createdAt']),
               textColor,
             ),
             const SizedBox(height: 6),
             _info(
               Icons.info_outline,
-              'Trạng thái',
-              _text(appt['status']),
+              AppTranslations.tr('status_label'),
+              AppTranslations.tr('${appt['status']}'.toLowerCase()),
               textColor,
             ),
             const SizedBox(height: 14),
@@ -279,15 +287,15 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                 onPressed: () => _openReview(appt),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: hasReviewed
-                      ? Colors.grey.shade200
+                      ? (isDark ? const Color(0xFF2E2E2E) : Colors.grey.shade200)
                       : AppColors.primary,
-                  foregroundColor: hasReviewed ? Colors.black87 : Colors.white,
+                  foregroundColor: hasReviewed ? (isDark ? Colors.white70 : Colors.black87) : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                child: Text(hasReviewed ? 'Xem đánh giá' : 'Đánh giá'),
+                child: Text(hasReviewed ? AppTranslations.tr('view_review') : AppTranslations.tr('evaluate')),
               ),
             ),
           ],
@@ -315,4 +323,3 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
     );
   }
 }
-

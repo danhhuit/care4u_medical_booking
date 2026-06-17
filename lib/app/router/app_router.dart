@@ -10,7 +10,6 @@ import 'package:care4u_medical_booking/features/doctors/screens/doctor_detail_sc
 import 'package:care4u_medical_booking/features/doctors/screens/doctors_screen.dart';
 import 'package:care4u_medical_booking/features/health_center/health_center_page.dart';
 import 'package:care4u_medical_booking/features/home/presentation/screens/main_screen.dart';
-// import 'package:care4u_medical_booking/features/medical_records/screens/results_page.dart';
 import 'package:care4u_medical_booking/features/notifications/presentation/screens/notification_list_screen.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/edit_profile_screen.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/patient_profile_screen.dart';
@@ -20,9 +19,7 @@ import 'package:care4u_medical_booking/features/store/presentation/screens/walle
 import 'package:care4u_medical_booking/features/payments/presentation/screens/topup_screen.dart';
 import 'package:care4u_medical_booking/features/payments/presentation/screens/transaction_history_screen.dart';
 import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_doctor_screen.dart';
-// import 'package:care4u_medical_booking/features/reviews/presentation/screens/review_list_screen.dart';
 import 'package:care4u_medical_booking/features/specialties/screens/specialties_screen.dart';
-// import 'package:care4u_medical_booking/features/prescriptions/screens/prescription_list_page.dart';
 import 'package:care4u_medical_booking/features/medical_records/screens/medical_record_list_screen.dart';
 import 'package:care4u_medical_booking/features/prescriptions/screens/prescription_list_screen.dart';
 

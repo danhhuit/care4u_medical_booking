@@ -3,6 +3,7 @@ import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 
 class ReviewDoctorScreen extends StatefulWidget {
   final int patientId;
@@ -31,7 +32,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
   final TextEditingController _commentCtrl = TextEditingController();
 
   int _rating = 0;
-  bool _isAnonymous = false;
+  final bool _isAnonymous = false; // Always false as anonymous review function is removed.
   bool _isSaving = false;
   bool _submitted = false;
 
@@ -42,7 +43,6 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     if (review != null) {
       _rating = int.tryParse('${review['rating'] ?? 0}') ?? 0;
       _commentCtrl.text = '${review['comment'] ?? ''}';
-      _isAnonymous = review['isAnonymous'] == true;
     }
   }
 
@@ -59,12 +59,12 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     final appointmentId = widget.appointmentId;
 
     if (doctorId == null || appointmentId == null || appointmentId.isEmpty) {
-      _showError('Thiếu thông tin bác sĩ hoặc lịch hẹn để gửi đánh giá');
+      _showError(AppTranslations.tr('missing_doctor_appt_info'));
       return;
     }
 
     if (_rating < 1 || _rating > 5) {
-      _showError('Vui lòng chọn số sao từ 1 đến 5');
+      _showError(AppTranslations.tr('review_choose_star'));
       return;
     }
 
@@ -88,7 +88,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${result['message'] ?? 'Gửi đánh giá thành công'}'),
+          content: Text('${result['message'] ?? AppTranslations.tr('review_success_title')}'),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -100,7 +100,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      _showError('Gửi đánh giá thất bại: $e');
+      _showError('${AppTranslations.tr('review_failed_msg')}: $e');
     }
   }
 
@@ -116,25 +116,32 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
 
   String get _doctorName => widget.doctorName?.trim().isNotEmpty == true
       ? widget.doctorName!.trim()
-      : 'Bác sĩ';
+      : AppTranslations.tr('doctor_label');
 
   @override
   Widget build(BuildContext context) {
+    final isDark = SettingsManager.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
+    final appBarColor = isDark ? const Color(0xFF1E1E1E) : AppColors.primary;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
           widget.existingReview != null || widget.isReadOnly
-              ? 'Chi tiết đánh giá'
-              : 'Đánh giá bác sĩ',
+              ? AppTranslations.tr('review_detail_title')
+              : AppTranslations.tr('rate_doctor'),
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: appBarColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: _submitted ? _buildSuccess() : _buildForm(),
+      body: _submitted ? _buildSuccess(textColor) : _buildForm(isDark, textColor),
     );
   }
 
-  Widget _buildSuccess() {
+  Widget _buildSuccess(Color textColor) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -143,16 +150,16 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           children: [
             const Icon(Icons.check_circle, color: AppColors.success, size: 84),
             const SizedBox(height: 20),
-            const Text(
-              'Đánh giá đã được gửi',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              AppTranslations.tr('review_submitted'),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Cảm ơn bạn đã gửi phản hồi. Đánh giá của bạn sẽ giúp Care4U cải thiện chất lượng dịch vụ.',
+            Text(
+              AppTranslations.tr('review_success_desc'),
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, height: 1.4),
+              style: const TextStyle(color: Colors.grey, height: 1.4),
             ),
             const SizedBox(height: 28),
             SizedBox(
@@ -167,7 +174,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Quay lại'),
+                child: Text(AppTranslations.tr('back_to_previous')),
               ),
             ),
           ],
@@ -176,8 +183,9 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(bool isDark, Color textColor) {
     final readOnly = widget.isReadOnly || widget.existingReview != null;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -197,15 +205,15 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           const SizedBox(height: 12),
           Text(
             _doctorName,
-            style: AppTextStyles.heading2,
+            style: AppTextStyles.heading2.copyWith(color: textColor),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
             readOnly
-                ? 'Bạn đã đánh giá lịch hẹn này'
-                : 'Bạn hài lòng với buổi khám như thế nào?',
-            style: AppTextStyles.captionLight,
+                ? AppTranslations.tr('already_reviewed')
+                : AppTranslations.tr('satisfaction_prompt'),
+            style: AppTextStyles.captionLight.copyWith(color: subTextColor),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -215,17 +223,19 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
           const SizedBox(height: 22),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('Nhận xét', style: AppTextStyles.captionDark),
+            child: Text(AppTranslations.tr('comments_label'), style: AppTextStyles.captionDark.copyWith(color: textColor)),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _commentCtrl,
             maxLines: 5,
             readOnly: readOnly,
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
-              hintText: 'Chia sẻ trải nghiệm khám bệnh của bạn...',
+              hintText: AppTranslations.tr('review_share_hint'),
+              hintStyle: const TextStyle(color: Colors.grey),
               filled: true,
-              fillColor: const Color(0xFFF5F7FA),
+              fillColor: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F7FA),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -233,16 +243,6 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          SwitchListTile(
-            value: _isAnonymous,
-            onChanged: readOnly
-                ? null
-                : (value) => setState(() => _isAnonymous = value),
-            activeColor: AppColors.primary,
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Đánh giá ẩn danh'),
-            subtitle: const Text('Tên của bạn sẽ hiển thị là "Ẩn danh"'),
-          ),
           if (widget.existingReview?['reply'] != null &&
               '${widget.existingReview?['reply']}'.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -254,7 +254,8 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Phản hồi của bác sĩ: ${widget.existingReview?['reply']}',
+                '${AppTranslations.tr('doctor_reply_prefix')}: ${widget.existingReview?['reply']}',
+                style: TextStyle(color: textColor),
               ),
             ),
           ],
@@ -282,7 +283,7 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
                         ),
                       )
                     : const Icon(Icons.send),
-                label: Text(_isSaving ? 'Đang gửi...' : 'Gửi đánh giá'),
+                label: Text(_isSaving ? AppTranslations.tr('saving_label') : AppTranslations.tr('review_submit')),
               ),
             ),
         ],
@@ -312,9 +313,16 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
   }
 
   Widget _ratingLabel() {
-    const labels = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+    final labels = [
+      '',
+      AppTranslations.tr('very_bad_label'),
+      AppTranslations.tr('bad_label'),
+      AppTranslations.tr('normal_label'),
+      AppTranslations.tr('good_label'),
+      AppTranslations.tr('excellent_label'),
+    ];
     return Text(
-      _rating > 0 ? labels[_rating] : 'Chọn số sao',
+      _rating > 0 ? labels[_rating] : AppTranslations.tr('review_rating_prompt'),
       style: TextStyle(
         color: _rating > 0 ? Colors.amber.shade700 : Colors.grey,
         fontWeight: FontWeight.w600,
@@ -322,4 +330,3 @@ class _ReviewDoctorScreenState extends State<ReviewDoctorScreen> {
     );
   }
 }
-
