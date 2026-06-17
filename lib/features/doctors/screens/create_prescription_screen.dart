@@ -27,6 +27,8 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   final _formKey = GlobalKey<FormState>();
   final _patientIdController = TextEditingController();
   final _medicalRecordIdController = TextEditingController();
+  
+  // Controllers for the medicine currently being configured
   final _dosageController = TextEditingController(text: '1 viên');
   final _frequencyController = TextEditingController(text: '2 lần/ngày');
   final _durationController = TextEditingController(text: '7 ngày');
@@ -39,6 +41,9 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   String? _error;
   int? _selectedMedicineId;
   List<Map<String, dynamic>> _medicines = [];
+  
+  // List of added medicines in the prescription
+  final List<Map<String, dynamic>> _prescriptionItems = [];
 
   @override
   void initState() {
@@ -79,6 +84,53 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     }
   }
 
+  void _addMedicineItem() {
+    final quantity = int.tryParse(_quantityController.text.trim());
+    if (_selectedMedicineId == null || quantity == null || quantity <= 0) {
+      _showError('Vui lòng chọn thuốc và nhập số lượng hợp lệ');
+      return;
+    }
+
+    final selectedMedicine = _medicines.firstWhere(
+      (m) => _toInt(m['id']) == _selectedMedicineId,
+    );
+    final name = '${selectedMedicine['name'] ?? 'Thuốc'}';
+    final dosage = _dosageController.text.trim();
+    final frequency = _frequencyController.text.trim();
+    final duration = _durationController.text.trim();
+    final instructions = _instructionsController.text.trim();
+
+    if (dosage.isEmpty || frequency.isEmpty || duration.isEmpty) {
+      _showError('Vui lòng nhập đầy đủ liều dùng, tần suất và thời gian');
+      return;
+    }
+
+    setState(() {
+      _prescriptionItems.add({
+        'medicineId': _selectedMedicineId,
+        'medicineName': name,
+        'dosage': dosage,
+        'frequency': frequency,
+        'duration': duration,
+        'quantity': quantity,
+        'instructions': instructions,
+      });
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Đã thêm thuốc vào đơn'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _removeMedicineItem(int index) {
+    setState(() {
+      _prescriptionItems.removeAt(index);
+    });
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -86,13 +138,14 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     final medicalRecordId = int.tryParse(
       _medicalRecordIdController.text.trim(),
     );
-    final quantity = int.tryParse(_quantityController.text.trim());
 
-    if (patientId == null ||
-        medicalRecordId == null ||
-        quantity == null ||
-        _selectedMedicineId == null) {
-      _showError('Vui lòng kiểm tra lại thông tin kê đơn');
+    if (patientId == null || medicalRecordId == null) {
+      _showError('Vui lòng kiểm tra lại mã bệnh nhân và mã hồ sơ bệnh án');
+      return;
+    }
+
+    if (_prescriptionItems.isEmpty) {
+      _showError('Vui lòng thêm ít nhất một loại thuốc vào đơn thuốc');
       return;
     }
 
@@ -106,16 +159,16 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
         notes: _notesController.text.trim().isEmpty
             ? null
             : _notesController.text.trim(),
-        items: [
-          {
-            'medicineId': _selectedMedicineId,
-            'dosage': _dosageController.text.trim(),
-            'frequency': _frequencyController.text.trim(),
-            'duration': _durationController.text.trim(),
-            'quantity': quantity,
-            'instructions': _instructionsController.text.trim(),
-          },
-        ],
+        items: _prescriptionItems.map((item) {
+          return {
+            'medicineId': item['medicineId'],
+            'dosage': item['dosage'],
+            'frequency': item['frequency'],
+            'duration': item['duration'],
+            'quantity': item['quantity'],
+            'instructions': item['instructions'],
+          };
+        }).toList(),
       );
 
       if (!mounted) return;
@@ -140,7 +193,6 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
-        duration: const Duration(seconds: 6),
       ),
     );
   }
@@ -215,59 +267,160 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                 style: TextStyle(color: AppColors.primary),
               ),
             ),
-          _numberField(
-            _patientIdController,
-            'Mã bệnh nhân',
-            Icons.person,
-            readOnly: widget.lockPatientAndRecord,
-          ),
-          const SizedBox(height: 12),
-          _numberField(
-            _medicalRecordIdController,
-            'Mã hồ sơ bệnh án',
-            Icons.folder_shared,
-            readOnly: widget.lockPatientAndRecord,
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<int>(
-            value: _selectedMedicineId,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Thuốc',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.medication),
+          
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Thông tin chung', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  _numberField(
+                    _patientIdController,
+                    'Mã bệnh nhân',
+                    Icons.person,
+                    readOnly: widget.lockPatientAndRecord,
+                  ),
+                  const SizedBox(height: 12),
+                  _numberField(
+                    _medicalRecordIdController,
+                    'Mã hồ sơ bệnh án',
+                    Icons.folder_shared,
+                    readOnly: widget.lockPatientAndRecord,
+                  ),
+                ],
+              ),
             ),
-            items: _medicines
-                .map((medicine) {
-                  final id = _toInt(medicine['id']);
-                  return DropdownMenuItem<int>(
-                    value: id,
-                    child: Text(
-                      _medicineLabel(medicine),
-                      overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 12),
+
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Thêm thuốc vào đơn', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<int>(
+                    value: _selectedMedicineId,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Chọn thuốc',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.medication),
                     ),
-                  );
-                })
-                .where((item) => item.value != null)
-                .toList(),
-            onChanged: (value) => setState(() => _selectedMedicineId = value),
-            validator: (value) => value == null ? 'Vui lòng chọn thuốc' : null,
+                    items: _medicines
+                        .map((medicine) {
+                          final id = _toInt(medicine['id']);
+                          return DropdownMenuItem<int>(
+                            value: id,
+                            child: Text(
+                              _medicineLabel(medicine),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        })
+                        .where((item) => item.value != null)
+                        .toList(),
+                    onChanged: (value) => setState(() => _selectedMedicineId = value),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(child: _textField(_dosageController, 'Liều dùng', Icons.local_hospital)),
+                      const SizedBox(width: 8),
+                      Expanded(child: _textField(_frequencyController, 'Tần suất', Icons.repeat)),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(child: _textField(_durationController, 'Thời gian', Icons.date_range)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _numberField(
+                          _quantityController,
+                          'Số lượng',
+                          Icons.format_list_numbered,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _textField(_instructionsController, 'Hướng dẫn sử dụng', Icons.notes),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton.icon(
+                      onPressed: _addMedicineItem,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Thêm loại thuốc này'),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
+
           const SizedBox(height: 12),
-          _textField(_dosageController, 'Liều dùng', Icons.local_hospital),
-          const SizedBox(height: 12),
-          _textField(_frequencyController, 'Tần suất', Icons.repeat),
-          const SizedBox(height: 12),
-          _textField(_durationController, 'Thời gian dùng', Icons.date_range),
-          const SizedBox(height: 12),
-          _numberField(
-            _quantityController,
-            'Số lượng',
-            Icons.format_list_numbered,
+
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Danh sách thuốc đã kê', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  if (_prescriptionItems.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(child: Text('Chưa có thuốc nào được thêm', style: TextStyle(color: Colors.grey))),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _prescriptionItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _prescriptionItems[index];
+                        return Card(
+                          color: Colors.grey.shade50,
+                          child: ListTile(
+                            title: Text('${item['medicineName']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text(
+                              'Liều: ${item['dosage']} | Tần suất: ${item['frequency']}\n'
+                              'Thời gian: ${item['duration']} | SL: ${item['quantity']}\n'
+                              'HD: ${item['instructions']}',
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _removeMedicineItem(index),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ),
           ),
+
           const SizedBox(height: 12),
-          _textField(_instructionsController, 'Hướng dẫn sử dụng', Icons.notes),
-          const SizedBox(height: 12),
+          
           TextFormField(
             controller: _notesController,
             maxLines: 3,
@@ -275,9 +428,13 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
               labelText: 'Ghi chú đơn thuốc',
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.edit_note),
+              filled: true,
+              fillColor: Colors.white,
             ),
           ),
+          
           const SizedBox(height: 20),
+          
           SizedBox(
             height: 52,
             child: ElevatedButton.icon(
@@ -318,9 +475,9 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
         labelText: label,
         border: const OutlineInputBorder(),
         prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.white,
       ),
-      validator: (value) =>
-          value == null || value.trim().isEmpty ? 'Không được để trống' : null,
     );
   }
 
@@ -338,8 +495,8 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
         labelText: label,
         border: const OutlineInputBorder(),
         prefixIcon: Icon(icon),
-        filled: readOnly,
-        fillColor: readOnly ? Colors.grey.shade100 : null,
+        filled: true,
+        fillColor: readOnly ? Colors.grey.shade100 : Colors.white,
       ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) return 'Không được để trống';
@@ -356,3 +513,4 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     return int.tryParse('$value');
   }
 }
+

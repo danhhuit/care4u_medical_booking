@@ -135,12 +135,25 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
   }
 
   List<Map<String, dynamic>> get _todayAppts {
-    return _appointments.where((a) {
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    
+    final list = _appointments.where((a) {
       final status = '${a['status'] ?? ''}'.toLowerCase();
-      return status == 'pending' ||
-          status == 'confirmed' ||
-          status == 'upcoming';
+      if (status == 'cancelled' || status == 'da_huy') return false;
+      
+      final dateRaw = '${a['scheduleDate'] ?? a['appointmentDate'] ?? a['date'] ?? a['createdAt'] ?? ''}';
+      if (dateRaw.isEmpty) return false;
+      final dateOnly = dateRaw.substring(0, 10);
+      return dateOnly == todayStr;
     }).toList();
+
+    list.sort((x, y) {
+      final tx = '${x['startTime'] ?? x['time'] ?? '00:00'}';
+      final ty = '${y['startTime'] ?? y['time'] ?? '00:00'}';
+      return tx.compareTo(ty);
+    });
+    return list;
   }
 
   List<Map<String, dynamic>> get _completedAppts {
@@ -289,7 +302,7 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                     Row(
                       children: [
                         _statsCard(
-                          'Lịch sắp tới',
+                          'Bệnh nhân hôm nay',
                           '${_todayAppts.length}',
                           Icons.calendar_today,
                           Colors.blue,
@@ -370,6 +383,11 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
   }
 
   Widget _appointmentCard(Map<String, dynamic> a) {
+    final todayList = _todayAppts;
+    final index = todayList.indexWhere((item) => '${item['id']}' == '${a['id']}');
+    final sttText = index != -1 ? 'STT: ${index + 1}' : 'STT: -';
+    final roomText = 'Phòng ${100 + currentDoctorId}';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -398,9 +416,37 @@ class _DoctorDashboardTabState extends State<DoctorDashboardTab> {
                   '${a['patientName'] ?? 'Bệnh nhân #${a['patientId']}'}',
                   style: AppTextStyles.bodyDark,
                 ),
-                Text(
-                  '${a['appointmentNo'] ?? ''}',
-                  style: AppTextStyles.captionLight,
+                Row(
+                  children: [
+                    Text(
+                      '${a['appointmentNo'] ?? ''}',
+                      style: AppTextStyles.captionLight,
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        sttText,
+                        style: const TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        roomText,
+                        style: const TextStyle(fontSize: 10, color: Colors.orange, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   _formatDateTime(a['createdAt']),

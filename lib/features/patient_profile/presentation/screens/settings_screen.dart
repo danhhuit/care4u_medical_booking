@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
+import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
+import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/core/services/notification_settings_service.dart';
 import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/change_password_screen.dart';
+import 'package:care4u_medical_booking/features/patient_profile/presentation/screens/user_guide_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _appointmentCancelled = appointmentCancelled;
       _labResult = labResult;
       _reminderMinutes = reminderMinutes;
+      _darkMode = SettingsManager.isDarkMode;
     });
   }
 
@@ -165,20 +169,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black87,
         ),
       ),
     );
   }
 
-  Widget _card({required List<Widget> children}) {
+  Widget _card({required List<Widget> children, required bool isDark}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(children: children),
@@ -222,124 +228,197 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  void _selectLanguage() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Text(
+                AppTranslations.tr('language'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                title: const Text('Tiếng Việt'),
+                trailing: SettingsManager.currentLanguage == 'vi'
+                    ? const Icon(Icons.check, color: AppColors.primary)
+                    : null,
+                onTap: () => Navigator.pop(context, 'vi'),
+              ),
+              ListTile(
+                title: const Text('English'),
+                trailing: SettingsManager.currentLanguage == 'en'
+                    ? const Icon(Icons.check, color: AppColors.primary)
+                    : null,
+                onTap: () => Navigator.pop(context, 'en'),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selected == null) return;
+    await SettingsManager.setLanguage(selected);
+    setState(() {});
+    _showMessage(
+      selected == 'vi'
+          ? 'Đã chuyển sang Tiếng Việt'
+          : 'Switched to English',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F8),
-      appBar: AppBar(
-        title: const Text('Cài đặt'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-      ),
-      body: ListView(
-        children: [
-          _sectionTitle('Thông báo'),
-          _card(
-            children: [
-              _switchTile(
-                icon: Icons.alarm,
-                title: 'Nhắc lịch khám',
-                value: _appointmentReminder,
-                onChanged: _setAppointmentReminder,
-              ),
-              _normalTile(
-                icon: Icons.timer,
-                title: 'Nhắc trước',
-                trailingText: '$_reminderMinutes min',
-                onTap: _selectReminderMinutes,
-              ),
-              _switchTile(
-                icon: Icons.check_circle_outline,
-                title: 'Thông báo xác nhận lịch',
-                value: _appointmentConfirmed,
-                onChanged: _setAppointmentConfirmed,
-              ),
-              _switchTile(
-                icon: Icons.cancel_outlined,
-                title: 'Thông báo hủy lịch',
-                value: _appointmentCancelled,
-                onChanged: _setAppointmentCancelled,
-              ),
-              _switchTile(
-                icon: Icons.assignment_outlined,
-                title: 'Kết quả xét nghiệm',
-                value: _labResult,
-                onChanged: _setLabResult,
-              ),
-            ],
-          ),
+    return ValueListenableBuilder<String>(
+      valueListenable: SettingsManager.languageCode,
+      builder: (context, lang, _) {
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: SettingsManager.themeMode,
+          builder: (context, mode, _) {
+            final isDark = mode == ThemeMode.dark ||
+                (mode == ThemeMode.system &&
+                    MediaQuery.of(context).platformBrightness == Brightness.dark);
+            final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF6F7F8);
+            final appBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+            final textColor = isDark ? Colors.white : Colors.black87;
 
-          _sectionTitle('Hệ thống'),
-          _card(
-            children: [
-              _normalTile(
-                icon: Icons.language,
-                title: 'Ngôn ngữ',
-                trailingText: 'Tiếng Việt',
-                onTap: () {
-                  _showMessage('Chức năng đổi ngôn ngữ đã có thể mở rộng sau');
-                },
+            return Scaffold(
+              backgroundColor: bgColor,
+              appBar: AppBar(
+                title: Text(AppTranslations.tr('settings')),
+                centerTitle: true,
+                backgroundColor: appBgColor,
+                foregroundColor: textColor,
+                elevation: 0,
               ),
-              SwitchListTile(
-                secondary: const Icon(
-                  Icons.dark_mode,
-                  color: AppColors.primary,
-                ),
-                title: const Text(
-                  'Chế độ tối',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                value: _darkMode,
-                activeColor: AppColors.primary,
-                onChanged: (value) {
-                  setState(() => _darkMode = value);
-                  _showMessage(
-                    value ? 'Đã bật chế độ tối' : 'Đã tắt chế độ tối',
-                  );
-                },
-              ),
-              _normalTile(
-                icon: Icons.menu_book,
-                title: 'Hướng dẫn sử dụng',
-                onTap: () {
-                  _showMessage(
-                    'Tính năng hướng dẫn sử dụng đang được cập nhật',
-                  );
-                },
-              ),
-            ],
-          ),
+              body: ListView(
+                children: [
+                  _sectionTitle(AppTranslations.tr('notifications_header')),
+                  _card(
+                    isDark: isDark,
+                    children: [
+                      _switchTile(
+                        icon: Icons.alarm,
+                        title: AppTranslations.tr('reminders'),
+                        value: _appointmentReminder,
+                        onChanged: _setAppointmentReminder,
+                      ),
+                      _normalTile(
+                        icon: Icons.timer,
+                        title: AppTranslations.tr('remind_before'),
+                        trailingText: '$_reminderMinutes min',
+                        onTap: _selectReminderMinutes,
+                      ),
+                      _switchTile(
+                        icon: Icons.check_circle_outline,
+                        title: AppTranslations.tr('booking_confirmed'),
+                        value: _appointmentConfirmed,
+                        onChanged: _setAppointmentConfirmed,
+                      ),
+                      _switchTile(
+                        icon: Icons.cancel_outlined,
+                        title: AppTranslations.tr('cancel_alerts'),
+                        value: _appointmentCancelled,
+                        onChanged: _setAppointmentCancelled,
+                      ),
+                      _switchTile(
+                        icon: Icons.assignment_outlined,
+                        title: AppTranslations.tr('test_results'),
+                        value: _labResult,
+                        onChanged: _setLabResult,
+                      ),
+                    ],
+                  ),
 
-          _sectionTitle('Bảo mật'),
-          _card(
-            children: [
-              _normalTile(
-                icon: Icons.lock_outline,
-                title: 'Đổi mật khẩu',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ChangePasswordScreen(),
+                  _sectionTitle(AppTranslations.tr('system_header')),
+                  _card(
+                    isDark: isDark,
+                    children: [
+                      _normalTile(
+                        icon: Icons.language,
+                        title: AppTranslations.tr('language'),
+                        trailingText: SettingsManager.currentLanguage == 'vi'
+                            ? 'Tiếng Việt'
+                            : 'English',
+                        onTap: _selectLanguage,
+                      ),
+                      SwitchListTile(
+                        secondary: const Icon(
+                          Icons.dark_mode,
+                          color: AppColors.primary,
+                        ),
+                        title: Text(
+                          AppTranslations.tr('dark_mode'),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        value: _darkMode,
+                        activeColor: AppColors.primary,
+                        onChanged: (value) async {
+                          setState(() => _darkMode = value);
+                          await SettingsManager.toggleTheme(value);
+                          _showMessage(
+                            value ? 'Đã bật chế độ tối' : 'Đã tắt chế độ tối',
+                          );
+                        },
+                      ),
+                      _normalTile(
+                        icon: Icons.menu_book,
+                        title: AppTranslations.tr('user_guide'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const UserGuideScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  _sectionTitle(AppTranslations.tr('security_header')),
+                  _card(
+                    isDark: isDark,
+                    children: [
+                      _normalTile(
+                        icon: Icons.lock_outline,
+                        title: AppTranslations.tr('change_password'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ChangePasswordScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Text(
+                      '${AppTranslations.tr('version')} 1.0.0',
+                      style: const TextStyle(color: Colors.grey),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 30),
+                ],
               ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-          const Center(
-            child: Text(
-              'Phiên bản 1.0.0',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
+

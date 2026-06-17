@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/core/constants/app_translations.dart';
 import 'package:care4u_medical_booking/core/api/care4u_api_service.dart';
+import 'package:care4u_medical_booking/core/services/wallet_service.dart';
+import 'package:care4u_medical_booking/features/store/presentation/screens/vietqr_payment_screen.dart';
+import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> doctorData;
@@ -176,10 +179,30 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     try {
       final data = await _api.getAvailableSchedulesByDoctor(_doctorId);
 
+      final now = DateTime.now();
+      final todayDate = DateTime(now.year, now.month, now.day);
+      final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
       final normalized = data.where((item) {
-        final date = _scheduleDateOf(item);
+        final dateStr = _scheduleDateOf(item);
         final scheduleId = _scheduleIdOf(item);
-        return date.isNotEmpty && scheduleId > 0;
+        if (dateStr.isEmpty || scheduleId <= 0) return false;
+
+        final date = DateTime.tryParse(dateStr);
+        if (date == null) return false;
+
+        if (dateStr == todayStr) {
+          final startTimeStr = _startTimeOf(item);
+          if (startTimeStr.isNotEmpty) {
+            final parts = startTimeStr.split(':');
+            final startHour = int.tryParse(parts[0]) ?? 0;
+            final startMin = int.tryParse(parts[1]) ?? 0;
+            final scheduleDateTime = DateTime(date.year, date.month, date.day, startHour, startMin);
+            return scheduleDateTime.isAfter(now);
+          }
+        }
+
+        return date.isAfter(todayDate) || date.isAtSameMomentAs(todayDate);
       }).toList();
 
       final dates = normalized.map(_scheduleDateOf).toSet().toList();
@@ -203,25 +226,97 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     }
   }
 
-  Future<void> _confirmBooking() async {
-    final selectedSchedule = _selectedSchedule;
-    if (selectedSchedule == null || _isSubmitting) return;
+  String _formatPrice(double price) {
+    final formatted = price.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
+    return '$formatted đ';
+  }
 
-    final scheduleId = _scheduleIdOf(selectedSchedule);
-    if (scheduleId <= 0) {
+  void _showPaymentSelection(double fee, int scheduleId, String selectedDate, String selectedTime) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Thanh toán đặt lịch khám',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Số tiền cần thanh toán: ${_formatPrice(fee)}',
+                  style: const TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.account_balance_wallet, color: AppColors.primary),
+                  title: const Text('Thanh toán bằng Ví Care4U'),
+                  subtitle: Text('Số dư: ${_formatPrice(WalletService.instance.balance.value)}'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _payWithWallet(fee, scheduleId, selectedDate, selectedTime);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.qr_code, color: Colors.blue),
+                  title: const Text('Thanh toán bằng chuyển khoản VietQR'),
+                  subtitle: const Text('Quét mã thanh toán ngân hàng'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _payWithVietQR(fee, scheduleId, selectedDate, selectedTime);
+                  },
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _payWithWallet(double fee, int scheduleId, String selectedDate, String selectedTime) async {
+    final success = WalletService.instance.deductBalance(fee, title: 'Thanh toán lịch khám BS. $_doctorName');
+    if (success) {
+      _executeBooking(scheduleId, selectedDate, selectedTime);
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn khung giờ khám hợp lệ')),
+        const SnackBar(
+          content: Text('Số dư ví không đủ. Vui lòng nạp thêm tiền hoặc chọn VietQR.'),
+          backgroundColor: Colors.red,
+        ),
       );
-      return;
     }
+  }
 
+  void _payWithVietQR(double fee, int scheduleId, String selectedDate, String selectedTime) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VietQRPaymentScreen(
+          amount: fee,
+          onSuccess: () {
+            _executeBooking(scheduleId, selectedDate, selectedTime);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _executeBooking(int scheduleId, String selectedDate, String selectedTime) async {
     setState(() {
       _isSubmitting = true;
     });
-
-    final selectedDate = _scheduleDateOf(selectedSchedule);
-    final selectedTime =
-        '${_startTimeOf(selectedSchedule)} - ${_endTimeOf(selectedSchedule)}';
 
     try {
       final result = await _api.createAppointment(
@@ -229,8 +324,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         doctorId: _doctorId,
         scheduleId: scheduleId,
         reason: 'Đặt lịch khám $_specialty',
-        notes:
-            'Ngày khám: $selectedDate, giờ khám: $selectedTime. Đặt lịch từ Flutter.',
+        notes: 'Ngày khám: $selectedDate, giờ khám: $selectedTime. Đặt lịch từ Flutter.',
       );
 
       if (!mounted) return;
@@ -275,6 +369,73 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _confirmBooking() async {
+    final selectedSchedule = _selectedSchedule;
+    if (selectedSchedule == null || _isSubmitting) return;
+
+    final scheduleId = _scheduleIdOf(selectedSchedule);
+    if (scheduleId <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng chọn khung giờ khám hợp lệ')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    final selectedDate = _scheduleDateOf(selectedSchedule);
+    final selectedTime =
+        '${_startTimeOf(selectedSchedule)} - ${_endTimeOf(selectedSchedule)}';
+
+    // Verify duplication
+    try {
+      final existingAppts = await _api.getAppointments();
+      final myPatientId = SettingsManager.currentPatientId;
+
+      final isDuplicate = existingAppts.any((app) {
+        final appPatientId = int.tryParse('${app['patientId'] ?? ''}') ?? 0;
+        final appScheduleId = int.tryParse('${app['scheduleId'] ?? ''}') ?? 0;
+        final appStatus = '${app['status'] ?? ''}'.toLowerCase().trim();
+
+        if (appPatientId == myPatientId && appStatus != 'cancelled' && appStatus != 'da_huy') {
+          if (appScheduleId == scheduleId) {
+            return true;
+          }
+          final appDate = '${app['scheduleDate'] ?? app['date'] ?? ''}'.substring(0, 10);
+          final appTime = '${app['startTime'] ?? app['time'] ?? ''}';
+          if (appDate == selectedDate && appTime.startsWith(_startTimeOf(selectedSchedule))) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+      if (isDuplicate) {
+        setState(() {
+          _isSubmitting = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bạn đã có lịch hẹn trùng vào khung giờ này rồi!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    } catch (e) {
+      debugPrint('Error checking duplicate appointment: $e');
+    }
+
+    setState(() {
+      _isSubmitting = false;
+    });
+
+    final double fee = double.tryParse('${widget.doctorData['fee'] ?? widget.doctorData['consultationFee'] ?? 300000}') ?? 300000;
+    _showPaymentSelection(fee, scheduleId, selectedDate, selectedTime);
   }
 
   String _weekdayText(String dateText) {

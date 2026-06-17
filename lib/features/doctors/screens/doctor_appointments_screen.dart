@@ -113,6 +113,57 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
     return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildTodayHeaderBanner() {
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    
+    final todayAppts = _appointments.where((a) {
+      final status = '${a['status'] ?? ''}'.toLowerCase();
+      if (status == 'cancelled' || status == 'da_huy') return false;
+      final dateRaw = '${a['scheduleDate'] ?? a['appointmentDate'] ?? a['date'] ?? a['createdAt'] ?? ''}';
+      if (dateRaw.isEmpty) return false;
+      return dateRaw.substring(0, 10) == todayStr;
+    }).toList();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2BB5A0), Color(0xFF1A7A6E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.healing, color: Colors.white, size: 36),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Lịch khám ngày hôm nay',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tổng số bệnh nhân: ${todayAppts.length} | Phòng khám: Phòng ${100 + currentDoctorId}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildList(String type) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -162,6 +213,23 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
       );
     }
 
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    
+    final todayList = _appointments.where((a) {
+      final status = '${a['status'] ?? ''}'.toLowerCase();
+      if (status == 'cancelled' || status == 'da_huy') return false;
+      final dateRaw = '${a['scheduleDate'] ?? a['appointmentDate'] ?? a['date'] ?? a['createdAt'] ?? ''}';
+      if (dateRaw.isEmpty) return false;
+      return dateRaw.substring(0, 10) == todayStr;
+    }).toList();
+    
+    todayList.sort((x, y) {
+      final tx = '${x['startTime'] ?? x['time'] ?? '00:00'}';
+      final ty = '${y['startTime'] ?? y['time'] ?? '00:00'}';
+      return tx.compareTo(ty);
+    });
+
     return RefreshIndicator(
       onRefresh: _loadAppointments,
       child: ListView.separated(
@@ -178,6 +246,12 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
           final reason = '${a['reason'] ?? 'Không có lý do khám'}';
           final appointmentNo = '${a['appointmentNo'] ?? ''}';
           final createdAt = _formatCreatedAt(a['createdAt']);
+
+          final index = todayList.indexWhere((item) => '${item['id']}' == '${a['id']}');
+          final dateRaw = '${a['scheduleDate'] ?? a['appointmentDate'] ?? a['date'] ?? a['createdAt'] ?? ''}';
+          final isToday = dateRaw.startsWith(todayStr);
+          final sttText = index != -1 ? 'STT: ${index + 1}' : 'STT: -';
+          final roomText = 'Phòng ${100 + currentDoctorId}';
 
           return Container(
             padding: const EdgeInsets.all(14),
@@ -210,12 +284,42 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                     children: [
                       Text(patientName, style: AppTextStyles.bodyDark),
                       Text(specialtyName, style: AppTextStyles.captionLight),
-                      Text(
-                        'Mã lịch: $appointmentNo',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.blueGrey,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            'Mã lịch: $appointmentNo',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.blueGrey,
+                            ),
+                          ),
+                          if (isToday) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                sttText,
+                                style: const TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                roomText,
+                                style: const TextStyle(fontSize: 10, color: Colors.orange, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       Text(
                         'Lý do: $reason',
@@ -262,39 +366,49 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('Lịch hẹn của tôi'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadAppointments,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7FA),
+        appBar: AppBar(
+          title: const Text('Lịch hẹn của tôi'),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          elevation: 0.5,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _loadAppointments,
+            ),
+          ],
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: AppColors.primary,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: Colors.grey,
+            tabs: const [
+              Tab(text: 'Tất cả'),
+              Tab(text: 'Sắp tới'),
+              Tab(text: 'Hoàn thành'),
+            ],
           ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.primary,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: Colors.grey,
-          tabs: const [
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Sắp tới'),
-            Tab(text: 'Hoàn thành'),
+        ),
+        body: Column(
+          children: [
+            if (!_isLoading && _errorMessage == null) _buildTodayHeaderBanner(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildList('all'),
+                  _buildList('upcoming'),
+                  _buildList('completed'),
+                ],
+              ),
+            ),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildList('all'),
-          _buildList('upcoming'),
-          _buildList('completed'),
-        ],
       ),
     );
   }

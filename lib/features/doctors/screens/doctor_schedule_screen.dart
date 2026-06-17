@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:care4u_medical_booking/app/theme/settings_manager.dart';
 import 'package:care4u_medical_booking/app/theme/app_colors.dart';
 import 'package:care4u_medical_booking/app/theme/app_text_styles.dart';
@@ -465,6 +465,17 @@ class _AddDoctorSchedulePageState extends State<_AddDoctorSchedulePage> {
     if (!_isValidDate(date)) {
       _showError('Ngày khám phải đúng định dạng YYYY-MM-DD');
       return;
+    }
+
+    final parsedDate = DateTime.tryParse(date);
+    if (parsedDate != null) {
+      final today = DateTime.now();
+      final todayDate = DateTime(today.year, today.month, today.day);
+      final compareDate = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
+      if (compareDate.isBefore(todayDate)) {
+        _showError('Không thể thêm lịch làm việc trong quá khứ');
+        return;
+      }
     }
 
     if (!_isValidTime(start) || !_isValidTime(end)) {
