@@ -87,6 +87,39 @@ public static class AppHelpers
         Thread.Sleep(2500);
     }
 
+    /// <summary>Đảm bảo ứng dụng đang ở màn hình Trang chủ bằng cách nhấn Back nếu đang ở màn hình sâu.</summary>
+    public static void EnsureHomeTab(AndroidDriver d, int w, int h, string adb, string device)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            try
+            {
+                string src = GetPageSource(d);
+                if (src.Contains("Tìm bác sĩ riêng"))
+                {
+                    break;
+                }
+            }
+            catch
+            {
+                // Ignored
+            }
+            // Gửi keyevent BACK
+            var psi = new System.Diagnostics.ProcessStartInfo(adb, $"-s {device} shell input keyevent 4")
+            {
+                UseShellExecute        = false,
+                CreateNoWindow         = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError  = true
+            };
+            using var p = System.Diagnostics.Process.Start(psi)!;
+            p.WaitForExit();
+            Thread.Sleep(1000);
+        }
+        TapAt(d, w, h, 142, 2232); // Tap tab Trang chủ
+        Thread.Sleep(1500);
+    }
+
     // ─── Đăng nhập bệnh nhân ──────────────────────────────────────
 
     /// <summary>Đăng nhập bệnh nhân bằng email và mật khẩu.</summary>

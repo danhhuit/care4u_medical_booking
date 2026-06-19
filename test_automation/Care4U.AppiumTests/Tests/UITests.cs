@@ -15,7 +15,7 @@ public class UITests : AppiumTestBase
     public override void OneTimeSetUp()
     {
         base.OneTimeSetUp();
-        ResetApp();
+        ResetApp(clearData: true);
         AppHelpers.NavigateToPatientLogin(Driver, DeviceWidth, DeviceHeight, AdbPath, DeviceName);
         AppHelpers.LoginPatient(Driver, DeviceWidth, DeviceHeight,
             PatientEmail, PatientPassword, AdbPath, DeviceName);

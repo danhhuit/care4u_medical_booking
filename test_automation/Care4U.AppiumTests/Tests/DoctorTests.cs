@@ -16,7 +16,7 @@ public class DoctorTests : AppiumTestBase
     {
         base.OneTimeSetUp();
         // Đăng nhập bệnh nhân trước khi chạy nhóm DOC
-        ResetApp();
+        ResetApp(clearData: true);
         AppHelpers.NavigateToPatientLogin(Driver, DeviceWidth, DeviceHeight, AdbPath, DeviceName);
         AppHelpers.LoginPatient(Driver, DeviceWidth, DeviceHeight,
             PatientEmail, PatientPassword, AdbPath, DeviceName);
@@ -570,9 +570,7 @@ public class DoctorTests : AppiumTestBase
     // ──────────────────────── Utility ────────────────────────────────────────────
     private void NavigateToDoctorTab()
     {
-        // Nhấn tab Trang chủ trước (tọa độ chính xác 142, 2232)
-        AppHelpers.TapAt(Driver, DeviceWidth, DeviceHeight, 142, 2232);
-        Thread.Sleep(1500);
+        AppHelpers.EnsureHomeTab(Driver, DeviceWidth, DeviceHeight, AdbPath, DeviceName);
         // Nhấn vào thanh tìm kiếm trên trang chủ (tọa độ chính xác 540, 438) để mở màn hình Bác sĩ
         AppHelpers.TapAt(Driver, DeviceWidth, DeviceHeight, 540, 438);
         Thread.Sleep(2000);

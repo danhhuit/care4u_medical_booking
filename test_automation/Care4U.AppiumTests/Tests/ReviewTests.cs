@@ -16,7 +16,7 @@ public class ReviewTests : AppiumTestBase
     {
         base.OneTimeSetUp();
         // Đăng nhập bệnh nhân trước khi chạy nhóm REV
-        ResetApp();
+        ResetApp(clearData: true);
         AppHelpers.NavigateToPatientLogin(Driver, DeviceWidth, DeviceHeight, AdbPath, DeviceName);
         AppHelpers.LoginPatient(Driver, DeviceWidth, DeviceHeight,
             PatientEmail, PatientPassword, AdbPath, DeviceName);

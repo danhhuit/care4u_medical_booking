@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj": {}
+    "D:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj": {}
   },
   "projects": {
-    "d:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj": {
+    "D:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj",
+        "projectUniqueName": "D:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj",
         "projectName": "Care4U.Api",
-        "projectPath": "d:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj",
+        "projectPath": "D:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\Care4U.Api.csproj",
         "packagesPath": "C:\\Users\\NGUYEN THANH DANH\\.nuget\\packages\\",
-        "outputPath": "d:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\obj\\",
+        "outputPath": "D:\\mobile\\project\\care4u_medical_booking\\api\\Care4U.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

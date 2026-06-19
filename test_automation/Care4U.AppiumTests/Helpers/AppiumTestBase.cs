@@ -141,6 +141,10 @@ public abstract class AppiumTestBase : IDisposable
     /// <summary>Chụp ảnh màn hình và lưu bằng ADB.</summary>
     protected string CaptureScreenshot(string name)
     {
+        if (Config["Screenshots:Enabled"] != null && !bool.Parse(Config["Screenshots:Enabled"]!))
+        {
+            return string.Empty;
+        }
         Thread.Sleep(1000);
         var filepath = Path.Combine(ScreenshotDir, $"{name}.png");
         try
@@ -260,8 +264,8 @@ public abstract class AppiumTestBase : IDisposable
         {
             UseShellExecute        = false,
             CreateNoWindow         = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError  = true
+            RedirectStandardOutput = false,
+            RedirectStandardError  = false
         };
         Process.Start(psi);
 
